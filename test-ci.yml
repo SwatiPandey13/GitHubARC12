@@ -1,0 +1,45 @@
+name: Verify Podman in OpenShift ARC Runner
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  verify-podman:
+    runs-on: openshift-arc-runner  # Your OpenShift ARC runner label
+    
+    steps:
+    - name: Check Podman installation
+      id: check-podman
+      run: |
+        # Check if podman is installed and get version
+        if command -v podman &> /dev/null; then
+          echo "Podman is installed"
+          podman --version
+          echo "podman_version=$(podman --version | awk '{print $3}')" >> $GITHUB_OUTPUT
+          echo "status=installed" >> $GITHUB_OUTPUT
+        else
+          echo "Podman is not installed"
+          echo "status=not_installed" >> $GITHUB_OUTPUT
+          exit 1
+        fi
+
+    - name: Verify basic Podman functionality
+      if: steps.check-podman.outputs.status == 'installed'
+      run: |
+        # Test running a container
+        echo "Testing basic Podman commands..."
+        podman run --rm registry.access.redhat.com/ubi8/ubi-minimal:latest echo "Podman is working!"
+
+        # Test rootless mode
+        podman --log-level=error run --rm --user 1000 registry.access.redhat.com/ubi8/ubi-minimal:latest whoami
+
+        # Test storage
+        podman pull registry.access.redhat.com/ubi8/ubi-minimal:latest
+        podman images
+
+    - name: Output results
+      run: |
+        echo "Podman verification completed successfully"
+        echo "Version: ${{ steps.check-podman.outputs.podman_version }}"
