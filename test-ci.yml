@@ -32,7 +32,13 @@ jobs:
             -noprompt
 
             
-Run openssl s_client -connect artifactory.voya.net:443 -showcerts </dev/null 2>/dev/null | openssl x509 -outform PEM > artifactory.crt
-sudo: The "no new privileges" flag is set, which prevents sudo from running as root.
-sudo: If sudo is running in a container, you may need to adjust the container configuration to disable the flag.
-Error: Process completed with exit code 1.
+Build container for action use: '/home/runner/_work/_actions/SonarSource/sonarqube-scan-action/v1/Dockerfile'.
+  /usr/bin/docker build -t f7306c:e037235cd06746708f9a1a834c3c8ff2 -f "/home/runner/_work/_actions/SonarSource/sonarqube-scan-action/v1/Dockerfile" "/home/runner/_work/_actions/SonarSource/sonarqube-scan-action/v1"
+  ERROR: Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?
+  Warning: Docker build failed with exit code 1, back off 8.554 seconds before retry.
+  /usr/bin/docker build -t f7306c:e037235cd06746708f9a1a834c3c8ff2 -f "/home/runner/_work/_actions/SonarSource/sonarqube-scan-action/v1/Dockerfile" "/home/runner/_work/_actions/SonarSource/sonarqube-scan-action/v1"
+  ERROR: Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?
+  Warning: Docker build failed with exit code 1, back off 8.491 seconds before retry.
+  /usr/bin/docker build -t f7306c:e037235cd06746708f9a1a834c3c8ff2 -f "/home/runner/_work/_actions/SonarSource/sonarqube-scan-action/v1/Dockerfile" "/home/runner/_work/_actions/SonarSource/sonarqube-scan-action/v1"
+  ERROR: Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?
+Error: Docker build failed with exit code 1
