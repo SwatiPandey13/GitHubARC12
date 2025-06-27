@@ -32,4 +32,30 @@ jobs:
             -noprompt
 
             
-/home/runner/_work/_temp/224e4bf2-d4ac-4af0-a632-855280e2a822.sh: line 13: /home/runner/bin/podman: cannot execute binary file: Exec format error
+     - name: Setup rootless Podman
+        run: |
+          # Check architecture
+          ARCH=$(uname -m)
+          echo "Detected architecture: $ARCH"
+          
+          # Download correct binary
+          if [[ "$ARCH" == "x86_64" ]]; then
+            URL="https://github.com/containers/podman/releases/latest/download/podman-remote-static-linux_amd64.tar.gz"
+          elif [[ "$ARCH" == "aarch64" ]]; then
+            URL="https://github.com/containers/podman/releases/latest/download/podman-remote-static-linux_arm64.tar.gz"
+          else
+            echo "Unsupported architecture"
+            exit 1
+          fi
+          
+          curl -LO $URL
+          tar -xzf podman-remote-static-*.tar.gz
+          mkdir -p $HOME/bin
+          mv podman-remote-static-* $HOME/bin/podman
+          chmod +x $HOME/bin/podman
+          echo "$HOME/bin" >> $GITHUB_PATH
+          
+          # Configure rootless
+          export XDG_RUNTIME_DIR=/tmp/podman-run
+          mkdir -p $XDG_RUNTIME_DIR
+          echo "XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR" >> $GITHUB_ENV
