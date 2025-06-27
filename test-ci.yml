@@ -32,30 +32,44 @@ jobs:
             -noprompt
 
             
-     - name: Setup rootless Podman
+ - name: Detect architecture
+        id: arch
         run: |
-          # Check architecture
           ARCH=$(uname -m)
-          echo "Detected architecture: $ARCH"
-          
-          # Download correct binary
-          if [[ "$ARCH" == "x86_64" ]]; then
-            URL="https://github.com/containers/podman/releases/latest/download/podman-remote-static-linux_amd64.tar.gz"
-          elif [[ "$ARCH" == "aarch64" ]]; then
-            URL="https://github.com/containers/podman/releases/latest/download/podman-remote-static-linux_arm64.tar.gz"
-          else
-            echo "Unsupported architecture"
-            exit 1
-          fi
-          
-          curl -LO $URL
-          tar -xzf podman-remote-static-*.tar.gz
+          case $ARCH in
+            x86_64)  echo "PODMAN_ARCH=amd64" >> $GITHUB_OUTPUT ;;
+            aarch64) echo "PODMAN_ARCH=arm64" >> $GITHUB_OUTPUT ;;
+            *)       echo "Unsupported architecture: $ARCH" && exit 1 ;;
+          esac
+
+      - name: Install Podman binary
+        run: |
+          # Create bin directory
           mkdir -p $HOME/bin
-          mv podman-remote-static-* $HOME/bin/podman
+          
+          # Download and extract correct binary
+          curl -sSLo podman.tgz \
+            "https://github.com/containers/podman/releases/latest/download/podman-remote-static-linux_${{ steps.arch.outputs.PODMAN_ARCH }}.tar.gz"
+          tar -xzf podman.tgz --strip-components=1 -C $HOME/bin podman-remote-static
+          mv $HOME/bin/podman-remote-static $HOME/bin/podman
           chmod +x $HOME/bin/podman
           echo "$HOME/bin" >> $GITHUB_PATH
-          
-          # Configure rootless
-          export XDG_RUNTIME_DIR=/tmp/podman-run
+
+          # Verify installation
+          $HOME/bin/podman --version
+
+      - name: Configure rootless environment
+        run: |
+          # Required directories
+          export XDG_RUNTIME_DIR=/tmp/podman-$UID
           mkdir -p $XDG_RUNTIME_DIR
           echo "XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR" >> $GITHUB_ENV
+          
+          # Storage configuration
+          mkdir -p $HOME/.local/share/containers
+          echo -e "[storage]\ndriver = \"vfs\"" > $HOME/.config/containers/storage.conf
+
+      - name: Test Podman
+        run: |
+          podman --rootless info
+          podman --rootless run --rm registry.access.redhat.com/ubi8/ubi-minimal:latest cat /etc/os-release
