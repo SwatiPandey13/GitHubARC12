@@ -30,3 +30,9 @@ jobs:
             -keystore $JAVA_HOME/lib/security/cacerts \
             -storepass changeit \
             -noprompt
+
+            
+Run openssl s_client -connect artifactory.voya.net:443 -showcerts </dev/null 2>/dev/null | openssl x509 -outform PEM > artifactory.crt
+sudo: The "no new privileges" flag is set, which prevents sudo from running as root.
+sudo: If sudo is running in a container, you may need to adjust the container configuration to disable the flag.
+Error: Process completed with exit code 1.
