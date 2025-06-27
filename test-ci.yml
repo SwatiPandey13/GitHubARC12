@@ -1,10 +1,12 @@
 - name: Install Maven 3.8.8 (No Admin)
   run: |
-    # Download and extract Maven to your home directory
-    wget https://archive.apache.org/dist/maven/maven-3/3.8.8/binaries/apache-maven-3.8.8-bin.tar.gz
+    # Download Maven using curl (works without wget)
+    curl -L -o apache-maven-3.8.8-bin.tar.gz https://archive.apache.org/dist/maven/maven-3/3.8.8/binaries/apache-maven-3.8.8-bin.tar.gz
+    
+    # Extract and set up
     mkdir -p ~/maven
     tar -xzf apache-maven-3.8.8-bin.tar.gz -C ~/maven
-    # Add to PATH (only for this workflow)
     echo "$HOME/maven/apache-maven-3.8.8/bin" >> $GITHUB_PATH
-    # Verify
-    mvn --version
+    
+    # Verify installation
+    $HOME/maven/apache-maven-3.8.8/bin/mvn --version
