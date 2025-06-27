@@ -32,23 +32,4 @@ jobs:
             -noprompt
 
             
-- name: Setup rootless Podman
-  run: |
-    # Download and extract the correct binary
-    curl -LO https://github.com/containers/podman/releases/latest/download/podman-remote-static-linux_amd64.tar.gz
-    tar -xvf podman-remote-static-linux_amd64.tar.gz
-    mkdir -p $HOME/bin
-    
-    # The actual extracted filename is different - use wildcard
-    mv podman-remote-static* $HOME/bin/podman
-    
-    chmod +x $HOME/bin/podman
-    echo "$HOME/bin" >> $GITHUB_PATH
-    
-    # Verify installation
-    $HOME/bin/podman --version
-    
-    # Configure rootless environment
-    export XDG_RUNTIME_DIR=/tmp/podman-run-$USER
-    mkdir -p $XDG_RUNTIME_DIR
-    echo "XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR" >> $GITHUB_ENV
+/home/runner/_work/_temp/224e4bf2-d4ac-4af0-a632-855280e2a822.sh: line 13: /home/runner/bin/podman: cannot execute binary file: Exec format error
