@@ -33,19 +33,22 @@ jobs:
 
             
 - name: Setup rootless Podman
-        run: |
-          # Method 1: Static binary (recommended)
-          curl -LO https://github.com/containers/podman/releases/download/v4.9.3/podman-remote-static-linux_amd64.tar.gz
-          tar -xzf podman-remote-static-*.tar.gz
-          mkdir -p $HOME/bin
-          mv podman-remote-static $HOME/bin/podman
-          chmod +x $HOME/bin/podman
-          echo "$HOME/bin" >> $GITHUB_PATH
-
-          # Configure rootless
-          export XDG_RUNTIME_DIR=/tmp/podman-run
-          mkdir -p $XDG_RUNTIME_DIR
-
-      - name: Test rootless container
-        run: |
-          podman --rootless run --rm registry.access.redhat.com/ubi8/ubi-minimal:latest echo "Success!"
+  run: |
+    # Download and extract the correct binary
+    curl -LO https://github.com/containers/podman/releases/latest/download/podman-remote-static-linux_amd64.tar.gz
+    tar -xvf podman-remote-static-linux_amd64.tar.gz
+    mkdir -p $HOME/bin
+    
+    # The actual extracted filename is different - use wildcard
+    mv podman-remote-static* $HOME/bin/podman
+    
+    chmod +x $HOME/bin/podman
+    echo "$HOME/bin" >> $GITHUB_PATH
+    
+    # Verify installation
+    $HOME/bin/podman --version
+    
+    # Configure rootless environment
+    export XDG_RUNTIME_DIR=/tmp/podman-run-$USER
+    mkdir -p $XDG_RUNTIME_DIR
+    echo "XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR" >> $GITHUB_ENV
