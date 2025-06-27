@@ -43,3 +43,9 @@ jobs:
           
       - name: Build with Maven
         run: mvn clean package -DskipTests
+
+  
+
+configuration>
+							<url>${artifactory.resolve.contextUrl}/maven-trusted/com/voya/descriptor/1.0/descriptor-1.0-envconfig.xml</url>
+
