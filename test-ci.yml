@@ -32,13 +32,20 @@ jobs:
             -noprompt
 
             
-Build container for action use: '/home/runner/_work/_actions/SonarSource/sonarqube-scan-action/v1/Dockerfile'.
-  /usr/bin/docker build -t f7306c:e037235cd06746708f9a1a834c3c8ff2 -f "/home/runner/_work/_actions/SonarSource/sonarqube-scan-action/v1/Dockerfile" "/home/runner/_work/_actions/SonarSource/sonarqube-scan-action/v1"
-  ERROR: Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?
-  Warning: Docker build failed with exit code 1, back off 8.554 seconds before retry.
-  /usr/bin/docker build -t f7306c:e037235cd06746708f9a1a834c3c8ff2 -f "/home/runner/_work/_actions/SonarSource/sonarqube-scan-action/v1/Dockerfile" "/home/runner/_work/_actions/SonarSource/sonarqube-scan-action/v1"
-  ERROR: Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?
-  Warning: Docker build failed with exit code 1, back off 8.491 seconds before retry.
-  /usr/bin/docker build -t f7306c:e037235cd06746708f9a1a834c3c8ff2 -f "/home/runner/_work/_actions/SonarSource/sonarqube-scan-action/v1/Dockerfile" "/home/runner/_work/_actions/SonarSource/sonarqube-scan-action/v1"
-  ERROR: Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?
-Error: Docker build failed with exit code 1
+- name: Setup rootless Podman
+        run: |
+          # Method 1: Static binary (recommended)
+          curl -LO https://github.com/containers/podman/releases/download/v4.9.3/podman-remote-static-linux_amd64.tar.gz
+          tar -xzf podman-remote-static-*.tar.gz
+          mkdir -p $HOME/bin
+          mv podman-remote-static $HOME/bin/podman
+          chmod +x $HOME/bin/podman
+          echo "$HOME/bin" >> $GITHUB_PATH
+
+          # Configure rootless
+          export XDG_RUNTIME_DIR=/tmp/podman-run
+          mkdir -p $XDG_RUNTIME_DIR
+
+      - name: Test rootless container
+        run: |
+          podman --rootless run --rm registry.access.redhat.com/ubi8/ubi-minimal:latest echo "Success!"
