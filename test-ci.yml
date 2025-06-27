@@ -50,6 +50,4 @@ Error:  Plugin org.apache.maven.plugins:maven-clean-plugin:2.5 or one of its dep
 
   
 
-configuration>
-							<url>${artifactory.resolve.contextUrl}/maven-trusted/com/voya/descriptor/1.0/descriptor-1.0-envconfig.xml</url>
-
+Error:  Plugin org.apache.maven.plugins:maven-clean-plugin:2.5 or one of its dependencies could not be resolved: Failed to read artifact descriptor for org.apache.maven.plugins:maven-clean-plugin:jar:2.5: Could not transfer artifact org.apache.maven.plugins:maven-clean-plugin:pom:2.5 from/to central (https://artifactory.voya.net/artifactory/maven-trusted): transfer failed for https://artifactory.voya.net/artifactory/maven-trusted/org/apache/maven/plugins/maven-clean-plugin/2.5/maven-clean-plugin-2.5.pom: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target -> [Help 1]
