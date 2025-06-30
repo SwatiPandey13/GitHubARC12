@@ -1,89 +1,16 @@
-name: Build and Package - Maven testing
-
-on:
-  push:
-    branches: 
-      - Test_Volo
-  pull_request:
-    branches: [ main ]
-  workflow_dispatch: 
-jobs:
-  build:
-    runs-on: github-arc-runners
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up JDK 8
+ # Switch to Java 11 for SonarQube
+      - name: Set up JDK 11 for SonarQube
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '8'
-          server-id: ''
-          # cache: maven
-
-      - name: Deploy custom settings.xml
-        run: |
-          mkdir -p ~/.m2
-          cp .github/maven/settings.xml ~/.m2/
-          ls -la ~/.m2/
-
-      - name: Install Maven 3.8.8 (No Admin)
-        run: |
-          curl -L -o apache-maven-3.8.8-bin.tar.gz https://archive.apache.org/dist/maven/maven-3/3.8.8/binaries/apache-maven-3.8.8-bin.tar.gz
-          mkdir -p ~/maven
-          tar -xzf apache-maven-3.8.8-bin.tar.gz -C ~/maven
-          echo "$HOME/maven/apache-maven-3.8.8/bin" >> $GITHUB_PATH
-          $HOME/maven/apache-maven-3.8.8/bin/mvn --version
-
-      - name: Write Artifactory CA cert from secret
-        run: |
-          echo "${{ secrets.ARTIFACTORY_CA_CRT }}" > artifactory-ca.crt
-
-      - name: Create new Java truststore and import Artifactory CA cert
-        run: |
-          # Create a new empty Java truststore
-          keytool -genkey -alias temp -keystore ./custom-cacerts -storepass changeit -keyalg RSA -dname "CN=temp" -validity 1
-          keytool -delete -alias temp -keystore ./custom-cacerts -storepass changeit
-          # Import the Artifactory CA certificate
-          keytool -importcert -noprompt \
-            -alias artifactory-ca \
-            -file artifactory-ca.crt \
-            -keystore ./custom-cacerts \
-            -storepass changeit
-          # Point all Java processes to use the new truststore
-          echo "JAVA_TOOL_OPTIONS=-Djavax.net.ssl.trustStore=$(pwd)/custom-cacerts -Djavax.net.ssl.trustStorePassword=changeit" >> $GITHUB_ENV
-
-      - name: Build with Maven
-        run: mvn clean package -DskipTests -Dartifactory.resolve.contextUrl=https://artifactory.voya.net/artifactory -Dartifactory.resolve.username=s700232 -Dartifactory.resolve.password=Ingcc123!
-
+          java-version: '11'
 
       - name: SonarQube Scan
-        run: mvn sonar:sonar -Dsonar.projectKey=Volo -Dsonar.projectName=Volo -Dsonar.host.url=https://sonarqube.voya.net/ -Dsonar.login=sqa_8f629bcea9ef8f37f5a0efd32a37dda93d731d16
-
-
-===========================
-
-Error:  Failed to execute goal org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.1.2184:sonar (default-cli) on project volo: Execution default-cli of goal org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.1.2184:sonar failed: An API incompatibility was encountered while executing org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.1.2184:sonar: java.lang.UnsupportedClassVersionError: org/sonar/batch/bootstrapper/EnvironmentInformation has been compiled by a more recent version of the Java Runtime (class file version 55.0), this version of the Java Runtime only recognizes class file versions up to 52.0
-Error:  -----------------------------------------------------
-Error:  realm =    plugin>org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.1.2184
-Error:  strategy = org.codehaus.plexus.classworlds.strategy.SelfFirstStrategy
-Error:  urls[0] = file:/home/runner/.m2/repository/org/sonarsource/scanner/maven/sonar-maven-plugin/3.9.1.2184/sonar-maven-plugin-3.9.1.2184.jar
-Error:  urls[1] = file:/home/runner/.m2/repository/org/sonatype/plexus/plexus-sec-dispatcher/1.4/plexus-sec-dispatcher-1.4.jar
-Error:  urls[2] = file:/home/runner/.m2/repository/org/sonatype/plexus/plexus-cipher/1.4/plexus-cipher-1.4.jar
-Error:  urls[3] = file:/home/runner/.m2/repository/org/codehaus/plexus/plexus-utils/3.2.1/plexus-utils-3.2.1.jar
-Error:  urls[4] = file:/home/runner/.m2/repository/org/sonarsource/scanner/api/sonar-scanner-api/2.16.2.588/sonar-scanner-api-2.16.2.588.jar
-Error:  urls[5] = file:/home/runner/.m2/repository/commons-lang/commons-lang/2.6/commons-lang-2.6.jar
-Error:  Number of foreign imports: 1
-Error:  import: Entry[import  from realm ClassRealm[maven.api, parent: null]]
-Error:  
-Error:  -----------------------------------------------------
-Error:  
-Error:  -> [Help 1]
-Error:  
-Error:  To see the full stack trace of the errors, re-run Maven with the -e switch.
-Error:  Re-run Maven using the -X switch to enable full debug logging.
-Error:  
-Error:  For more information about the errors and possible solutions, please read the following articles:
-Error:  [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/PluginContainerException
-Error: Process completed with exit code 1.
+        run: |
+          # Use the same Maven installation but with Java 11
+          export JAVA_HOME=$RUNNER_TEMP/Java_Temurin-Hotspot_jdk/11.0.22-7/x64
+          $HOME/maven/apache-maven-3.8.8/bin/mvn sonar:sonar \
+            -Dsonar.projectKey=Volo \
+            -Dsonar.projectName=Volo \
+            -Dsonar.host.url=https://sonarqube.voya.net/ \
+            -Dsonar.login=sqa_8f629bcea9ef8f37f5a0efd32a37dda93d1236
