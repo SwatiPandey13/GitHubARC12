@@ -1,9 +1,9 @@
-name: Sonar testing
+name: Sonar test
 
 on:
   push:
     branches: 
-      - sonartesting
+      - test_sonar
 
   workflow_dispatch: 
 jobs:
@@ -25,7 +25,6 @@ jobs:
           mkdir -p ~/.m2
           cp .github/maven/settings.xml ~/.m2/
           ls -la ~/.m2/
-
       - name: Cache Maven packages
         uses: actions/cache@v3
         with:
@@ -40,11 +39,9 @@ jobs:
           tar -xzf apache-maven-3.8.8-bin.tar.gz -C ~/maven
           echo "$HOME/maven/apache-maven-3.8.8/bin" >> $GITHUB_PATH
           $HOME/maven/apache-maven-3.8.8/bin/mvn --version
-
       - name: Write Artifactory CA cert from secret
         run: |
           echo "${{ secrets.ARTIFACTORY_CA_CRT }}" > artifactory-ca.crt
-
       - name: Create new Java truststore and import Artifactory CA cert
         run: |
           # Create a new empty Java truststore
@@ -58,9 +55,8 @@ jobs:
             -storepass changeit
           # Point all Java processes to use the new truststore
           echo "JAVA_TOOL_OPTIONS=-Djavax.net.ssl.trustStore=$(pwd)/custom-cacerts -Djavax.net.ssl.trustStorePassword=changeit" >> $GITHUB_ENV
-
       - name: Build with Maven
-        run: mvn -B clean package -DskipTests -Dartifactory.resolve.contextUrl=https://artifactory.voya.net/artifactory -Dartifactory.resolve.username=s7232 -Dartifactory.resolve.password=Ing123!
+        run: mvn -B clean package -DskipTests -Dartifactory.resolve.contextUrl=https://artifactory.voya.net/artifactory -Dartifactory.resolve.username=s700232 -Dartifactory.resolve.password=Ingcc123!
 
       - name: Set up JDK 11 for SonarQube
         uses: actions/setup-java@v3
@@ -74,19 +70,19 @@ jobs:
             -Dsonar.projectKey=Volo \
             -Dsonar.projectName=Volo \
             -Dsonar.host.url=https://sonarqube.voya.net/ \
-            -Dsonar.login=sqa_8f629bcea9ef8f37f5a0efd32a37dda93d731e16 \
+            -Dsonar.login=sqa_8f629bcea9ef8f37f5a0efd32a37dda93d731d16 \
             -Dsonar.java.jdkHome=$JAVA_HOME_11_X64 \  # Explicitly point to JDK 11
-            -Dartifactory.resolve.username=s7232 \
-            -Dartifactory.resolve.password=Ing123!
+            -Dartifactory.resolve.username=s700232 \
+            -Dartifactory.resolve.password=Ingcc123!
           
-      # - name: SonarQube Scan
-      #   run: |
-      #     # Use the same Maven installation but with Java 11
-      #     export JAVA_HOME=${{ env.JAVA_HOME_11_X64 }}
-      #     echo "using JAVA_HOME: $JAVA_HOME"
-      #     $HOME/maven/apache-maven-3.8.8/bin/mvn sonar:sonar \
-      #       -Dsonar.projectKey=Volo \
-      #       -Dsonar.projectName=Volo \
-      #       -Dsonar.host.url=https://sonarqube.voya.net/ \
-      #       -Dsonar.login=sqa_8f629bcea9ef8f37f5a0efd32a37dda93d731e16
+ ==============================
+
+ Error:  No plugin found for prefix 'sonar' in the current project and in the plugin groups [org.apache.maven.plugins, org.codehaus.mojo] available from the repositories [local (/home/runner/.m2/repository), central (https://repo.maven.apache.org/maven2)] -> [Help 1]
+Error:  
+Error:  To see the full stack trace of the errors, re-run Maven with the -e switch.
+Error:  Re-run Maven using the -X switch to enable full debug logging.
+Error:  
+Error:  For more information about the errors and possible solutions, please read the following articles:
+Error:  [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/NoPluginFoundForPrefixException
+Error: Process completed with exit code 1.
             
