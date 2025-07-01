@@ -1,20 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <settings xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.1.0 http://maven.apache.org/xsd/settings-1.1.0.xsd" xmlns="http://maven.apache.org/SETTINGS/1.1.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <mirrors>
-      <mirror>
-        <id>artifactory-central</id>
-        <name>Artifactory Central Mirror</name>
-        <url>https://artifactory.voya.net/artifactory/maven-central</url>
-        <mirrorOf>central</mirrorOf>
-      </mirror>
-      <mirror>
-        <id>artifactory-sonarsource</id>
-        <name>Artifactory SonarSource Mirror</name>
-        <url>https://artifactory.voya.net/artifactory/sonarsource</url>
-        <mirrorOf>sonarsource</mirrorOf>
-      </mirror>
-    </mirrors>
         <pluginGroups>
                 <pluginGroup>org.sonarsource.scanner.maven</pluginGroup>
         </pluginGroups>
@@ -85,3 +71,30 @@
     <activeProfile>artifactory</activeProfile>
   </activeProfiles>
 </settings>
+
+=====
+
+#!/bin/bash
+
+# Set environment variables for GitHub Actions Runner
+export RUNNER_ALLOW_RUNASROOT="0"
+export HOME=/home/runner
+
+# Configure the runner
+./config.sh --url "${GITHUB_REPO_URL}" \
+            --token "${GITHUB_RUNNER_TOKEN}" \
+            --name "${RUNNER_NAME:-$(hostname)}" \
+            --work "${RUNNER_WORK_DIR:-_work}" \
+            --labels "${RUNNER_LABELS:-rhel,openshift,podman,maven}" \
+            --unattended \
+            --replace
+
+# Start the runner with cleanup
+function cleanup() {
+    echo "Removing runner..."
+    ./config.sh remove --token "${GITHUB_RUNNER_TOKEN}"
+}
+
+trap cleanup EXIT
+
+./run.sh
