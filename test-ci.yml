@@ -1,100 +1,89 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<settings xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.1.0 http://maven.apache.org/xsd/settings-1.1.0.xsd" xmlns="http://maven.apache.org/SETTINGS/1.1.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-        <pluginGroups>
-                <pluginGroup>org.sonarsource.scanner.maven</pluginGroup>
-        </pluginGroups>
-  <servers>
-    <server>
-      <username>mvntrstdrd</username>
-      <password>AP4APohYwGqL5heqb3W3Hv8zQxx</password>
-      <id>central</id>
-    </server>
-    <server>
-      <username>mvntrstdrd</username>
-      <password>AP4APohYwGqL5heqb3W3Hv8zQxx</password>
-      <id>snapshots</id>
-    </server>
-  </servers>
-  <profiles>
-    <profile>
-      <repositories>
-        <repository>
-          <snapshots>
-            <enabled>false</enabled>
-          </snapshots>
-          <id>central</id>
-          <name>maven-trusted</name>
-          <url>https://artifactory.voya.net/artifactory/maven-trusted</url>
-        </repository>
-        <repository>
-          <snapshots />
-          <id>snapshots</id>
-          <name>maven-trusted</name>
-          <url>https://artifactory.voya.net/artifactory/maven-trusted</url>
-        </repository>
-      </repositories>
-      <pluginRepositories>
-        <pluginRepository>
-          <snapshots>
-            <enabled>false</enabled>
-          </snapshots>
-          <id>central</id>
-          <name>maven-trusted</name>
-          <url>https://artifactory.voya.net/artifactory/maven-trusted</url>
-        </pluginRepository>
-        <pluginRepository>
-          <snapshots />
-          <id>snapshots</id>
-          <name>maven-trusted</name>
-          <url>https://artifactory.voya.net/artifactory/maven-trusted</url>
-        </pluginRepository>
-      </pluginRepositories>
-      <id>artifactory</id>
-    </profile>
-        <profile>
-                <id>sonar</id>
-                <activation>
-                        <activeByDefault>true</activeByDefault>
-                </activation>
-                <properties>
-                        <!-- Optional URL to server. Default value is http://localhost:9000
-                        <sonar.host.url>https://sonarqube.unit.voya.net</sonar.host.url>
-                        <sonar.token>31217b10f6b4ddfb2f3aee9314d06d16d8fd7125</sonar.token> -->
-                        <sonar-maven-plugin.version>3.7.0.1746</sonar-maven-plugin.version>
-                        <sonar.host.url>https://sonarqube.voya.net</sonar.host.url>
-                        <sonar.token>16ff4b90327cff10d753938349ef7cf5caa2cbd2</sonar.token>
-                </properties>
-        </profile>
-  </profiles>
-  <activeProfiles>
-    <activeProfile>artifactory</activeProfile>
-  </activeProfiles>
-</settings>
+name: Sonar test
 
+on:
+  push:
+    branches: 
+      - test_sonar
+
+  workflow_dispatch: 
+jobs:
+  build:
+    runs-on: github-arc-runners
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 11 for build
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Deploy custom settings.xml
+        run: |
+          mkdir -p ~/.m2
+          cp .github/maven/settings.xml ~/.m2/
+          ls -la ~/.m2/
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2-
+
+      - name: Install Maven 3.8.8 (No Admin)
+        run: |
+          curl -L -o apache-maven-3.8.8-bin.tar.gz https://archive.apache.org/dist/maven/maven-3/3.8.8/binaries/apache-maven-3.8.8-bin.tar.gz
+          mkdir -p ~/maven
+          tar -xzf apache-maven-3.8.8-bin.tar.gz -C ~/maven
+          echo "$HOME/maven/apache-maven-3.8.8/bin" >> $GITHUB_PATH
+          $HOME/maven/apache-maven-3.8.8/bin/mvn --version
+      - name: Write Artifactory CA cert from secret
+        run: |
+          echo "${{ secrets.ARTIFACTORY_CA_CRT }}" > artifactory-ca.crt
+      - name: Create new Java truststore and import Artifactory CA cert
+        run: |
+          # Create a new empty Java truststore
+          keytool -genkey -alias temp -keystore ./custom-cacerts -storepass changeit -keyalg RSA -dname "CN=temp" -validity 1
+          keytool -delete -alias temp -keystore ./custom-cacerts -storepass changeit
+          # Import the Artifactory CA certificate
+          keytool -importcert -noprompt \
+            -alias artifactory-ca \
+            -file artifactory-ca.crt \
+            -keystore ./custom-cacerts \
+            -storepass changeit
+          # Point all Java processes to use the new truststore
+          echo "JAVA_TOOL_OPTIONS=-Djavax.net.ssl.trustStore=$(pwd)/custom-cacerts -Djavax.net.ssl.trustStorePassword=changeit" >> $GITHUB_ENV
+      - name: Build with Maven
+        run: mvn -B clean package -DskipTests -Dartifactory.resolve.contextUrl=https://artifactory.voya.net/artifactory -Dartifactory.resolve.username=$userae -Dartifactory.resolve.password=$password
+
+
+
+      - name: Run SonarQube analysis
+        run: |
+          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:3.11.0.3922:sonar \
+            -Dsonar.projectKey=Volo \
+            -Dsonar.projectName=Volo \
+            -Dsonar.host.url=https://sonarqube.voya.net/ \
+            -Dsonar.login=$login \
+            -Dsonar.java.jdkHome=$JAVA_HOME_11_X64 \  # Explicitly point to JDK 11
+            -Dartifactory.resolve.username=$userae \
+            -Dartifactory.resolve.password=$password \
+            -s .github/maven/settings.xml
+
+
+        
 =====
 
-#!/bin/bash
-
-# Set environment variables for GitHub Actions Runner
-export RUNNER_ALLOW_RUNASROOT="0"
-export HOME=/home/runner
-
-# Configure the runner
-./config.sh --url "${GITHUB_REPO_URL}" \
-            --token "${GITHUB_RUNNER_TOKEN}" \
-            --name "${RUNNER_NAME:-$(hostname)}" \
-            --work "${RUNNER_WORK_DIR:-_work}" \
-            --labels "${RUNNER_LABELS:-rhel,openshift,podman,maven}" \
-            --unattended \
-            --replace
-
-# Start the runner with cleanup
-function cleanup() {
-    echo "Removing runner..."
-    ./config.sh remove --token "${GITHUB_RUNNER_TOKEN}"
-}
-
-trap cleanup EXIT
-
-./run.sh
+Error:  Failed to execute goal on project voloJAR: Could not resolve dependencies for project com.generate.project.module:voloJAR:jar:1.0.0: Could not find artifact sun.jdk:tools:jar:1.8 at specified path /home/runner/_work/_tool/Java_Temurin-Hotspot_jdk/11.0.27-6/x64/lib/tools.jar -> [Help 1]
+Error:  
+Error:  To see the full stack trace of the errors, re-run Maven with the -e switch.
+Error:  Re-run Maven using the -X switch to enable full debug logging.
+Error:  
+Error:  For more information about the errors and possible solutions, please read the following articles:
+Error:  [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/DependencyResolutionException
+Error:  
+Error:  After correcting the problems, you can resume the build with the command
+Error:    mvn <args> -rf :voloJAR
+Error: Process completed with exit code 1.
