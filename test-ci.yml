@@ -1,18 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
          xmlns="http://maven.apache.org/POM/4.0.0" 
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-    <!-- Keep all existing configuration until the build section -->
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.generate.project.parent</groupId>
+    <artifactId>volo</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+    <name>volo</name>
+    <url>http://maven.apache.org</url>
+    
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <final.name>ivolo</final.name>
+        <final.version>1.0.0</final.version>
+        <target.dir>${project.basedir}/target/${project.artifactId}</target.dir>
+        
+        <!-- Java 17 Properties -->
+        <maven.compiler.release>17</maven.compiler.release>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        
+        <!-- Plugin Versions -->
+        <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
+        <sonar-maven-plugin.version>3.11.0.3922</sonar-maven-plugin.version>
+        <maven.enforcer.plugin.version>3.4.1</maven.enforcer.plugin.version>
+        
+        <!-- Sonar Properties -->
+        <sonar.skipSurefireTests>true</sonar.skipSurefireTests>
+        <sonar.test.exclusions>**/*</sonar.test.exclusions>
+        
+        <!-- Jakarta EE Versions -->
+        <jakarta.activation.version>2.1.2</jakarta.activation.version>
+        <jakarta.mail.version>2.1.2</jakarta.mail.version>
+        <jakarta.mail.impl.version>2.0.1</jakarta.mail.impl.version>
+        <jakarta.jaxb.version>4.0.0</jakarta.jaxb.version>
+        <jaxb.impl.version>4.0.3</jaxb.impl.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Handle tools.jar dependency -->
+            <dependency>
+                <groupId>sun.jdk</groupId>
+                <artifactId>tools</artifactId>
+                <version>1.8</version>
+                <scope>system</scope>
+                <systemPath>${java.home}/../lib/tools.jar</systemPath>
+                <optional>true</optional>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <modules>
+        <module>voloJAR</module>
+        <module>voloWAR</module>
+    </modules>
+
+    <dependencies>
+        <!-- Your existing dependencies remain unchanged -->
+        <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+            <version>1.1</version>
+        </dependency>
+        <!-- All other existing dependencies... -->
+        
+        <!-- Add Jakarta EE dependencies for Java 17 compatibility -->
+        <dependency>
+            <groupId>jakarta.activation</groupId>
+            <artifactId>jakarta.activation-api</artifactId>
+            <version>${jakarta.activation.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.mail</groupId>
+            <artifactId>jakarta.mail-api</artifactId>
+            <version>${jakarta.mail.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>jakarta.mail</artifactId>
+            <version>${jakarta.mail.impl.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+            <version>${jakarta.jaxb.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>${jaxb.impl.version}</version>
+        </dependency>
+    </dependencies>
 
     <build>
         <pluginManagement>
             <plugins>
-                <!-- Updated compiler plugin configuration -->
+                <!-- Compiler Plugin -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.11.0</version>
+                    <version>${maven.compiler.plugin.version}</version>
                     <configuration>
-                        <release>17</release>
+                        <release>${maven.compiler.release}</release>
                         <compilerArgs>
                             <arg>--add-modules=java.se,jdk.unsupported</arg>
                             <arg>-Xlint:unchecked</arg>
@@ -21,25 +112,45 @@
                         <parameters>true</parameters>
                         <fork>true</fork>
                         <verbose>true</verbose>
+                        <showWarnings>true</showWarnings>
+                        <showDeprecation>true</showDeprecation>
                     </configuration>
                 </plugin>
                 
-                <!-- SonarQube plugin remains the same -->
+                <!-- SonarQube Plugin -->
+                <plugin>
+                    <groupId>org.sonarsource.scanner.maven</groupId>
+                    <artifactId>sonar-maven-plugin</artifactId>
+                    <version>${sonar-maven-plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>sonar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                
+                <!-- Enforcer Plugin -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>${maven.enforcer.plugin.version}</version>
+                </plugin>
             </plugins>
         </pluginManagement>
         
         <plugins>
-            <!-- Active compiler plugin -->
+            <!-- Active plugins -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
             </plugin>
             
-            <!-- Add enforcer plugin to validate environment -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.4.1</version>
                 <executions>
                     <execution>
                         <id>enforce-java</id>
@@ -51,6 +162,9 @@
                                 <requireJavaVersion>
                                     <version>[17,18)</version>
                                 </requireJavaVersion>
+                                <requireMavenVersion>
+                                    <version>[3.8.6,)</version>
+                                </requireMavenVersion>
                             </rules>
                         </configuration>
                     </execution>
@@ -59,7 +173,6 @@
         </plugins>
     </build>
 
-    <!-- Add profile for Java 17 specific configuration -->
     <profiles>
         <profile>
             <id>java17</id>
@@ -67,27 +180,8 @@
                 <jdk>17</jdk>
             </activation>
             <properties>
-                <!-- Explicitly disable tools.jar dependency -->
                 <maven.compiler.includeSystemScope>false</maven.compiler.includeSystemScope>
             </properties>
-            <dependencies>
-                <!-- Replace legacy Java EE dependencies with Jakarta EE -->
-                <dependency>
-                    <groupId>jakarta.activation</groupId>
-                    <artifactId>jakarta.activation-api</artifactId>
-                    <version>2.1.2</version>
-                </dependency>
-                <dependency>
-                    <groupId>jakarta.mail</groupId>
-                    <artifactId>jakarta.mail-api</artifactId>
-                    <version>2.1.2</version>
-                </dependency>
-                <dependency>
-                    <groupId>com.sun.mail</groupId>
-                    <artifactId>jakarta.mail</artifactId>
-                    <version>2.0.1</version>
-                </dependency>
-            </dependencies>
         </profile>
     </profiles>
 </project>
