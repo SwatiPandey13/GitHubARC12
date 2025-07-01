@@ -1,68 +1,92 @@
-name: Maven Build with SonarQube
+name: Sonar testing
 
 on:
   push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
+    branches: 
+      - sonartesting
 
-env:
-  MAVEN_OPTS: -Djava.awt.headless=true
-  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-  ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
-  ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
-
+  workflow_dispatch: 
 jobs:
   build:
-    runs-on: openshift-rhel-runner  # Replace with your actual runner label
-    
+    runs-on: github-arc-runners
     steps:
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0  # Required for SonarQube analysis
-        
-    # Setup JDK 8 for building the project (since your pom.xml specifies Java 8)
-    - name: Set up JDK 8 for build
-      uses: actions/setup-java@v3
-      with:
-        java-version: '8'
-        distribution: 'temurin'
-        cache: 'maven'
-        
-    - name: Cache Maven packages
-      uses: actions/cache@v3
-      with:
-        path: ~/.m2
-        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-        restore-keys: ${{ runner.os }}-m2-
-        
-    # First build with tests skipped (faster)
-    - name: Build with Maven
-      run: mvn -B clean package -DskipTests -Dartifactory.resolve.username=$ARTIFACTORY_USERNAME -Dartifactory.resolve.password=$ARTIFACTORY_PASSWORD
-      
-    # Setup JDK 11 for SonarQube analysis
-    - name: Set up JDK 11 for SonarQube
-      uses: actions/setup-java@v3
-      with:
-        java-version: '11'
-        distribution: 'temurin'
-        
-    # Run SonarQube analysis with proper Java version
-    - name: Run SonarQube analysis
-      run: |
-        mvn -B verify sonar:sonar \
-          -Dsonar.projectKey=volo \
-          -Dsonar.projectName=volo \
-          -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
-          -Dsonar.login=$SONAR_TOKEN \
-          -Dsonar.java.jdkHome=$JAVA_HOME_11_X64 \  # Explicitly point to JDK 11
-          -Dartifactory.resolve.username=$ARTIFACTORY_USERNAME \
-          -Dartifactory.resolve.password=$ARTIFACTORY_PASSWORD
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 8 for build
+        uses: actions/setup-java@v3
+        with:
+          java-version: '8'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Deploy custom settings.xml
+        run: |
+          mkdir -p ~/.m2
+          cp .github/maven/settings.xml ~/.m2/
+          ls -la ~/.m2/
+
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2-
+
+      - name: Install Maven 3.8.8 (No Admin)
+        run: |
+          curl -L -o apache-maven-3.8.8-bin.tar.gz https://archive.apache.org/dist/maven/maven-3/3.8.8/binaries/apache-maven-3.8.8-bin.tar.gz
+          mkdir -p ~/maven
+          tar -xzf apache-maven-3.8.8-bin.tar.gz -C ~/maven
+          echo "$HOME/maven/apache-maven-3.8.8/bin" >> $GITHUB_PATH
+          $HOME/maven/apache-maven-3.8.8/bin/mvn --version
+
+      - name: Write Artifactory CA cert from secret
+        run: |
+          echo "${{ secrets.ARTIFACTORY_CA_CRT }}" > artifactory-ca.crt
+
+      - name: Create new Java truststore and import Artifactory CA cert
+        run: |
+          # Create a new empty Java truststore
+          keytool -genkey -alias temp -keystore ./custom-cacerts -storepass changeit -keyalg RSA -dname "CN=temp" -validity 1
+          keytool -delete -alias temp -keystore ./custom-cacerts -storepass changeit
+          # Import the Artifactory CA certificate
+          keytool -importcert -noprompt \
+            -alias artifactory-ca \
+            -file artifactory-ca.crt \
+            -keystore ./custom-cacerts \
+            -storepass changeit
+          # Point all Java processes to use the new truststore
+          echo "JAVA_TOOL_OPTIONS=-Djavax.net.ssl.trustStore=$(pwd)/custom-cacerts -Djavax.net.ssl.trustStorePassword=changeit" >> $GITHUB_ENV
+
+      - name: Build with Maven
+        run: mvn -B clean package -DskipTests -Dartifactory.resolve.contextUrl=https://artifactory.voya.net/artifactory -Dartifactory.resolve.username=s7232 -Dartifactory.resolve.password=Ing123!
+
+      - name: Set up JDK 11 for SonarQube
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      - name: Run SonarQube analysis
+        run: |
+          mvn -B verify sonar:sonar \
+            -Dsonar.projectKey=Volo \
+            -Dsonar.projectName=Volo \
+            -Dsonar.host.url=https://sonarqube.voya.net/ \
+            -Dsonar.login=sqa_8f629bcea9ef8f37f5a0efd32a37dda93d731e16 \
+            -Dsonar.java.jdkHome=$JAVA_HOME_11_X64 \  # Explicitly point to JDK 11
+            -Dartifactory.resolve.username=s7232 \
+            -Dartifactory.resolve.password=Ing123!
           
-    - name: Archive build artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: build-artifacts
-        path: |
-          **/target/*.war
-          **/target/*.jar
+      # - name: SonarQube Scan
+      #   run: |
+      #     # Use the same Maven installation but with Java 11
+      #     export JAVA_HOME=${{ env.JAVA_HOME_11_X64 }}
+      #     echo "using JAVA_HOME: $JAVA_HOME"
+      #     $HOME/maven/apache-maven-3.8.8/bin/mvn sonar:sonar \
+      #       -Dsonar.projectKey=Volo \
+      #       -Dsonar.projectName=Volo \
+      #       -Dsonar.host.url=https://sonarqube.voya.net/ \
+      #       -Dsonar.login=sqa_8f629bcea9ef8f37f5a0efd32a37dda93d731e16
+            
