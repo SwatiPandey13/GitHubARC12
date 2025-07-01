@@ -1,8 +1,73 @@
-Error:  Plugin org.sonarsource.scanner.maven:sonar-maven-plugin:3.11.0.3922 or one of its dependencies could not be resolved: Failed to read artifact descriptor for org.sonarsource.scanner.maven:sonar-maven-plugin:jar:3.11.0.3922: Could not transfer artifact org.sonarsource.scanner.maven:sonar-maven-plugin:pom:3.11.0.3922 from/to central (https://repo.maven.apache.org/maven2): transfer failed for https://repo.maven.apache.org/maven2/org/sonarsource/scanner/maven/sonar-maven-plugin/3.11.0.3922/sonar-maven-plugin-3.11.0.3922.pom: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target -> [Help 1]
-Error:  
-Error:  To see the full stack trace of the errors, re-run Maven with the -e switch.
-Error:  Re-run Maven using the -X switch to enable full debug logging.
-Error:  
-Error:  For more information about the errors and possible solutions, please read the following articles:
-Error:  [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/PluginResolutionException
-Error: Process completed with exit code 1.
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.1.0 http://maven.apache.org/xsd/settings-1.1.0.xsd" xmlns="http://maven.apache.org/SETTINGS/1.1.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <pluginGroups>
+                <pluginGroup>org.sonarsource.scanner.maven</pluginGroup>
+        </pluginGroups>
+  <servers>
+    <server>
+      <username>mvntrstdrd</username>
+      <password>AP4APohYwGqL5heqb3W3Hv8zQxx</password>
+      <id>central</id>
+    </server>
+    <server>
+      <username>mvntrstdrd</username>
+      <password>AP4APohYwGqL5heqb3W3Hv8zQxx</password>
+      <id>snapshots</id>
+    </server>
+  </servers>
+  <profiles>
+    <profile>
+      <repositories>
+        <repository>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+          <id>central</id>
+          <name>maven-trusted</name>
+          <url>https://artifactory.voya.net/artifactory/maven-trusted</url>
+        </repository>
+        <repository>
+          <snapshots />
+          <id>snapshots</id>
+          <name>maven-trusted</name>
+          <url>https://artifactory.voya.net/artifactory/maven-trusted</url>
+        </repository>
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+          <id>central</id>
+          <name>maven-trusted</name>
+          <url>https://artifactory.voya.net/artifactory/maven-trusted</url>
+        </pluginRepository>
+        <pluginRepository>
+          <snapshots />
+          <id>snapshots</id>
+          <name>maven-trusted</name>
+          <url>https://artifactory.voya.net/artifactory/maven-trusted</url>
+        </pluginRepository>
+      </pluginRepositories>
+      <id>artifactory</id>
+    </profile>
+        <profile>
+                <id>sonar</id>
+                <activation>
+                        <activeByDefault>true</activeByDefault>
+                </activation>
+                <properties>
+                        <!-- Optional URL to server. Default value is http://localhost:9000
+                        <sonar.host.url>https://sonarqube.unit.voya.net</sonar.host.url>
+                        <sonar.token>31217b10f6b4ddfb2f3aee9314d06d16d8fd7125</sonar.token> -->
+                        <sonar-maven-plugin.version>3.7.0.1746</sonar-maven-plugin.version>
+                        <sonar.host.url>https://sonarqube.voya.net</sonar.host.url>
+                        <sonar.token>16ff4b90327cff10d753938349ef7cf5caa2cbd2</sonar.token>
+                </properties>
+        </profile>
+  </profiles>
+  <activeProfiles>
+    <activeProfile>artifactory</activeProfile>
+  </activeProfiles>
+</settings>
