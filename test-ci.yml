@@ -1,67 +1,19 @@
-name: Build EDT-HS-Microsites
-
-on:
-  workflow_dispatch:  # Allows manual triggering
-  # push:
-  #   branches: [ main ]  # Uncomment to trigger on pushes to main
-
-jobs:
-  build:
-    runs-on: djax123_win_runner  # Your self-hosted runner
-    
-    env:
-      buildConfiguration: 'Release'
-      buildPlatform: 'x64'
-      solutionName: 'EDT-HS-Microsites/EDT-HS-Microsites.sln'
-      visualStudioVersion: '14.0'
-      # buildNumber will be set in the steps
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Set build number
-      id: set-build-number
-      run: |
-        $date = Get-Date -Format "yyyyMMdd.HHmmss"
-        echo "build_number=1.0.$date" >> $env:GITHUB_OUTPUT
-      shell: pwsh
-
-    # Restore NuGet packages
-    - name: NuGet restore
-      run: nuget restore $env:solutionName
-      shell: cmd
-
-    # Main build
-    - name: MSBuild CompileAllProject
-      run: |
-        msbuild EDT-HS-Microsites.build `
-          /t:CompileAllProject `
-          /p:VisualStudioVersion=$env:visualStudioVersion `
-          /p:DeployOnBuild=True `
-          /p:DeployDefaultTarget="WebPublish" `
-          /p:WebPublishMethod="FileSystem" `
-          /p:DeleteExistingFiles=True `
-          /p:publishUrl=./dist/Root/Deploy `
-          /p:GenerateProjectSpecificOutputFolder=true `
-          /p:OutputPath=${{ github.workspace }}\dist `
-          /p:Platform=$env:buildPlatform `
-          /p:Configuration=$env:buildConfiguration
-
-    # Artifacts packaging
-    - name: MSBuild artifacts
-      run: |
-        msbuild artifacts.msbuild `
-          /t:All `
-          /p:BRANCH=${{ github.ref_name }} `
-          /p:BUILD_NUMBER=${{ steps.set-build-number.outputs.build_number }} `
-          /p:JOB_NAME="${{ github.workflow }}" `
-          /p:ArchiveDirectory="${{ github.workspace }}\dist\_PublishedWebsites" `
-          /p:SevenZipPath="C:\Program Files\7-Zip\7z.exe"
-
-    # Upload artifacts
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: drop
-        path: ${{ github.workspace }}/target
+[2025-07-02 11:29:19Z INFO Terminal] WRITE LINE:
+[2025-07-02 11:29:19Z INFO ConfigurationManager] Test Connection complete.
+[2025-07-02 11:29:19Z INFO HostContext] Well known directory 'Bin': 'C:\actions-runner\bin'
+[2025-07-02 11:29:19Z INFO HostContext] Well known directory 'Root': 'C:\actions-runner'
+[2025-07-02 11:29:19Z INFO HostContext] Well known config file 'RSACredentials': 'C:\actions-runner\.credentials_rsaparams'
+[2025-07-02 11:29:19Z INFO RSAEncryptedFileKeyManager] Creating new RSA key using 2048-bit key length
+[2025-07-02 11:29:19Z INFO RSAEncryptedFileKeyManager] Successfully saved RSA key parameters to file C:\actions-runner\.credentials_rsaparams
+[2025-07-02 11:29:19Z INFO CommandSettings] Arg 'runnergroup': ''
+[2025-07-02 11:29:19Z INFO CommandSettings] Flag 'unattended': 'False'
+[2025-07-02 11:29:19Z INFO PromptManager] ReadValue
+[2025-07-02 11:29:19Z INFO Terminal] WRITE: Enter the name of the runner group to add this runner to:
+[2025-07-02 11:29:19Z INFO Terminal] WRITE: [press Enter for Default]
+[2025-07-02 11:29:19Z INFO Terminal] READ LINE
+[2025-07-02 11:36:13Z INFO Terminal] Read value: 'djaxwrae9000_win_runner'
+[2025-07-02 11:36:13Z INFO Terminal] WRITE LINE:
+[2025-07-02 11:36:13Z ERR  Runner] GitHub.DistributedTask.WebApi.TaskAgentPoolNotFoundException: Could not find any self-hosted runner group named "djaxwrae9000_win_runner".
+   at GitHub.Runner.Listener.Configuration.ConfigurationManager.ConfigureAsync(CommandSettings command)
+   at GitHub.Runner.Listener.Runner.ExecuteCommand(CommandSettings command)
+[2025-07-02 11:36:13Z ERR  Terminal] WRITE ERROR: Could not find any self-hosted runner group named "djaxwrae9000_win_runner".
