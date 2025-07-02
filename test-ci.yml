@@ -1,379 +1,53 @@
-[INFO] 94 warnings 
-[INFO] -------------------------------------------------------------
-[INFO] -------------------------------------------------------------
-Error:  COMPILATION ERROR : 
-[INFO] -------------------------------------------------------------
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DateUtility.java:[11,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DateUtility.java:[12,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DateUtility.java:[30,22] error: cannot find symbol
-  symbol:   class Log
-  location: class DateUtility
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/wm/dao/impl/WorkflowModuleDAOImpl.java:[15,25] error: package javax.servlet.http does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/wm/dao/impl/WorkflowModuleDAOImpl.java:[19,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/wm/dao/impl/WorkflowModuleDAOImpl.java:[20,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/wm/dao/impl/WorkflowModuleDAOImpl.java:[23,38] error: package citistreet.id.util.db.processor does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/wm/dao/impl/WorkflowModuleDAOImpl.java:[24,38] error: package citistreet.id.util.db.processor does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[23,24] error: package citistreet.db.dao does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[24,28] error: package citistreet.id.util.db does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[25,28] error: package citistreet.id.util.db does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[26,38] error: package citistreet.id.util.db.processor does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[27,38] error: package citistreet.id.util.db.processor does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[28,38] error: package citistreet.id.util.db.processor does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[29,38] error: package citistreet.id.util.db.processor does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[30,38] error: package citistreet.id.util.db.processor does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[31,38] error: package citistreet.id.util.db.processor does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[50,38] error: cannot find symbol
-  symbol: class AbstractDAO
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/wm/dao/impl/WorkflowModuleDAOImpl.java:[51,22] error: cannot find symbol
-  symbol:   class Log
-  location: class WorkflowModuleDAOImpl
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/wm/dao/impl/WorkflowModuleDAOImpl.java:[63,1] error: cannot find symbol
-  symbol:   class ValueListProcessor
-  location: class WorkflowModuleDAOImpl
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/wm/beans/Request.java:[10,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/wm/beans/Request.java:[11,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/wm/beans/Request.java:[146,22] error: cannot find symbol
-  symbol:   class Log
-  location: class Request
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[51,11] error: cannot find symbol
-  symbol:   class DBQuery
-  location: class DaoBase
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[52,11] error: cannot find symbol
-  symbol:   class DBQueryFactory
-  location: class DaoBase
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[55,11] error: cannot find symbol
-  symbol:   class ValueListProcessor
-  location: class DaoBase
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[56,11] error: cannot find symbol
-  symbol:   class ValueListProcessor
-  location: class DaoBase
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[57,11] error: cannot find symbol
-  symbol:   class ValueListProcessor
-  location: class DaoBase
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[59,11] error: cannot find symbol
-  symbol:   class SingletonValueProcessor
-  location: class DaoBase
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[61,11] error: cannot find symbol
-  symbol:   class SingletonValueProcessor
-  location: class DaoBase
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[64,11] error: cannot find symbol
-  symbol:   class ValueFactory
-  location: class DaoBase
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[65,11] error: cannot find symbol
-  symbol:   class ValueFactory
-  location: class DaoBase
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[66,11] error: cannot find symbol
-  symbol:   class ValueFactory
-  location: class DaoBase
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[67,11] error: cannot find symbol
-  symbol:   class ValueFactory
-  location: class DaoBase
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[68,11] error: cannot find symbol
-  symbol:   class ValueFactory
-  location: class DaoBase
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[77,11] error: cannot find symbol
-  symbol:   class ValueMapProcessor
-  location: class DaoBase
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[78,11] error: cannot find symbol
-  symbol:   class ValueMapProcessor
-  location: class DaoBase
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[79,11] error: cannot find symbol
-  symbol:   class ValueMapProcessor
-  location: class DaoBase
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[80,11] error: cannot find symbol
-  symbol:   class ValueMapProcessor
-  location: class DaoBase
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/SSHKeyManager.java:[6,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/SSHKeyManager.java:[7,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/SSHKeyManager.java:[20,22] error: cannot find symbol
-  symbol:   class Log
-  location: class SSHKeyManager
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/am/business/impl/ManageApplicationHelperImpl.java:[9,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/am/business/impl/ManageApplicationHelperImpl.java:[10,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/am/business/impl/ManageApplicationHelperImpl.java:[24,22] error: cannot find symbol
-  symbol:   class Log
-  location: class ManageApplicationHelperImpl
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/ui/dao/impl/DynamicTaskDAOImpl.java:[17,25] error: package javax.servlet.http does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/ui/dao/impl/DynamicTaskDAOImpl.java:[21,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/ui/dao/impl/DynamicTaskDAOImpl.java:[22,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/ui/dao/impl/DynamicTaskDAOImpl.java:[25,28] error: package citistreet.id.util.db does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/ui/dao/impl/DynamicTaskDAOImpl.java:[26,38] error: package citistreet.id.util.db.processor does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/ui/dao/impl/DynamicTaskDAOImpl.java:[27,38] error: package citistreet.id.util.db.processor does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/ui/dao/impl/DynamicTaskDAOImpl.java:[57,22] error: cannot find symbol
-  symbol:   class Log
-  location: class DynamicTaskDAOImpl
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/am/dao/HistoryAdminDAO.java:[6,24] error: package citistreet.db.dao does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/am/dao/HistoryAdminDAO.java:[22,41] error: cannot find symbol
-  symbol: class DAO
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/am/dao/ApplicationAdminDAO.java:[7,24] error: package citistreet.db.dao does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/am/dao/ApplicationAdminDAO.java:[21,45] error: cannot find symbol
-  symbol: class DAO
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/am/dao/impl/ApplicationAdminDAOImpl.java:[16,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/am/dao/impl/ApplicationAdminDAOImpl.java:[17,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/am/dao/impl/ApplicationAdminDAOImpl.java:[19,38] error: package citistreet.id.util.db.processor does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/am/dao/impl/ApplicationAdminDAOImpl.java:[20,38] error: package citistreet.id.util.db.processor does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/am/dao/impl/ApplicationAdminDAOImpl.java:[43,22] error: cannot find symbol
-  symbol:   class Log
-  location: class ApplicationAdminDAOImpl
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/ui/actions/LoginAction.java:[6,25] error: package javax.servlet.http does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/ui/actions/LoginAction.java:[8,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/ui/actions/LoginAction.java:[9,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/BaseAction.java:[20,25] error: package javax.servlet.http does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/BaseAction.java:[21,25] error: package javax.servlet.http does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/BaseAction.java:[22,25] error: package javax.servlet.http does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/BaseAction.java:[24,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/BaseAction.java:[25,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/ui/actions/LoginAction.java:[32,22] error: cannot find symbol
-  symbol:   class Log
-  location: class LoginAction
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/BaseAction.java:[51,22] error: cannot find symbol
-  symbol:   class Log
-  location: class BaseAction
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/am/actions/TestAction.java:[7,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/am/actions/TestAction.java:[8,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/am/actions/TestAction.java:[20,22] error: cannot find symbol
-  symbol:   class Log
-  location: class TestAction
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/PropertyManager.java:[18,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/PropertyManager.java:[19,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/PropertyManager.java:[48,23] error: cannot find symbol
-  symbol:   class Log
-  location: class Singleton
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/wm/business/impl/ClosedRequestHelperImpl.java:[6,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/wm/business/impl/ClosedRequestHelperImpl.java:[7,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/wm/business/impl/ClosedRequestHelperImpl.java:[18,15] error: cannot find symbol
-  symbol:   class Log
-  location: class ClosedRequestHelperImpl
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/wm/actions/SearchClosedAllRequestAction.java:[12,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/wm/actions/SearchClosedAllRequestAction.java:[13,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/wm/actions/SearchClosedAllRequestAction.java:[37,22] error: cannot find symbol
-  symbol:   class Log
-  location: class SearchClosedAllRequestAction
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/ui/actions/TaskAction.java:[6,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/ui/actions/TaskAction.java:[7,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/ui/actions/TaskAction.java:[26,22] error: cannot find symbol
-  symbol:   class Log
-  location: class TaskAction
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/am/dao/UserAdminDAO.java:[5,24] error: package citistreet.db.dao does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/am/dao/UserAdminDAO.java:[12,38] error: cannot find symbol
-  symbol: class DAO
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/wm/actions/SearchOpenAllRequestAction.java:[9,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/wm/actions/SearchOpenAllRequestAction.java:[10,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/wm/actions/SearchOpenAllRequestAction.java:[34,22] error: cannot find symbol
-  symbol:   class Log
-  location: class SearchOpenAllRequestAction
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/Utilities.java:[16,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/Utilities.java:[17,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/Utilities.java:[22,22] error: cannot find symbol
-  symbol:   class Log
-  location: class Utilities
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/ui/business/impl/LoginActionHelperImpl.java:[5,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/ui/business/impl/LoginActionHelperImpl.java:[6,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/ui/business/impl/LoginActionHelperImpl.java:[19,15] error: cannot find symbol
-  symbol:   class Log
-  location: class LoginActionHelperImpl
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/ui/business/impl/ScriptValidatorImpl.java:[10,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/ui/business/impl/ScriptValidatorImpl.java:[11,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/ui/business/impl/ScriptValidatorImpl.java:[24,22] error: cannot find symbol
-  symbol:   class Log
-  location: class ScriptValidatorImpl
-[INFO] 100 errors 
-[INFO] -------------------------------------------------------------
-[INFO] ------------------------------------------------------------------------
-[INFO] Reactor Summary for volo 1.0.0:
-[INFO] 
-[INFO] volo ............................................... SUCCESS [ 15.476 s]
-[INFO] voloJAR ............................................ FAILURE [ 17.910 s]
-[INFO] ivolo .............................................. SKIPPED
-[INFO] ------------------------------------------------------------------------
-[INFO] BUILD FAILURE
-[INFO] ------------------------------------------------------------------------
-[INFO] Total time:  33.520 s
-[INFO] Finished at: 2025-07-02T11:00:10Z
-[INFO] ------------------------------------------------------------------------
-Error:  Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.11.0:compile (default-compile) on project voloJAR: Compilation failure: Compilation failure: 
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DateUtility.java:[11,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DateUtility.java:[12,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DateUtility.java:[30,22] error: cannot find symbol
-Error:    symbol:   class Log
-Error:    location: class DateUtility
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/wm/dao/impl/WorkflowModuleDAOImpl.java:[15,25] error: package javax.servlet.http does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/wm/dao/impl/WorkflowModuleDAOImpl.java:[19,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/wm/dao/impl/WorkflowModuleDAOImpl.java:[20,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/wm/dao/impl/WorkflowModuleDAOImpl.java:[23,38] error: package citistreet.id.util.db.processor does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/wm/dao/impl/WorkflowModuleDAOImpl.java:[24,38] error: package citistreet.id.util.db.processor does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[23,24] error: package citistreet.db.dao does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[24,28] error: package citistreet.id.util.db does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[25,28] error: package citistreet.id.util.db does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[26,38] error: package citistreet.id.util.db.processor does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[27,38] error: package citistreet.id.util.db.processor does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[28,38] error: package citistreet.id.util.db.processor does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[29,38] error: package citistreet.id.util.db.processor does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[30,38] error: package citistreet.id.util.db.processor does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[31,38] error: package citistreet.id.util.db.processor does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[50,38] error: cannot find symbol
-Error:    symbol: class AbstractDAO
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/wm/dao/impl/WorkflowModuleDAOImpl.java:[51,22] error: cannot find symbol
-Error:    symbol:   class Log
-Error:    location: class WorkflowModuleDAOImpl
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/wm/dao/impl/WorkflowModuleDAOImpl.java:[63,1] error: cannot find symbol
-Error:    symbol:   class ValueListProcessor
-Error:    location: class WorkflowModuleDAOImpl
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/wm/beans/Request.java:[10,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/wm/beans/Request.java:[11,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/wm/beans/Request.java:[146,22] error: cannot find symbol
-Error:    symbol:   class Log
-Error:    location: class Request
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[51,11] error: cannot find symbol
-Error:    symbol:   class DBQuery
-Error:    location: class DaoBase
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[52,11] error: cannot find symbol
-Error:    symbol:   class DBQueryFactory
-Error:    location: class DaoBase
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[55,11] error: cannot find symbol
-Error:    symbol:   class ValueListProcessor
-Error:    location: class DaoBase
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[56,11] error: cannot find symbol
-Error:    symbol:   class ValueListProcessor
-Error:    location: class DaoBase
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[57,11] error: cannot find symbol
-Error:    symbol:   class ValueListProcessor
-Error:    location: class DaoBase
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[59,11] error: cannot find symbol
-Error:    symbol:   class SingletonValueProcessor
-Error:    location: class DaoBase
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[61,11] error: cannot find symbol
-Error:    symbol:   class SingletonValueProcessor
-Error:    location: class DaoBase
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[64,11] error: cannot find symbol
-Error:    symbol:   class ValueFactory
-Error:    location: class DaoBase
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[65,11] error: cannot find symbol
-Error:    symbol:   class ValueFactory
-Error:    location: class DaoBase
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[66,11] error: cannot find symbol
-Error:    symbol:   class ValueFactory
-Error:    location: class DaoBase
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[67,11] error: cannot find symbol
-Error:    symbol:   class ValueFactory
-Error:    location: class DaoBase
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[68,11] error: cannot find symbol
-Error:    symbol:   class ValueFactory
-Error:    location: class DaoBase
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[77,11] error: cannot find symbol
-Error:    symbol:   class ValueMapProcessor
-Error:    location: class DaoBase
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[78,11] error: cannot find symbol
-Error:    symbol:   class ValueMapProcessor
-Error:    location: class DaoBase
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[79,11] error: cannot find symbol
-Error:    symbol:   class ValueMapProcessor
-Error:    location: class DaoBase
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/DaoBase.java:[80,11] error: cannot find symbol
-Error:    symbol:   class ValueMapProcessor
-Error:    location: class DaoBase
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/SSHKeyManager.java:[6,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/SSHKeyManager.java:[7,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/SSHKeyManager.java:[20,22] error: cannot find symbol
-Error:    symbol:   class Log
-Error:    location: class SSHKeyManager
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/am/business/impl/ManageApplicationHelperImpl.java:[9,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/am/business/impl/ManageApplicationHelperImpl.java:[10,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/am/business/impl/ManageApplicationHelperImpl.java:[24,22] error: cannot find symbol
-Error:    symbol:   class Log
-Error:    location: class ManageApplicationHelperImpl
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/ui/dao/impl/DynamicTaskDAOImpl.java:[17,25] error: package javax.servlet.http does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/ui/dao/impl/DynamicTaskDAOImpl.java:[21,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/ui/dao/impl/DynamicTaskDAOImpl.java:[22,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/ui/dao/impl/DynamicTaskDAOImpl.java:[25,28] error: package citistreet.id.util.db does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/ui/dao/impl/DynamicTaskDAOImpl.java:[26,38] error: package citistreet.id.util.db.processor does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/ui/dao/impl/DynamicTaskDAOImpl.java:[27,38] error: package citistreet.id.util.db.processor does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/ui/dao/impl/DynamicTaskDAOImpl.java:[57,22] error: cannot find symbol
-Error:    symbol:   class Log
-Error:    location: class DynamicTaskDAOImpl
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/am/dao/HistoryAdminDAO.java:[6,24] error: package citistreet.db.dao does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/am/dao/HistoryAdminDAO.java:[22,41] error: cannot find symbol
-Error:    symbol: class DAO
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/am/dao/ApplicationAdminDAO.java:[7,24] error: package citistreet.db.dao does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/am/dao/ApplicationAdminDAO.java:[21,45] error: cannot find symbol
-Error:    symbol: class DAO
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/am/dao/impl/ApplicationAdminDAOImpl.java:[16,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/am/dao/impl/ApplicationAdminDAOImpl.java:[17,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/am/dao/impl/ApplicationAdminDAOImpl.java:[19,38] error: package citistreet.id.util.db.processor does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/am/dao/impl/ApplicationAdminDAOImpl.java:[20,38] error: package citistreet.id.util.db.processor does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/am/dao/impl/ApplicationAdminDAOImpl.java:[43,22] error: cannot find symbol
-Error:    symbol:   class Log
-Error:    location: class ApplicationAdminDAOImpl
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/ui/actions/LoginAction.java:[6,25] error: package javax.servlet.http does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/ui/actions/LoginAction.java:[8,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/ui/actions/LoginAction.java:[9,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/BaseAction.java:[20,25] error: package javax.servlet.http does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/BaseAction.java:[21,25] error: package javax.servlet.http does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/BaseAction.java:[22,25] error: package javax.servlet.http does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/BaseAction.java:[24,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/BaseAction.java:[25,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/ui/actions/LoginAction.java:[32,22] error: cannot find symbol
-Error:    symbol:   class Log
-Error:    location: class LoginAction
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/BaseAction.java:[51,22] error: cannot find symbol
-Error:    symbol:   class Log
-Error:    location: class BaseAction
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/am/actions/TestAction.java:[7,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/am/actions/TestAction.java:[8,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/am/actions/TestAction.java:[20,22] error: cannot find symbol
-Error:    symbol:   class Log
-Error:    location: class TestAction
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/PropertyManager.java:[18,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/PropertyManager.java:[19,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/PropertyManager.java:[48,23] error: cannot find symbol
-Error:    symbol:   class Log
-Error:    location: class Singleton
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/wm/business/impl/ClosedRequestHelperImpl.java:[6,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/wm/business/impl/ClosedRequestHelperImpl.java:[7,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/wm/business/impl/ClosedRequestHelperImpl.java:[18,15] error: cannot find symbol
-Error:    symbol:   class Log
-Error:    location: class ClosedRequestHelperImpl
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/wm/actions/SearchClosedAllRequestAction.java:[12,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/wm/actions/SearchClosedAllRequestAction.java:[13,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/wm/actions/SearchClosedAllRequestAction.java:[37,22] error: cannot find symbol
-Error:    symbol:   class Log
-Error:    location: class SearchClosedAllRequestAction
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/ui/actions/TaskAction.java:[6,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/ui/actions/TaskAction.java:[7,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/ui/actions/TaskAction.java:[26,22] error: cannot find symbol
-Error:    symbol:   class Log
-Error:    location: class TaskAction
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/am/dao/UserAdminDAO.java:[5,24] error: package citistreet.db.dao does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/am/dao/UserAdminDAO.java:[12,38] error: cannot find symbol
-Error:    symbol: class DAO
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/wm/actions/SearchOpenAllRequestAction.java:[9,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/wm/actions/SearchOpenAllRequestAction.java:[10,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/wm/actions/SearchOpenAllRequestAction.java:[34,22] error: cannot find symbol
-Error:    symbol:   class Log
-Error:    location: class SearchOpenAllRequestAction
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/Utilities.java:[16,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/Utilities.java:[17,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/util/Utilities.java:[22,22] error: cannot find symbol
-Error:    symbol:   class Log
-Error:    location: class Utilities
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/ui/business/impl/LoginActionHelperImpl.java:[5,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/ui/business/impl/LoginActionHelperImpl.java:[6,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/ui/business/impl/LoginActionHelperImpl.java:[19,15] error: cannot find symbol
-Error:    symbol:   class Log
-Error:    location: class LoginActionHelperImpl
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/ui/business/impl/ScriptValidatorImpl.java:[10,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/ui/business/impl/ScriptValidatorImpl.java:[11,25] error: package citistreet.logging does not exist
-Error:  /home/runner/_work/arc-test-cloud/arc-test-cloud/voloJAR/src/main/java/com/ing/re/volo/ui/business/impl/ScriptValidatorImpl.java:[24,22] error: cannot find symbol
-Error:    symbol:   class Log
-Error:    location: class ScriptValidatorImpl
-Error:  -> [Help 1]
-Error:  
-Error:  To see the full stack trace of the errors, re-run Maven with the -e switch.
-Error:  Re-run Maven using the -X switch to enable full debug logging.
-Error:  
-Error:  For more information about the errors and possible solutions, please read the following articles:
-Error:  [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
-Error:  
-Error:  After correcting the problems, you can resume the build with the command
-Error:    mvn <args> -rf :voloJAR
-Error: Process completed with exit code 1.
+trigger: none
+# - main  # or your main branch name
+pool:
+  name: Windows_Servers
+variables:
+  buildConfiguration: 'Release'
+  buildPlatform: 'x64'
+  solutionName: 'EDT-HS-Microsites/EDT-HS-Microsites.sln'
+  visualStudioVersion: '14.0'
+  buildNumber: $(Build.BuildNumber)  # Azure DevOps build number
+
+# pool:
+#   vmImage: 'windows-latest'  # or 'windows-2019' for VS2019
+
+steps:
+# Install NuGet
+- task: NuGetToolInstaller@1
+
+# Restore packages (replicates BeforeBuild target)
+- task: NuGetCommand@2
+  inputs:
+    command: 'restore'
+    restoreSolution: '$(solutionName)'
+    feedsToUse: 'select'
+
+# Run the main build (replicates CompileAllProject target)
+- task: MSBuild@1
+  inputs:
+    solution: 'EDT-HS-Microsites.build'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+    msbuildArguments: '/t:CompileAllProject /p:VisualStudioVersion=$(visualStudioVersion) /p:DeployOnBuild=True /p:DeployDefaultTarget="WebPublish" /p:WebPublishMethod="FileSystem" /p:DeleteExistingFiles=True /p:publishUrl=./dist/Root/Deploy /p:GenerateProjectSpecificOutputFolder=true /p:OutputPath=$(Build.SourcesDirectory)\dist'
+    msbuildArchitecture: 'x64'
+
+# Install 7zip (required for artifacts.msbuild)
+# - powershell: |
+#     choco install 7zip -y --force
+#   displayName: 'Install 7zip'
+#   condition: eq(variables['Agent.OS'], 'Windows_NT')
+
+# Run artifacts packaging (replicates artifacts.msbuild)
+- task: MSBuild@1
+  inputs:
+    solution: 'artifacts.msbuild'
+    msbuildArguments: '/t:All /p:BRANCH=$(Build.SourceBranchName) /p:BUILD_NUMBER=$(Build.BuildNumber) /p:JOB_NAME="$(Build.DefinitionName)" /p:ArchiveDirectory="$(Build.SourcesDirectory)\dist\_PublishedWebsites" /p:SevenZipPath="C:\Program Files\7-Zip\7z.exe"'
+    msbuildArchitecture: 'x64'
+
+# Publish build artifacts
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.SourcesDirectory)\target'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
