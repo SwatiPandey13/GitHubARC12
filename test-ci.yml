@@ -1,3 +1,5 @@
+Parent pom.xml
+
 <?xml version="1.0" encoding="UTF-8"?>
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
          xmlns="http://maven.apache.org/POM/4.0.0" 
@@ -186,17 +188,297 @@
     </profiles>
 </project>
 
+=======
 
-==========================================
+Child pom.xml
 
 
-- name: Build with Maven
-  env:
-    MAVEN_OPTS: "--add-modules=java.se,jdk.unsupported -Djavax.net.ssl.trustStore=${{ github.workspace }}/custom-cacerts -Djavax.net.ssl.trustStorePassword=changeit"
-  run: |
-    mvn -B clean package -DskipTests \
-      -Dartifactory.resolve.contextUrl=https://artifactory.voya.net/artifactory \
-      -Dartifactory.resolve.username=${{ secrets.ARTIFACTORY_USERNAME }} \
-      -Dartifactory.resolve.password=${{ secrets.ARTIFACTORY_PASSWORD }} \
-      -Pjava17 \
-      -Dmaven.compiler.forceJavacCompilerUse=true
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.generate.project.parent</groupId>
+		<artifactId>volo</artifactId>
+		<version>1.0.0</version>
+	</parent>
+	<groupId>com.generate.project.web</groupId>
+	<artifactId>ivolo</artifactId>
+	<packaging>war</packaging>
+	<url>http://maven.apache.org</url>
+
+<properties>
+
+        <maven.compiler.source>17</maven.compiler.source>
+
+        <maven.compiler.target>17</maven.compiler.target>
+
+    </properties>
+	
+	<dependencies>
+		<dependency>
+			<groupId>com.generate.project.module</groupId>
+			<artifactId>voloJAR</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
+	<build>
+		<finalName>${final.name}</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.sonarsource.scanner.maven</groupId>
+				<artifactId>sonar-maven-plugin</artifactId>
+				<version>3.7.0.1746</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>3.3.2</version>
+				
+<!-- 				<version>2.6</version> -->
+				<configuration>
+					<packagingExcludes>WEB-INF/lib/servlet-api*.jar,WEB-INF/lib/jsp-api-*.jar,WEB-INF/lib/commons-logging-api*.jar,WEB-INF/lib/mail-*.jar,WEB-INF/lib/asm-commons-*.jar,WEB-INF/lib/asm-tree-*.jar,
+					WEB-INF/lib/commons-io-*.jar,WEB-INF/lib/junit-*.jar,WEB-INF/lib/ognl-2.6.11.jar,WEB-INF/lib/spring-test-*.jar</packagingExcludes>
+					<encoding>UTF-8</encoding>
+					<modules>
+						<jarModule>
+							<groupId>com.generate.project.module</groupId>
+							<artifactId>voloJAR</artifactId>
+							<version>${project.version}</version>
+						</jarModule>
+					</modules>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.11.0</version>
+				<configuration>
+					<source>17</source>
+
+					<target>17</target>
+
+					<release>17</release>
+				</configuration>
+			</plugin>
+			 <plugin>
+				<groupId>com.googlecode.maven-download-plugin</groupId>
+				<artifactId>download-maven-plugin</artifactId>
+				<version>1.6.8</version>
+				<executions>
+					<execution>
+						<id>download-descriptor-env</id>
+						<phase>package</phase>
+						<goals>
+							<goal>wget</goal>
+						</goals>
+						<configuration>
+							<url>${artifactory.resolve.contextUrl}/maven-trusted/com/voya/descriptor/1.0/descriptor-1.0-envconfig.xml</url>
+							<username>${artifactory.resolve.username}</username>
+							<password>${artifactory.resolve.password}</password>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.soebes.maven.plugins</groupId>
+				<artifactId>iterator-maven-plugin</artifactId>
+				<version>0.5.0</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>iterator</goal>
+						</goals>
+						<configuration>
+							<folder>${project.parent.basedir}/AppServerConfig/env</folder>
+							<pluginExecutors>
+								<pluginExecutor>
+									<plugin>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-assembly-plugin</artifactId>
+										<version>2.5.2</version>
+									</plugin>
+									<goal>single</goal>
+									<configuration>
+										<finalName>${project.artifactId}-${item}-env</finalName>
+										<descriptors>
+											<descriptor>${project.build.directory}/descriptor-1.0-envconfig.xml</descriptor>
+										</descriptors>
+									</configuration>
+								</pluginExecutor>
+							</pluginExecutors>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.googlecode.maven-download-plugin</groupId>
+				<artifactId>download-maven-plugin</artifactId>
+				<version>1.4.0</version>
+				<executions>
+					<execution>
+						<id>download-descriptor-static</id>
+						<phase>package</phase>
+						<goals>
+							<goal>wget</goal>
+						</goals>
+						<configuration>
+							<url>${artifactory.resolve.contextUrl}/maven-trusted/com/voya/descriptor/1.0/descriptor-1.0-static.xml</url>
+							<username>${artifactory.resolve.username}</username>
+							<password>${artifactory.resolve.password}</password>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.5.2</version>
+				<configuration>
+					<descriptors>
+						<descriptor>${project.build.directory}/descriptor-1.0-static.xml</descriptor>
+					</descriptors>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>3.6.0</version>
+				<executions>
+				    <execution>
+				    <id>assemble-docker-contents</id>
+					<phase>package</phase>
+					<goals>
+					    <goal>single</goal>
+					</goals>
+					<configuration>
+					    <finalName>apps</finalName>
+					    <outputDirectory>${maven.multiModuleProjectDirectory}</outputDirectory>
+					    <appendAssemblyId>false</appendAssemblyId>
+					    <descriptors>
+						<descriptor>${project.parent.basedir}/docker-assembler.xml</descriptor>
+					    </descriptors>
+					</configuration>
+				    </execution>
+				</executions>
+           		 </plugin> 
+		</plugins>
+	</build>
+</project>
+
+==================
+workflow actions sonartest.yml
+
+name: Sonar test
+
+on:
+  push:
+    branches: 
+      - test_sonar
+
+  workflow_dispatch: 
+jobs:
+  build:
+    runs-on: github-arc-runners
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17 for build
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Deploy custom settings.xml
+        run: |
+          mkdir -p ~/.m2
+          cp .github/maven/settings.xml ~/.m2/
+          ls -la ~/.m2/
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2-
+
+      - name: Install Maven 3.8.8 (No Admin)
+        run: |
+          curl -L -o apache-maven-3.8.8-bin.tar.gz https://archive.apache.org/dist/maven/maven-3/3.8.8/binaries/apache-maven-3.8.8-bin.tar.gz
+          mkdir -p ~/maven
+          tar -xzf apache-maven-3.8.8-bin.tar.gz -C ~/maven
+          echo "$HOME/maven/apache-maven-3.8.8/bin" >> $GITHUB_PATH
+          $HOME/maven/apache-maven-3.8.8/bin/mvn --version
+      - name: Write Artifactory CA cert from secret
+        run: |
+          echo "${{ secrets.ARTIFACTORY_CA_CRT }}" > artifactory-ca.crt
+      - name: Create new Java truststore and import Artifactory CA cert
+        run: |
+          # Create a new empty Java truststore
+          keytool -genkey -alias temp -keystore ./custom-cacerts -storepass changeit -keyalg RSA -dname "CN=temp" -validity 1
+          keytool -delete -alias temp -keystore ./custom-cacerts -storepass changeit
+          # Import the Artifactory CA certificate
+          keytool -importcert -noprompt \
+            -alias artifactory-ca \
+            -file artifactory-ca.crt \
+            -keystore ./custom-cacerts \
+            -storepass changeit
+          # Point all Java processes to use the new truststore
+          echo "JAVA_TOOL_OPTIONS=-Djavax.net.ssl.trustStore=$(pwd)/custom-cacerts -Djavax.net.ssl.trustStorePassword=changeit" >> $GITHUB_ENV
+      
+      - name: Build with Maven
+        env:
+          MAVEN_OPTS: "--add-modules=java.se,jdk.unsupported -Djavax.net.ssl.trustStore=${{ github.workspace }}/custom-cacerts -Djavax.net.ssl.trustStorePassword=changeit"
+        run: |
+          mvn -B clean package -DskipTests \
+            -Dartifactory.resolve.contextUrl=https://artifactory.voya.net/artifactory \
+            -Dartifactory.resolve.username=s700232 \
+            -Dartifactory.resolve.password=Ingcc123! \
+            -Pjava17 \ 
+            -Dmaven.compiler.fork=true
+            
+      # - name: Build with Maven
+      #   run: mvn -B clean package -DskipTests -Dartifactory.resolve.contextUrl=https://artifactory.voya.net/artifactory -Dartifactory.resolve.username=s700232 -Dartifactory.resolve.password=Ingcc123!
+
+      # - name: Set up JDK 11 for SonarQube
+      #   uses: actions/setup-java@v3
+      #   with:
+      #     java-version: '11'
+      #     distribution: 'temurin'
+
+      - name: Run SonarQube analysis
+        run: |
+          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:3.11.0.3922:sonar \
+            -Dsonar.projectKey=Volo \
+            -Dsonar.projectName=Volo \
+            -Dsonar.host.url=https://sonarqube.voya.net/ \
+            -Dsonar.login=sqa_8f629bcea9ef8f37f5a0efd32a37dda93d731d16 \
+            -Dsonar.java.jdkHome=$JAVA_HOME_11_X64 \  # Explicitly point to JDK 11
+            -Dartifactory.resolve.username=s700232 \
+            -Dartifactory.resolve.password=Ingcc123! \
+            -s .github/maven/settings.xml
+
+
+=========
+
+error
+
+Error:  Unknown lifecycle phase " ". You must specify a valid lifecycle phase or a goal in the format <plugin-prefix>:<goal> or <plugin-group-id>:<plugin-artifact-id>[:<plugin-version>]:<goal>. Available lifecycle phases are: validate, initialize, generate-sources, process-sources, generate-resources, process-resources, compile, process-classes, generate-test-sources, process-test-sources, generate-test-resources, process-test-resources, test-compile, process-test-classes, test, prepare-package, package, pre-integration-test, integration-test, post-integration-test, verify, install, deploy, pre-clean, clean, post-clean, pre-site, site, post-site, site-deploy. -> [Help 1]
+Error:  
+Error:  To see the full stack trace of the errors, re-run Maven with the -e switch.
+Error:  Re-run Maven using the -X switch to enable full debug logging.
+Error:  
+Error:  For more information about the errors and possible solutions, please read the following articles:
+Error:  [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/LifecyclePhaseNotFoundException
+Error: Process completed with exit code 1.
