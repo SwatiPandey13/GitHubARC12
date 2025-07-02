@@ -1,53 +1,67 @@
-trigger: none
-# - main  # or your main branch name
-pool:
-  name: Windows_Servers
-variables:
-  buildConfiguration: 'Release'
-  buildPlatform: 'x64'
-  solutionName: 'EDT-HS-Microsites/EDT-HS-Microsites.sln'
-  visualStudioVersion: '14.0'
-  buildNumber: $(Build.BuildNumber)  # Azure DevOps build number
+name: Build EDT-HS-Microsites
 
-# pool:
-#   vmImage: 'windows-latest'  # or 'windows-2019' for VS2019
+on:
+  workflow_dispatch:  # Allows manual triggering
+  # push:
+  #   branches: [ main ]  # Uncomment to trigger on pushes to main
 
-steps:
-# Install NuGet
-- task: NuGetToolInstaller@1
+jobs:
+  build:
+    runs-on: djax123_win_runner  # Your self-hosted runner
+    
+    env:
+      buildConfiguration: 'Release'
+      buildPlatform: 'x64'
+      solutionName: 'EDT-HS-Microsites/EDT-HS-Microsites.sln'
+      visualStudioVersion: '14.0'
+      # buildNumber will be set in the steps
 
-# Restore packages (replicates BeforeBuild target)
-- task: NuGetCommand@2
-  inputs:
-    command: 'restore'
-    restoreSolution: '$(solutionName)'
-    feedsToUse: 'select'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-# Run the main build (replicates CompileAllProject target)
-- task: MSBuild@1
-  inputs:
-    solution: 'EDT-HS-Microsites.build'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-    msbuildArguments: '/t:CompileAllProject /p:VisualStudioVersion=$(visualStudioVersion) /p:DeployOnBuild=True /p:DeployDefaultTarget="WebPublish" /p:WebPublishMethod="FileSystem" /p:DeleteExistingFiles=True /p:publishUrl=./dist/Root/Deploy /p:GenerateProjectSpecificOutputFolder=true /p:OutputPath=$(Build.SourcesDirectory)\dist'
-    msbuildArchitecture: 'x64'
+    - name: Set build number
+      id: set-build-number
+      run: |
+        $date = Get-Date -Format "yyyyMMdd.HHmmss"
+        echo "build_number=1.0.$date" >> $env:GITHUB_OUTPUT
+      shell: pwsh
 
-# Install 7zip (required for artifacts.msbuild)
-# - powershell: |
-#     choco install 7zip -y --force
-#   displayName: 'Install 7zip'
-#   condition: eq(variables['Agent.OS'], 'Windows_NT')
+    # Restore NuGet packages
+    - name: NuGet restore
+      run: nuget restore $env:solutionName
+      shell: cmd
 
-# Run artifacts packaging (replicates artifacts.msbuild)
-- task: MSBuild@1
-  inputs:
-    solution: 'artifacts.msbuild'
-    msbuildArguments: '/t:All /p:BRANCH=$(Build.SourceBranchName) /p:BUILD_NUMBER=$(Build.BuildNumber) /p:JOB_NAME="$(Build.DefinitionName)" /p:ArchiveDirectory="$(Build.SourcesDirectory)\dist\_PublishedWebsites" /p:SevenZipPath="C:\Program Files\7-Zip\7z.exe"'
-    msbuildArchitecture: 'x64'
+    # Main build
+    - name: MSBuild CompileAllProject
+      run: |
+        msbuild EDT-HS-Microsites.build `
+          /t:CompileAllProject `
+          /p:VisualStudioVersion=$env:visualStudioVersion `
+          /p:DeployOnBuild=True `
+          /p:DeployDefaultTarget="WebPublish" `
+          /p:WebPublishMethod="FileSystem" `
+          /p:DeleteExistingFiles=True `
+          /p:publishUrl=./dist/Root/Deploy `
+          /p:GenerateProjectSpecificOutputFolder=true `
+          /p:OutputPath=${{ github.workspace }}\dist `
+          /p:Platform=$env:buildPlatform `
+          /p:Configuration=$env:buildConfiguration
 
-# Publish build artifacts
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(Build.SourcesDirectory)\target'
-    ArtifactName: 'drop'
-    publishLocation: 'Container'
+    # Artifacts packaging
+    - name: MSBuild artifacts
+      run: |
+        msbuild artifacts.msbuild `
+          /t:All `
+          /p:BRANCH=${{ github.ref_name }} `
+          /p:BUILD_NUMBER=${{ steps.set-build-number.outputs.build_number }} `
+          /p:JOB_NAME="${{ github.workflow }}" `
+          /p:ArchiveDirectory="${{ github.workspace }}\dist\_PublishedWebsites" `
+          /p:SevenZipPath="C:\Program Files\7-Zip\7z.exe"
+
+    # Upload artifacts
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: drop
+        path: ${{ github.workspace }}/target
