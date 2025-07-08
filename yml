@@ -1,8 +1,9 @@
 # STAGE 1: Use UBI8 with OpenJDK 8 as base
-FROM artifactory.voya.net/docker-dev-local/openshift/ubi8/openjdk-8:latest AS jdk-base
+FROM artifactory.voya.net/docker-virtual/openshift/ubi8/openjdk-8:latest
+
 
 # STAGE 2: Add GitHub Actions Runner
-FROM artifactory.voya.net/docker-virtual/openshift/actions/action-runner:latest AS runner
+FROM artifactory.voya.net/docker-virtual/openshift/actions/action-runner:latest
 
 # STAGE 3: Final image combining both with additional JDKs
 FROM jdk-base
