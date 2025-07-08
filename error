@@ -1,2 +1,358 @@
-[3/3] STEP 6/15: COPY --from=artifactory.voya.net/docker-virtual/rhel8-openjdk8-11-devil:latest     /usr/lib/jvm/jdk-8 /usr/lib/jvm/jdk8
-Error: building at STEP "COPY --from=artifactory.voya.net/docker-virtual/rhel8-openjdk8-11-devil:latest /usr/lib/jvm/jdk-8 /usr/lib/jvm/jdk8": checking on sources under "/var/lib/containers/storage/overlay/dc753209248ff91ba06fa1c49fa2cfb88731c516512c82eb5778408e8ca276e7/merged": copier: stat: "/usr/lib/jvm/jdk-8": no such file or directory
+[
+  {
+    "Id": "8056f2e967f901eeae8c9f7012e21e013dc7af80e6ad4333b3c6c6b1952bd12d",
+    "Digest": "sha256:cd0b49ed2ebfab8a8ee57d1cd0d11cc370c67cd8c1da819c71969f3d6cd66d85",
+    "RepoTags": [
+      "artifactory.voya.net/docker-virtual/rhel8-openjdk8-11-devil:latest"
+    ],
+    "RepoDigests": [
+      "artifactory.voya.net/docker-virtual/rhel8-openjdk8-11-devil@sha256:6cd89d364732c3bfd8ea4b1847a8dbccba29d966606513567e6291463eb6c954",
+      "artifactory.voya.net/docker-virtual/rhel8-openjdk8-11-devil@sha256:cd0b49ed2ebfab8a8ee57d1cd0d11cc370c67cd8c1da819c71969f3d6cd66d85"
+    ],
+    "Parent": "",
+    "Comment": "",
+    "Created": "2025-05-15T17:18:18.384077305Z",
+    "Config": {
+      "User": "root",
+      "Env": [
+        "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+        "container=oci",
+        "LANG=en_US.UTF-8",
+        "LANGUAGE=en_US.UTF-8",
+        "TZ=America/New_York",
+        "JAVA_HOME=/usr/lib/jvm/java-1.8.0"
+      ],
+      "Cmd": [
+        "/bin/bash"
+      ],
+      "Labels": {
+        "architecture": "x86_64",
+        "build-date": "2025-04-16T09:03:22",
+        "com.redhat.component": "ubi8-container",
+        "com.redhat.license_terms": "https://www.redhat.com/en/about/red-hat-end-user-license-agreements#UBI",
+        "description": "The Universal Base Image is designed and engineered to be the base layer for all of your containerized applications, middleware and utilities. This base image is freely redistributable, but Red Hat only supports Red Hat technologies through subscriptions for Red Hat products. This image is maintained by Red Hat and updated regularly.",
+        "distribution-scope": "public",
+        "io.buildah.version": "1.33.12",
+        "io.k8s.description": "The Universal Base Image is designed and engineered to be the base layer for all of your containerized applications, middleware and utilities. This base image is freely redistributable, but Red Hat only supports Red Hat technologies through subscriptions for Red Hat products. This image is maintained by Red Hat and updated regularly.",
+        "io.k8s.display-name": "Red Hat Universal Base Image 8",
+        "io.openshift.expose-services": "",
+        "io.openshift.tags": "base rhel8",
+        "maintainer": "Red Hat, Inc.",
+        "name": "ubi8",
+        "release": "1262",
+        "summary": "Provides the latest release of Red Hat Universal Base Image 8.",
+        "url": "https://access.redhat.com/containers/#/registry.access.redhat.com/ubi8/images/8.10-1262",
+        "vcs-ref": "967861a8dbbb288b8cec9f1fee7ccbf6c7ee9a20",
+        "vcs-type": "git",
+        "vendor": "Red Hat, Inc.",
+        "version": "8.10"
+      }
+    },
+    "Version": "",
+    "Author": "Spartak Nasto spartak.nasto@voya.com",
+    "Architecture": "amd64",
+    "Os": "linux",
+    "Size": 1695759093,
+    "VirtualSize": 1695759093,
+    "GraphDriver": {
+      "Name": "overlay",
+      "Data": {
+        "LowerDir": "/var/lib/containers/storage/overlay/ef012fd54296713ad85647259df2d79e3562041c61b974bb72c65fdefee4ead0/diff:/var/lib/containers/storage/overlay/3ce98e2b7e6bc9f9f44573d8f04a92d0eb981e198ee1850e41613a272e271ca5/diff:/var/lib/containers/storage/overlay/f67167f158761e6d4f64f47f89a13dd79b0b700463b8693459da03044e223103/diff:/var/lib/containers/storage/overlay/bce03713f9ee767f75925d1221b1b79dae89eca0d2d834dca736346510ba8ff7/diff:/var/lib/containers/storage/overlay/0ba5a840fd235e144e1046341ba0ff455263c589166b94497208ba4e8f33bc78/diff:/var/lib/containers/storage/overlay/f94ae960c13a7bd268e7d0937cfd110778314e4a65f2dd88e9819ad1000b3898/diff:/var/lib/containers/storage/overlay/32d3131c690e926be5dc231767848ee077c55311c92302263fd28760d90f48b3/diff:/var/lib/containers/storage/overlay/98126bdd3482255d98f545a575c83b0fdb7cffc70ff99de9d1dd580d7499c436/diff:/var/lib/containers/storage/overlay/ea2a43221886ef5a35856d2e7c8bb126b4abb57ea08cb834ab779240084071e5/diff:/var/lib/containers/storage/overlay/0c62aaa11d3b041f98593b8c2f3f946c33c245ca0ab4156bd8acf9232e5715e5/diff:/var/lib/containers/storage/overlay/bba36a003b404f884d1d36dfc72cb33ed17ad409d4cbe8a78380437baceb3642/diff:/var/lib/containers/storage/overlay/706eaa384254ca3cc8e67c4685a4f274b2550d342bd2f1d72b6809aa7ce125d2/diff:/var/lib/containers/storage/overlay/98f8e6b55a5a8a1d2a1c3734c0bfeb2eabbfe796b2c3c5a0776840cd2195c9af/diff:/var/lib/containers/storage/overlay/ead5e72312a3c3d67269d8428f27d45812af32de6a6c12ad65d0c2807dc6dec8/diff:/var/lib/containers/storage/overlay/d5c856e9d5f17e796fd54a6c953c9fad20ff3629d771ed1d11c525c6ac270782/diff:/var/lib/containers/storage/overlay/6489de82645089e6d951b28d990eec46d7b012cc0b0896ef8f56a2da6f881635/diff:/var/lib/containers/storage/overlay/a60035546a7110599ec8e8bafdfda0a194df60caa74bc028556e0ff6a4a4cf5f/diff",
+        "UpperDir": "/var/lib/containers/storage/overlay/ccdf097502438f5b4322f43b90420d65a7fde58f283feebabeeedcf94f50d6b1/diff",
+        "WorkDir": "/var/lib/containers/storage/overlay/ccdf097502438f5b4322f43b90420d65a7fde58f283feebabeeedcf94f50d6b1/work"
+      }
+    },
+    "RootFS": {
+      "Type": "layers",
+      "Layers": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    "Labels": {
+      "architecture": "x86_64",
+      "build-date": "2025-04-16T09:03:22",
+      "com.redhat.component": "ubi8-container",
+      "com.redhat.license_terms": "https://www.redhat.com/en/about/red-hat-end-user-license-agreements#UBI",
+      "description": "The Universal Base Image is designed and engineered to be the base layer for all of your containerized applications, middleware and utilities. This base image is freely redistributable, but Red Hat only supports Red Hat technologies through subscriptions for Red Hat products. This image is maintained by Red Hat and updated regularly.",
+      "distribution-scope": "public",
+      "io.buildah.version": "1.33.12",
+      "io.k8s.description": "The Universal Base Image is designed and engineered to be the base layer for all of your containerized applications, middleware and utilities. This base image is freely redistributable, but Red Hat only supports Red Hat technologies through subscriptions for Red Hat products. This image is maintained by Red Hat and updated regularly.",
+      "io.k8s.display-name": "Red Hat Universal Base Image 8",
+      "io.openshift.expose-services": "",
+      "io.openshift.tags": "base rhel8",
+      "maintainer": "Red Hat, Inc.",
+      "name": "ubi8",
+      "release": "1262",
+      "summary": "Provides the latest release of Red Hat Universal Base Image 8.",
+      "url": "https://access.redhat.com/containers/#/registry.access.redhat.com/ubi8/images/8.10-1262",
+      "vcs-ref": "967861a8dbbb288b8cec9f1fee7ccbf6c7ee9a20",
+      "vcs-type": "git",
+      "vendor": "Red Hat, Inc.",
+      "version": "8.10"
+    },
+    "Annotations": {},
+    "ManifestType": "application/vnd.docker.distribution.manifest.v1+prettyjws",
+    "User": "root",
+    "History": [
+      {
+        "created": "2025-04-16T09:13:36.696124833Z",
+        "created_by": "/bin/sh -c #(nop) ADD file:0b41f33c82f493838bf2656cebe762e8df2b1878fce13ac63e2fdf581ee6894f in / ",
+        "empty_layer": true
+      },
+      {
+        "created": "2025-04-16T09:13:37.224125245Z",
+        "created_by": "/bin/sh -c mv -f /etc/yum.repos.d/ubi.repo /tmp || :",
+        "empty_layer": true
+      },
+      {
+        "created": "2025-04-16T09:13:37.400748642Z",
+        "created_by": "/bin/sh -c #(nop) ADD file:df13b6a4fdeac4626ab7cd7e99d16d30edc6e3e5441295ae7691bee26604a5b1 in /tmp/tls-ca-bundle.pem ",
+        "empty_layer": true
+      },
+      {
+        "created": "2025-04-16T09:13:37.623638056Z",
+        "created_by": "/bin/sh -c #(nop) ADD multi:d7c6a0863b5a33b3038eda733414ece7091372501b255c430df066f009e99c5c in /etc/yum.repos.d/ ",
+        "empty_layer": true
+      },
+      {
+        "created": "2025-04-16T09:13:37.623700332Z",
+        "created_by": "/bin/sh -c #(nop) LABEL maintainer=\"Red Hat, Inc.\"",
+        "empty_layer": true
+      },
+      {
+        "created": "2025-04-16T09:13:37.623808087Z",
+        "created_by": "/bin/sh -c #(nop) LABEL com.redhat.component=\"ubi8-container\"       name=\"ubi8\"       version=\"8.10\"",
+        "empty_layer": true
+      },
+      {
+        "created": "2025-04-16T09:13:37.623840707Z",
+        "created_by": "/bin/sh -c #(nop) LABEL com.redhat.license_terms=\"https://www.redhat.com/en/about/red-hat-end-user-license-agreements#UBI\"",
+        "empty_layer": true
+      },
+      {
+        "created": "2025-04-16T09:13:37.62387063Z",
+        "created_by": "/bin/sh -c #(nop) LABEL summary=\"Provides the latest release of Red Hat Universal Base Image 8.\"",
+        "empty_layer": true
+      },
+      {
+        "created": "2025-04-16T09:13:37.623991405Z",
+        "created_by": "/bin/sh -c #(nop) LABEL description=\"The Universal Base Image is designed and engineered to be the base layer for all of your containerized applications, middleware and utilities. This base image is freely redistributable, but Red Hat only supports Red Hat technologies through subscriptions for Red Hat products. This image is maintained by Red Hat and updated regularly.\"",
+        "empty_layer": true
+      },
+      {
+        "created": "2025-04-16T09:13:37.624040681Z",
+        "created_by": "/bin/sh -c #(nop) LABEL io.k8s.display-name=\"Red Hat Universal Base Image 8\"",
+        "empty_layer": true
+      },
+      {
+        "created": "2025-04-16T09:13:37.624077222Z",
+        "created_by": "/bin/sh -c #(nop) LABEL io.openshift.expose-services=\"\"",
+        "empty_layer": true
+      },
+      {
+        "created": "2025-04-16T09:13:37.624097667Z",
+        "created_by": "/bin/sh -c #(nop) LABEL io.openshift.tags=\"base rhel8\"",
+        "empty_layer": true
+      },
+      {
+        "created": "2025-04-16T09:13:37.62410939Z",
+        "created_by": "/bin/sh -c #(nop) ENV container oci",
+        "empty_layer": true
+      },
+      {
+        "created": "2025-04-16T09:13:37.624178345Z",
+        "created_by": "/bin/sh -c #(nop) ENV PATH /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+        "empty_layer": true
+      },
+      {
+        "created": "2025-04-16T09:13:37.624198875Z",
+        "created_by": "/bin/sh -c #(nop) CMD [\"/bin/bash\"]",
+        "empty_layer": true
+      },
+      {
+        "created": "2025-04-16T09:13:38.118642648Z",
+        "created_by": "/bin/sh -c rm -rf /var/log/*",
+        "empty_layer": true
+      },
+      {
+        "created": "2025-04-16T09:13:38.637995337Z",
+        "created_by": "/bin/sh -c mkdir -p /var/log/rhsm",
+        "empty_layer": true
+      },
+      {
+        "created": "2025-04-16T09:13:38.638055756Z",
+        "created_by": "/bin/sh -c #(nop) LABEL release=1262",
+        "empty_layer": true
+      },
+      {
+        "created": "2025-04-16T09:13:38.801453951Z",
+        "created_by": "/bin/sh -c #(nop) ADD file:6d7260d57f2cebedb04acd37c9ccd87e7c568f6be53a8842c86623082af045ce in /root/buildinfo/content_manifests/ubi8-container-8.10-1262.json ",
+        "empty_layer": true
+      },
+      {
+        "created": "2025-04-16T09:13:38.97052234Z",
+        "created_by": "/bin/sh -c #(nop) ADD file:8b7562eab7b54cfad5f59c6c51b7b17184f70694c09dd423d7e4b5b04bd4c511 in /root/buildinfo/Dockerfile-ubi8-8.10-1262 ",
+        "empty_layer": true
+      },
+      {
+        "created": "2025-04-16T09:13:38.970706263Z",
+        "created_by": "/bin/sh -c #(nop) LABEL \"distribution-scope\"=\"public\" \"vendor\"=\"Red Hat, Inc.\" \"build-date\"=\"2025-04-16T09:03:22\" \"architecture\"=\"x86_64\" \"vcs-type\"=\"git\" \"vcs-ref\"=\"967861a8dbbb288b8cec9f1fee7ccbf6c7ee9a20\" \"io.k8s.description\"=\"The Universal Base Image is designed and engineered to be the base layer for all of your containerized applications, middleware and utilities. This base image is freely redistributable, but Red Hat only supports Red Hat technologies through subscriptions for Red Hat products. This image is maintained by Red Hat and updated regularly.\" \"url\"=\"https://access.redhat.com/containers/#/registry.access.redhat.com/ubi8/images/8.10-1262\"",
+        "empty_layer": true
+      },
+      {
+        "created": "2025-04-16T09:13:39.456779674Z",
+        "created_by": "/bin/sh -c rm -f '/etc/yum.repos.d/repo-ba3f3.repo' '/etc/yum.repos.d/repo-c6679.repo'",
+        "empty_layer": true
+      },
+      {
+        "created": "2025-04-16T09:13:40.007305524Z",
+        "created_by": "/bin/sh -c rm -f /tmp/tls-ca-bundle.pem",
+        "empty_layer": true
+      },
+      {
+        "created": "2025-04-16T09:13:41.88807519Z",
+        "created_by": "/bin/sh -c mv -fZ /tmp/ubi.repo /etc/yum.repos.d/ubi.repo || :"
+      },
+      {
+        "created": "2025-05-15T17:15:35.757926361Z",
+        "created_by": "/bin/sh -c #(nop) MAINTAINER Spartak Nasto spartak.nasto@voya.com",
+        "author": "Spartak Nasto spartak.nasto@voya.com",
+        "empty_layer": true
+      },
+      {
+        "created": "2025-05-15T17:15:35.937933783Z",
+        "created_by": "/bin/sh -c #(nop) USER root",
+        "author": "Spartak Nasto spartak.nasto@voya.com",
+        "empty_layer": true
+      },
+      {
+        "created": "2025-05-15T17:15:37.347224598Z",
+        "created_by": "/bin/sh -c mkdir -p /opt/app/docker",
+        "author": "Spartak Nasto spartak.nasto@voya.com"
+      },
+      {
+        "created": "2025-05-15T17:16:38.315480737Z",
+        "created_by": "/bin/sh -c      /usr/bin/yum --enablerepo=* --disablerepo=Voya_Zing_Software_Zing_RHEL8_x86_64,Voya_Zing_Software_Zing_RHEL7_x86_64,*rhel7*,*RHEL7*,*rhel6*,*RHEL6*,*rhel9*,*RHEL9*,amq-streams-2-for-rhel-8-rpms --disablerepo=Voya_ING-Software_ws-rhel8 --disablerepo=satellite-tools-6.8-for-rhel-8-x86_64-rpms --disablerepo=jb-eap-7.3-for-rhel-8-x86_64-rpms --disablerepo=ubi-8* --disablerepo=Voya_ING-Software_ws-rhel8-jboss74 --disablerepo=Voya_ING-Software_jboss74-test --disablerepo=Voya_ING-Software_ws-rhel9 --disablerepo=rhel-8-for-x86_64-appstream-eus-rpms --disablerepo=Voya_Microsoft_Microsoft_-_RHEL8 -y install --nogpgcheck java-1.8.0-openjdk-devel.x86_64",
+        "author": "Spartak Nasto spartak.nasto@voya.com"
+      },
+      {
+        "created": "2025-05-15T17:17:11.001112171Z",
+        "created_by": "/bin/sh -c      /usr/bin/yum --enablerepo=* --disablerepo=Voya_Zing_Software_Zing_RHEL8_x86_64,Voya_Zing_Software_Zing_RHEL7_x86_64,*rhel7*,*RHEL7*,*rhel6*,*RHEL6*,*rhel9*,*RHEL9*,amq-streams-2-for-rhel-8-rpms --disablerepo=Voya_ING-Software_ws-rhel8 --disablerepo=satellite-tools-6.8-for-rhel-8-x86_64-rpms --disablerepo=jb-eap-7.3-for-rhel-8-x86_64-rpms --disablerepo=ubi-8* --disablerepo=Voya_ING-Software_ws-rhel8-jboss74 --disablerepo=Voya_ING-Software_jboss74-test --disablerepo=Voya_ING-Software_ws-rhel9 --disablerepo=rhel-8-for-x86_64-appstream-eus-rpms --disablerepo=Voya_Microsoft_Microsoft_-_RHEL8 -y install --nogpgcheck java-11-openjdk-devel.x86_64",
+        "author": "Spartak Nasto spartak.nasto@voya.com"
+      },
+      {
+        "created": "2025-05-15T17:17:28.197607566Z",
+        "created_by": "/bin/sh -c      /usr/bin/yum --enablerepo=* --disablerepo=Voya_Zing_Software_Zing_RHEL8_x86_64,Voya_Zing_Software_Zing_RHEL7_x86_64,*rhel7*,*RHEL7*,*rhel6*,*RHEL6*,*rhel9*,*RHEL9*,amq-streams-2-for-rhel-8-rpms --disablerepo=Voya_ING-Software_ws-rhel8 --disablerepo=satellite-tools-6.8-for-rhel-8-x86_64-rpms --disablerepo=jb-eap-7.3-for-rhel-8-x86_64-rpms --disablerepo=ubi-8* --disablerepo=Voya_ING-Software_ws-rhel8-jboss74 --disablerepo=Voya_ING-Software_jboss74-test --disablerepo=Voya_ING-Software_ws-rhel9 --disablerepo=rhel-8-for-x86_64-appstream-eus-rpms --disablerepo=Voya_Microsoft_Microsoft_-_RHEL8 -y install --nogpgcheck dos2unix*",
+        "author": "Spartak Nasto spartak.nasto@voya.com"
+      },
+      {
+        "created": "2025-05-15T17:17:34.100509723Z",
+        "created_by": "/bin/sh -c   /usr/bin/yum --disablerepo=* --enablerepo=rhel-8-for-x86_64-baseos-rpms -y install rsync",
+        "author": "Spartak Nasto spartak.nasto@voya.com"
+      },
+      {
+        "created": "2025-05-15T17:17:43.554303109Z",
+        "created_by": "/bin/sh -c      /usr/bin/yum --enablerepo=* --disablerepo=Voya_Zing_Software_Zing_RHEL8_x86_64,Voya_Zing_Software_Zing_RHEL7_x86_64,*rhel7*,*RHEL7*,*rhel6*,*RHEL6*,*rhel9*,*RHEL9*,amq-streams-2-for-rhel-8-rpms --disablerepo=Voya_ING-Software_ws-rhel8 --disablerepo=satellite-tools-6.8-for-rhel-8-x86_64-rpms --disablerepo=jb-eap-7.3-for-rhel-8-x86_64-rpms --disablerepo=ubi-8* --disablerepo=Voya_ING-Software_ws-rhel8-jboss74 --disablerepo=Voya_ING-Software_jboss74-test --disablerepo=Voya_ING-Software_ws-rhel9 --disablerepo=rhel-8-for-x86_64-appstream-eus-rpms --disablerepo=Voya_Microsoft_Microsoft_-_RHEL8 -y install --nogpgcheck openssh-server*",
+        "author": "Spartak Nasto spartak.nasto@voya.com"
+      },
+      {
+        "created": "2025-05-15T17:17:53.005924387Z",
+        "created_by": "/bin/sh -c      /usr/bin/yum --enablerepo=* --disablerepo=Voya_Zing_Software_Zing_RHEL8_x86_64,Voya_Zing_Software_Zing_RHEL7_x86_64,*rhel7*,*RHEL7*,*rhel6*,*RHEL6*,*rhel9*,*RHEL9*,amq-streams-2-for-rhel-8-rpms --disablerepo=Voya_ING-Software_ws-rhel8 --disablerepo=satellite-tools-6.8-for-rhel-8-x86_64-rpms --disablerepo=jb-eap-7.3-for-rhel-8-x86_64-rpms --disablerepo=ubi-8* --disablerepo=Voya_ING-Software_ws-rhel8-jboss74 --disablerepo=Voya_ING-Software_jboss74-test --disablerepo=Voya_ING-Software_ws-rhel9 --disablerepo=rhel-8-for-x86_64-appstream-eus-rpms --disablerepo=Voya_Microsoft_Microsoft_-_RHEL8 -y install --nogpgcheck openssh-client*",
+        "author": "Spartak Nasto spartak.nasto@voya.com"
+      },
+      {
+        "created": "2025-05-15T17:17:56.74624644Z",
+        "created_by": "/bin/sh -c umask 0022",
+        "author": "Spartak Nasto spartak.nasto@voya.com"
+      },
+      {
+        "created": "2025-05-15T17:17:58.894078126Z",
+        "created_by": "/bin/sh -c #(nop) COPY multi:21b710db2ef5bb1533faca98da0f2be9de704267f63e5ccfd6d6a43cdeb67377 in /usr/lib64/ ",
+        "author": "Spartak Nasto spartak.nasto@voya.com"
+      },
+      {
+        "created": "2025-05-15T17:18:00.660243216Z",
+        "created_by": "/bin/sh -c #(nop) COPY file:9de852e6c5c7f829b9c5384bee226e810af0abf16d56649fb046d0eceae70ed9 in /usr/bin/ ",
+        "author": "Spartak Nasto spartak.nasto@voya.com"
+      },
+      {
+        "created": "2025-05-15T17:18:02.772968627Z",
+        "created_by": "/bin/sh -c chmod 755 /usr/lib64/libprocps.so.*  /usr/lib64/libtinfo.so.5 /usr/bin/ps",
+        "author": "Spartak Nasto spartak.nasto@voya.com"
+      },
+      {
+        "created": "2025-05-15T17:18:05.281558826Z",
+        "created_by": "/bin/sh -c find -L /usr/lib/jvm/java-1.8.0-openjdk/jre/lib/security/java.security -type f -print0 | xargs -0 sed -i \"s/#networkaddress.cache.ttl=-1/networkaddress.cache.ttl=60/\"",
+        "author": "Spartak Nasto spartak.nasto@voya.com"
+      },
+      {
+        "created": "2025-05-15T17:18:07.817161908Z",
+        "created_by": "/bin/sh -c find /usr/lib/jvm/java-11-openjdk/conf/security/java.security -type f -print0 | xargs -0 sed -i \"s/#networkaddress.cache.ttl=-1/networkaddress.cache.ttl=60/\"",
+        "author": "Spartak Nasto spartak.nasto@voya.com"
+      },
+      {
+        "created": "2025-05-15T17:18:09.839125833Z",
+        "created_by": "/bin/sh -c #(nop) COPY file:b1955a74a04846c0482caf7e9bf7d83eaf03aaa6b906930224f2f693ee458701 in /usr/share/crypto-policies/DEFAULT/java.txt ",
+        "author": "Spartak Nasto spartak.nasto@voya.com"
+      },
+      {
+        "created": "2025-05-15T17:18:12.538936355Z",
+        "created_by": "/bin/sh -c chmod 644 /usr/share/crypto-policies/DEFAULT/java.txt ",
+        "author": "Spartak Nasto spartak.nasto@voya.com"
+      },
+      {
+        "created": "2025-05-15T17:18:15.138004343Z",
+        "created_by": "/bin/sh -c cp -f /usr/share/zoneinfo/EST5EDT /etc/localtime ",
+        "author": "Spartak Nasto spartak.nasto@voya.com"
+      },
+      {
+        "created": "2025-05-15T17:18:15.57331459Z",
+        "created_by": "/bin/sh -c #(nop) ENV LANG=en_US.UTF-8",
+        "author": "Spartak Nasto spartak.nasto@voya.com",
+        "empty_layer": true
+      },
+      {
+        "created": "2025-05-15T17:18:15.79687313Z",
+        "created_by": "/bin/sh -c #(nop) ENV LANGUAGE=en_US.UTF-8",
+        "author": "Spartak Nasto spartak.nasto@voya.com",
+        "empty_layer": true
+      },
+      {
+        "created": "2025-05-15T17:18:16.028152035Z",
+        "created_by": "/bin/sh -c #(nop) ENV TZ=\"America/New_York\"",
+        "author": "Spartak Nasto spartak.nasto@voya.com",
+        "empty_layer": true
+      },
+      {
+        "created": "2025-05-15T17:18:18.025815205Z",
+        "created_by": "/bin/sh -c #(nop) COPY file:bb3ba4de79585409d3516ca6b8cf9edeab6244b495fb81e1f974d24760c061de in ~/ ",
+        "author": "Spartak Nasto spartak.nasto@voya.com"
+      },
+      {
+        "created": "2025-05-15T17:18:18.384077305Z",
+        "author": "Spartak Nasto spartak.nasto@voya.com",
+        "empty_layer": true
+      }
+    ],
+    "NamesHistory": [
+      "artifactory.voya.net/docker-virtual/rhel8-openjdk8-11-devil:latest"
+    ]
+  }
+]
