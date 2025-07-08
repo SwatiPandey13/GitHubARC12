@@ -1,6 +1,4 @@
-# ... [previous Dockerfile content] ...
-
-# OpenShift permissions
+# OpenShift permissions (as root)
 RUN chown -R 1001:0 /home/runner /usr/lib/jvm /opt/maven && \
     chmod -R g+rw /home/runner /usr/lib/jvm /opt/maven
 
