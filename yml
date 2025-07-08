@@ -16,7 +16,7 @@ RUN update-ca-trust extract
 RUN microdnf install -y ca-certificates && \
     update-ca-trust && \
     microdnf update -y && \
-    microdnf install -y wget tar gzip which && \
+    microdnf install -y wget tar gzip which libicu && \
     microdnf clean all
 
 # STAGE 2: GitHub Runner (using exact SHA256 from your inspect output)
@@ -36,10 +36,10 @@ RUN echo -e '#!/bin/sh\ncd /home/runner\nexec ./run.sh "$@"' > /entrypoint.sh &&
     chmod +x /home/runner/run.sh
 
 # 3. Install JDK 8 and 11 from the combined image
-COPY --from=artifactory.voya.net/artifactory/docker-virtual/rhel8-openjdk8-11-devil/latest \
-    /usr/lib/jvm/jdk-8 /usr/lib/jvm/jdk8
-COPY --from=artifactory.voya.net/artifactory/docker-virtual/rhel8-openjdk8-11-devil/latest \
-    /usr/lib/jvm/jdk-11 /usr/lib/jvm/jdk11
+COPY --from=artifactory.voya.net/docker-virtual/rhel8-openjdk8-11-devil@sha256:6cd89d364732c3bfd8ea4b1847a8dbccba29d966606513567e6291463eb6c954 \
+    /usr/lib/jvm/java-1.8.0-openjdk /usr/lib/jvm/jdk8
+COPY --from=artifactory.voya.net/docker-virtual/rhel8-openjdk8-11-devil@sha256:6cd89d364732c3bfd8ea4b1847a8dbccba29d966606513567e6291463eb6c954 \
+    /usr/lib/jvm/java-11-openjdk /usr/lib/jvm/jdk11
 
 # Configure Java alternatives
 RUN alternatives --install "/usr/bin/java" "java" "/usr/lib/jvm/jdk8/bin/java" 1 && \
@@ -69,7 +69,10 @@ ENV JAVA_HOME=/usr/lib/jvm/jdk8 \
     DEBIAN_FRONTEND=noninteractive \
     RUNNER_MANUALLY_TRAP_SIG=1 \
     ACTIONS_RUNNER_PRINT_LOG_TO_STDOUT=1 \
-    ImageOS=ubuntu22
+    ImageOS=ubuntu22 \
+    DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=0 \
+    LC_ALL=en_US.UTF-8 \
+    LANG=en_US.UTF-8
 
 # OpenShift permissions
 RUN chown -R 1001:0 /home/runner /usr/lib/jvm /opt/maven && \
@@ -85,4 +88,5 @@ HEALTHCHECK --interval=30s --timeout=10s \
     CMD java -version && javac -version && mvn -v
 
 # Use the created entrypoint
-ENTRYPOINT ["/entrypoint.sh"]
+#ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/home/runner/run.sh"]
