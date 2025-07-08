@@ -1,5 +1,12 @@
-# ===== ADD THE NEW ENTRYPOINT SOLUTION HERE =====
-# Multi-purpose entrypoint that handles both Java tools and runner
+# ... [previous Dockerfile content] ...
+
+# OpenShift permissions
+RUN chown -R 1001:0 /home/runner /usr/lib/jvm /opt/maven && \
+    chmod -R g+rw /home/runner /usr/lib/jvm /opt/maven
+
+# ===== ENTRYPOINT CREATION =====
+USER root  # Temporarily become root
+
 RUN echo -e '#!/bin/sh\n\
 if [ "$1" = "java" ] || [ "$1" = "javac" ] || [ "$1" = "mvn" ]; then\n\
     exec "$@"\n\
@@ -7,6 +14,10 @@ else\n\
     cd /home/runner\n\
     exec ./run.sh "$@"\n\
 fi' > /entrypoint.sh && \
-    chmod +x /entrypoint.sh
+    chmod +x /entrypoint.sh && \
+    chown 1001:0 /entrypoint.sh
+
+USER 1001  # Switch back to runner user
+# ===== END ENTRYPOINT =====
 
 ENTRYPOINT ["/entrypoint.sh"]
