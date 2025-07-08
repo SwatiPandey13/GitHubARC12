@@ -1,2 +1,9 @@
-Trying to pull artifactory.voya.net/docker-virtual/openshift/actions/action-runner:latest...
-Error: creating build container: initializing source docker://artifactory.voya.net/docker-virtual/openshift/actions/action-runner:latest: reading manifest latest in artifactory.voya.net/docker-virtual/openshift/actions/action-runner: manifest unknown: The named manifest is not known to the registry.
+# 1. Build the image
+docker build -t artifactory.voya.net/docker-virtual/openshift/custom-runner:latest .
+
+# 2. Test the runner
+docker run --rm artifactory.voya.net/docker-virtual/openshift/custom-runner:latest
+
+# 3. Verify Java versions
+docker run --rm artifactory.voya.net/docker-virtual/openshift/custom-runner:latest \
+  sh -c "java -version && /usr/lib/jvm/jdk11/bin/java -version"
