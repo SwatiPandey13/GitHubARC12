@@ -1,7 +1,193 @@
-[3/3] STEP 1/13: FROM 42f5a021f38217e7cde712671a9ab5b9700f556301a334c83ee42c99d59afc11
-[3/3] STEP 2/13: COPY --from=runner /home/runner /home/runner
---> 8596556a4dfc
-[3/3] STEP 3/13: COPY --from=runner /usr/local/bin/ /usr/local/bin/
---> 295f17a92670
-[3/3] STEP 4/13: COPY --from=runner /entrypoint.sh /entrypoint.sh
-Error: building at STEP "COPY --from=runner /entrypoint.sh /entrypoint.sh": checking on sources under "/var/lib/containers/storage/overlay/a0dc2ddc9eafd812bc91cfb36d3c0cf49b6157adb323237677228bf9437ea1ed/merged": copier: stat: "/entrypoint.sh": no such file or directory
+[
+  {
+    "Id": "39cc3392e051ca1f8a565112c91fe1b77bc1a977538f2d5a7e8214900ff3d980",
+    "Digest": "sha256:8975102ef76de619ff3bd316209bee1eb51e0153d7b4c72d807d396152d8ce5d",
+    "RepoTags": [
+      "artifactory.voya.net/docker-virtual/openshift/actions/actions-runner:latest"
+    ],
+    "RepoDigests": [
+      "artifactory.voya.net/docker-virtual/openshift/actions/actions-runner@sha256:8975102ef76de619ff3bd316209bee1eb51e0153d7b4c72d807d396152d8ce5d"
+    ],
+    "Parent": "",
+    "Comment": "",
+    "Created": "2025-06-02T18:49:51.349076346Z",
+    "Config": {
+      "User": "runner",
+      "Env": [
+        "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+        "APP_UID=1654",
+        "ASPNETCORE_HTTP_PORTS=8080",
+        "DOTNET_RUNNING_IN_CONTAINER=true",
+        "DEBIAN_FRONTEND=noninteractive",
+        "RUNNER_MANUALLY_TRAP_SIG=1",
+        "ACTIONS_RUNNER_PRINT_LOG_TO_STDOUT=1",
+        "ImageOS=ubuntu22"
+      ],
+      "Cmd": [
+        "/bin/bash"
+      ],
+      "WorkingDir": "/home/runner",
+      "Labels": {
+        "org.opencontainers.image.description": "https://github.com/actions/runner/releases/tag/v2.325.0",
+        "org.opencontainers.image.licenses": "MIT",
+        "org.opencontainers.image.ref.name": "ubuntu",
+        "org.opencontainers.image.source": "https://github.com/actions/runner",
+        "org.opencontainers.image.version": "22.04"
+      }
+    },
+    "Version": "",
+    "Author": "",
+    "Architecture": "amd64",
+    "Os": "linux",
+    "Size": 1158588465,
+    "VirtualSize": 1158588465,
+    "GraphDriver": {
+      "Name": "overlay",
+      "Data": {
+        "LowerDir": "/var/lib/containers/storage/overlay/519a7ab963502cfb35e5efc5fc1a701fd26061a1313fee3ff29b6b1c03e52d44/diff:/var/lib/containers/storage/overlay/56b2ba0ecbe43be6998b45b3e80071a1ed7519551947ca933ede2518d89a70ec/diff:/var/lib/containers/storage/overlay/6bfb8063f7772ea0fd9842b04dfc20ecc2ea190e571f99985e15ecfe1effe213/diff:/var/lib/containers/storage/overlay/9b221df956f7a9a2f9865eb0480e7e84f98ee320bea1627e946b93b7bde5bd3f/diff:/var/lib/containers/storage/overlay/f7dc655fabee9973b53833f2fecda1fb14cb3dea51593693bd1f5bebaecb86fa/diff:/var/lib/containers/storage/overlay/9972def018db1b79a5aeb371b04433f0b5a56188f0c35608d000459299307fd4/diff:/var/lib/containers/storage/overlay/b3ea3f33477ffcad09b6a4c7acb50880ee12bf09d01cc2bbbdcf12fdc25a2929/diff:/var/lib/containers/storage/overlay/f9b4fffb2a87f21a1c67650efa0de323cfe68ec44f3cc986e1232f394c8a5311/diff:/var/lib/containers/storage/overlay/f862e1968e4b4c3c3af141e37d2ec22b19ec0fd50d6a8aaf683de6729e296226/diff",
+        "UpperDir": "/var/lib/containers/storage/overlay/e5f2fb07405ac3e09eeb18d14d679b8ab600271db4521e62dc797a339de2c325/diff",
+        "WorkDir": "/var/lib/containers/storage/overlay/e5f2fb07405ac3e09eeb18d14d679b8ab600271db4521e62dc797a339de2c325/work"
+      }
+    },
+    "RootFS": {
+      "Type": "layers",
+      "Layers": [
+        "sha256:f862e1968e4b4c3c3af141e37d2ec22b19ec0fd50d6a8aaf683de6729e296226",
+        "sha256:c72fe3b8f07f42ac029fd4d2f4afdcc8c19348888e293e7923fb505007464a28",
+        "sha256:25c047ffca3efa4ba24b3ccc98c4037f85feedd3f64074d81d2e1174e26f530b",
+        "sha256:ae6eafbd98e63d3665fbfcbb527118b6e015d67a16eeaf8b8ef848a92d6ace90",
+        "sha256:b4788fd5ed0baa22e4d0d854a3b1b9b7b290275dd8886d66399dfed84aa39ad2",
+        "sha256:af87f1d6a41a811b07487744559324f4ee05e8aa42bad64a039e17e33cd0ce1a",
+        "sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+        "sha256:60452cd002aee995fa9d9923ca3fa4aa8cba10e4b91aba74068d3711543b37f5",
+        "sha256:f3c602a0861970f8d4c91cc74c60581379ae594776ee6d5e66969f9b8069a4ea",
+        "sha256:da4771bb8eb3c1557e1f6c192a7ad4e13b606ad13e64b3cd666176b2d0b674aa"
+      ]
+    },
+    "Labels": {
+      "org.opencontainers.image.description": "https://github.com/actions/runner/releases/tag/v2.325.0",
+      "org.opencontainers.image.licenses": "MIT",
+      "org.opencontainers.image.ref.name": "ubuntu",
+      "org.opencontainers.image.source": "https://github.com/actions/runner",
+      "org.opencontainers.image.version": "22.04"
+    },
+    "Annotations": {},
+    "ManifestType": "application/vnd.oci.image.manifest.v1+json",
+    "User": "runner",
+    "History": [
+      {
+        "created": "2025-05-30T22:30:42.898627637Z",
+        "created_by": "/bin/sh -c #(nop)  ARG RELEASE",
+        "empty_layer": true
+      },
+      {
+        "created": "2025-05-30T22:30:42.9234878Z",
+        "created_by": "/bin/sh -c #(nop)  ARG LAUNCHPAD_BUILD_ARCH",
+        "empty_layer": true
+      },
+      {
+        "created": "2025-05-30T22:30:42.946285582Z",
+        "created_by": "/bin/sh -c #(nop)  LABEL org.opencontainers.image.ref.name=ubuntu",
+        "empty_layer": true
+      },
+      {
+        "created": "2025-05-30T22:30:42.971145847Z",
+        "created_by": "/bin/sh -c #(nop)  LABEL org.opencontainers.image.version=22.04",
+        "empty_layer": true
+      },
+      {
+        "created": "2025-05-30T22:30:45.205253722Z",
+        "created_by": "/bin/sh -c #(nop) ADD file:82f38ebced7b2756311fb492d3d44cc131b22654e8620baa93883537a3e355aa in / "
+      },
+      {
+        "created": "2025-05-30T22:30:45.500168088Z",
+        "created_by": "/bin/sh -c #(nop)  CMD [\"/bin/bash\"]",
+        "empty_layer": true
+      },
+      {
+        "created": "2025-05-31T00:35:03.972823325Z",
+        "created_by": "ENV APP_UID=1654 ASPNETCORE_HTTP_PORTS=8080 DOTNET_RUNNING_IN_CONTAINER=true",
+        "comment": "buildkit.dockerfile.v0",
+        "empty_layer": true
+      },
+      {
+        "created": "2025-05-31T00:35:03.972823325Z",
+        "created_by": "RUN /bin/sh -c apt-get update     && apt-get install -y --no-install-recommends         ca-certificates                 libc6         libgcc-s1         libicu70         libssl3         libstdc++6         tzdata         zlib1g     && rm -rf /var/lib/apt/lists/* # buildkit",
+        "comment": "buildkit.dockerfile.v0"
+      },
+      {
+        "created": "2025-05-31T00:35:05.464843329Z",
+        "created_by": "RUN /bin/sh -c groupadd         --gid=$APP_UID         app     && useradd -l         --uid=$APP_UID         --gid=$APP_UID         --create-home         app # buildkit",
+        "comment": "buildkit.dockerfile.v0"
+      },
+      {
+        "created": "2025-06-02T18:48:23.061956102Z",
+        "created_by": "ENV DEBIAN_FRONTEND=noninteractive",
+        "comment": "buildkit.dockerfile.v0",
+        "empty_layer": true
+      },
+      {
+        "created": "2025-06-02T18:48:23.061956102Z",
+        "created_by": "ENV RUNNER_MANUALLY_TRAP_SIG=1",
+        "comment": "buildkit.dockerfile.v0",
+        "empty_layer": true
+      },
+      {
+        "created": "2025-06-02T18:48:23.061956102Z",
+        "created_by": "ENV ACTIONS_RUNNER_PRINT_LOG_TO_STDOUT=1",
+        "comment": "buildkit.dockerfile.v0",
+        "empty_layer": true
+      },
+      {
+        "created": "2025-06-02T18:48:23.061956102Z",
+        "created_by": "ENV ImageOS=ubuntu22",
+        "comment": "buildkit.dockerfile.v0",
+        "empty_layer": true
+      },
+      {
+        "created": "2025-06-02T18:48:23.061956102Z",
+        "created_by": "RUN /bin/sh -c apt update -y     && apt install -y --no-install-recommends sudo lsb-release gpg-agent software-properties-common curl jq unzip     && rm -rf /var/lib/apt/lists/* # buildkit",
+        "comment": "buildkit.dockerfile.v0"
+      },
+      {
+        "created": "2025-06-02T18:49:48.05992793Z",
+        "created_by": "RUN /bin/sh -c add-apt-repository ppa:git-core/ppa     && apt update -y     && apt install -y git     && rm -rf /var/lib/apt/lists/* # buildkit",
+        "comment": "buildkit.dockerfile.v0"
+      },
+      {
+        "created": "2025-06-02T18:49:48.332831446Z",
+        "created_by": "RUN /bin/sh -c adduser --disabled-password --gecos \"\" --uid 1001 runner     && groupadd docker --gid 123     && usermod -aG sudo runner     && usermod -aG docker runner     && echo \"%sudo   ALL=(ALL:ALL) NOPASSWD:ALL\" > /etc/sudoers     && echo \"Defaults env_keep += \\\"DEBIAN_FRONTEND\\\"\" >> /etc/sudoers # buildkit",
+        "comment": "buildkit.dockerfile.v0"
+      },
+      {
+        "created": "2025-06-02T18:49:48.352821267Z",
+        "created_by": "WORKDIR /home/runner",
+        "comment": "buildkit.dockerfile.v0"
+      },
+      {
+        "created": "2025-06-02T18:49:50.662429889Z",
+        "created_by": "COPY --chown=runner:docker /actions-runner . # buildkit",
+        "comment": "buildkit.dockerfile.v0"
+      },
+      {
+        "created": "2025-06-02T18:49:50.838240392Z",
+        "created_by": "COPY /usr/local/lib/docker/cli-plugins/docker-buildx /usr/local/lib/docker/cli-plugins/docker-buildx # buildkit",
+        "comment": "buildkit.dockerfile.v0"
+      },
+      {
+        "created": "2025-06-02T18:49:51.349076346Z",
+        "created_by": "RUN /bin/sh -c install -o root -g root -m 755 docker/* /usr/bin/ && rm -rf docker # buildkit",
+        "comment": "buildkit.dockerfile.v0"
+      },
+      {
+        "created": "2025-06-02T18:49:51.349076346Z",
+        "created_by": "USER runner",
+        "comment": "buildkit.dockerfile.v0",
+        "empty_layer": true
+      }
+    ],
+    "NamesHistory": [
+      "artifactory.voya.net/docker-virtual/openshift/actions/actions-runner:latest"
+    ]
+  }
+]
