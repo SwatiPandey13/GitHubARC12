@@ -1,98 +1,29 @@
-podman run --rm runner-image sh -c "ls -l /entrypoint.sh && java -version"
-[RUNNER 2025-07-08 14:17:54Z INFO HostContext] No proxy settings were found based on environmental variables (http_proxy/https_proxy/HTTP_PROXY/HTTPS_PROXY)
-[RUNNER 2025-07-08 14:17:54Z INFO HostContext] Well known directory 'Bin': '/home/runner/bin'
-[RUNNER 2025-07-08 14:17:54Z INFO HostContext] Well known directory 'Root': '/home/runner'
-[RUNNER 2025-07-08 14:17:54Z INFO HostContext] Well known config file 'Credentials': '/home/runner/.credentials'
-[RUNNER 2025-07-08 14:17:54Z INFO HostContext] Well known directory 'Bin': '/home/runner/bin'
-[RUNNER 2025-07-08 14:17:54Z INFO HostContext] Well known directory 'Root': '/home/runner'
-[RUNNER 2025-07-08 14:17:54Z INFO HostContext] Well known config file 'Runner': '/home/runner/.runner'
-[RUNNER 2025-07-08 14:17:54Z INFO Listener] Runner is built for Linux (X64) - linux-x64.
-[RUNNER 2025-07-08 14:17:54Z INFO Listener] RuntimeInformation: Red Hat Enterprise Linux 8.10 (Ootpa).
-[RUNNER 2025-07-08 14:17:54Z INFO Listener] Version: 2.325.0
-[RUNNER 2025-07-08 14:17:54Z INFO Listener] Commit: 71ed7cd46223bd5d61633445946813012b502d54
-[RUNNER 2025-07-08 14:17:54Z INFO Listener] Culture: en-US
-[RUNNER 2025-07-08 14:17:54Z INFO Listener] UI Culture: en-US
-[RUNNER 2025-07-08 14:17:54Z INFO HostContext] Well known directory 'Bin': '/home/runner/bin'
-[RUNNER 2025-07-08 14:17:54Z INFO HostContext] Well known directory 'Root': '/home/runner'
-[RUNNER 2025-07-08 14:17:54Z INFO Listener] Validating directory permissions for: '/home/runner'
-[RUNNER 2025-07-08 14:17:54Z INFO CommandLineParser] Parse
-[RUNNER 2025-07-08 14:17:54Z INFO CommandLineParser] Parsing 9 args
-[RUNNER 2025-07-08 14:17:54Z INFO CommandLineParser] parsing argument
-[RUNNER 2025-07-08 14:17:54Z INFO CommandLineParser] HasArgs: False
-[RUNNER 2025-07-08 14:17:54Z INFO CommandLineParser] Adding Command: run
-[RUNNER 2025-07-08 14:17:54Z INFO CommandLineParser] parsing argument
-[RUNNER 2025-07-08 14:17:54Z INFO CommandLineParser] HasArgs: False
-[RUNNER 2025-07-08 14:17:54Z INFO CommandLineParser] Adding Command: sh
-[RUNNER 2025-07-08 14:17:54Z INFO CommandLineParser] parsing argument
-[RUNNER 2025-07-08 14:17:54Z INFO CommandLineParser] HasArgs: False
-[RUNNER 2025-07-08 14:17:54Z INFO CommandLineParser] Adding Command: -c
-[RUNNER 2025-07-08 14:17:54Z INFO CommandLineParser] parsing argument
-[RUNNER 2025-07-08 14:17:54Z INFO CommandLineParser] HasArgs: False
-[RUNNER 2025-07-08 14:17:54Z INFO CommandLineParser] Adding Command: ls
-[RUNNER 2025-07-08 14:17:54Z INFO CommandLineParser] parsing argument
-[RUNNER 2025-07-08 14:17:54Z INFO CommandLineParser] HasArgs: False
-[RUNNER 2025-07-08 14:17:54Z INFO CommandLineParser] Adding Command: -l
-[RUNNER 2025-07-08 14:17:54Z INFO CommandLineParser] parsing argument
-[RUNNER 2025-07-08 14:17:54Z INFO CommandLineParser] HasArgs: False
-[RUNNER 2025-07-08 14:17:54Z INFO CommandLineParser] Adding Command: /entrypoint.sh
-[RUNNER 2025-07-08 14:17:54Z INFO CommandLineParser] parsing argument
-[RUNNER 2025-07-08 14:17:54Z INFO CommandLineParser] HasArgs: False
-[RUNNER 2025-07-08 14:17:54Z INFO CommandLineParser] Adding Command: &&
-[RUNNER 2025-07-08 14:17:54Z INFO CommandLineParser] parsing argument
-[RUNNER 2025-07-08 14:17:54Z INFO CommandLineParser] HasArgs: False
-[RUNNER 2025-07-08 14:17:54Z INFO CommandLineParser] Adding Command: java
-[RUNNER 2025-07-08 14:17:54Z INFO CommandLineParser] parsing argument
-[RUNNER 2025-07-08 14:17:54Z INFO CommandLineParser] HasArgs: False
-[RUNNER 2025-07-08 14:17:54Z INFO CommandLineParser] Adding Command: -version
-[RUNNER 2025-07-08 14:17:54Z INFO Listener] Arguments parsed
-[RUNNER 2025-07-08 14:17:54Z INFO CommandSettings] Command 'configure': 'False'
-[RUNNER 2025-07-08 14:17:54Z INFO CommandSettings] Command 'remove': 'False'
-[RUNNER 2025-07-08 14:17:54Z INFO CommandSettings] Command 'run': 'True'
-[RUNNER 2025-07-08 14:17:54Z ERR  Terminal] WRITE ERROR: Unrecognized command-line input arguments for command run: 'sh, -c, ls, -l, /entrypoint.sh, &&, java, -version'. For usage refer to: .\config.cmd --help or ./config.sh --help
-Unrecognized command-line input arguments for command run: 'sh, -c, ls, -l, /entrypoint.sh, &&, java, -version'. For usage refer to: .\config.cmd --help or ./config.sh --help
-[RUNNER 2025-07-08 14:17:54Z INFO Runner] ExecuteCommand
-[RUNNER 2025-07-08 14:17:54Z INFO ConfigurationStore] currentAssemblyLocation: /home/runner/bin/Runner.Listener.dll
-[RUNNER 2025-07-08 14:17:54Z INFO HostContext] Well known directory 'Bin': '/home/runner/bin'
-[RUNNER 2025-07-08 14:17:54Z INFO ConfigurationStore] binPath: /home/runner/bin
-[RUNNER 2025-07-08 14:17:54Z INFO HostContext] Well known directory 'Bin': '/home/runner/bin'
-[RUNNER 2025-07-08 14:17:54Z INFO HostContext] Well known directory 'Root': '/home/runner'
-[RUNNER 2025-07-08 14:17:54Z INFO ConfigurationStore] RootFolder: /home/runner
-[RUNNER 2025-07-08 14:17:54Z INFO HostContext] Well known directory 'Bin': '/home/runner/bin'
-[RUNNER 2025-07-08 14:17:54Z INFO HostContext] Well known directory 'Root': '/home/runner'
-[RUNNER 2025-07-08 14:17:54Z INFO HostContext] Well known config file 'Runner': '/home/runner/.runner'
-[RUNNER 2025-07-08 14:17:54Z INFO ConfigurationStore] ConfigFilePath: /home/runner/.runner
-[RUNNER 2025-07-08 14:17:54Z INFO HostContext] Well known directory 'Bin': '/home/runner/bin'
-[RUNNER 2025-07-08 14:17:54Z INFO HostContext] Well known directory 'Root': '/home/runner'
-[RUNNER 2025-07-08 14:17:54Z INFO HostContext] Well known config file 'MigratedRunner': '/home/runner/.runner_migrated'
-[RUNNER 2025-07-08 14:17:54Z INFO ConfigurationStore] MigratedConfigFilePath: /home/runner/.runner_migrated
-[RUNNER 2025-07-08 14:17:54Z INFO HostContext] Well known directory 'Bin': '/home/runner/bin'
-[RUNNER 2025-07-08 14:17:54Z INFO HostContext] Well known directory 'Root': '/home/runner'
-[RUNNER 2025-07-08 14:17:54Z INFO HostContext] Well known config file 'Credentials': '/home/runner/.credentials'
-[RUNNER 2025-07-08 14:17:54Z INFO ConfigurationStore] CredFilePath: /home/runner/.credentials
-[RUNNER 2025-07-08 14:17:54Z INFO HostContext] Well known directory 'Bin': '/home/runner/bin'
-[RUNNER 2025-07-08 14:17:54Z INFO HostContext] Well known directory 'Root': '/home/runner'
-[RUNNER 2025-07-08 14:17:54Z INFO HostContext] Well known config file 'MigratedCredentials': '/home/runner/.credentials_migrated'
-[RUNNER 2025-07-08 14:17:54Z INFO ConfigurationStore] MigratedCredFilePath: /home/runner/.credentials_migrated
-[RUNNER 2025-07-08 14:17:54Z INFO HostContext] Well known directory 'Bin': '/home/runner/bin'
-[RUNNER 2025-07-08 14:17:54Z INFO HostContext] Well known directory 'Root': '/home/runner'
-[RUNNER 2025-07-08 14:17:54Z INFO HostContext] Well known config file 'Service': '/home/runner/.service'
-[RUNNER 2025-07-08 14:17:54Z INFO ConfigurationStore] ServiceConfigFilePath: /home/runner/.service
-[RUNNER 2025-07-08 14:17:54Z INFO CommandSettings] Flag 'help': 'False'
-[RUNNER 2025-07-08 14:17:54Z INFO CommandSettings] Flag 'version': 'False'
-[RUNNER 2025-07-08 14:17:54Z INFO CommandSettings] Flag 'commit': 'False'
-[RUNNER 2025-07-08 14:17:54Z INFO CommandSettings] Flag 'check': 'False'
-[RUNNER 2025-07-08 14:17:54Z INFO CommandSettings] Command 'configure': 'False'
-[RUNNER 2025-07-08 14:17:54Z INFO CommandSettings] Command 'remove': 'False'
-[RUNNER 2025-07-08 14:17:54Z INFO CommandSettings] Command 'warmup': 'False'
-[RUNNER 2025-07-08 14:17:54Z INFO ConfigurationManager] LoadSettings
-[RUNNER 2025-07-08 14:17:54Z INFO ConfigurationStore] IsConfigured()
-[RUNNER 2025-07-08 14:17:54Z INFO ConfigurationStore] IsConfigured: False
-[RUNNER 2025-07-08 14:17:54Z INFO ConfigurationManager] Is configured: False
-[RUNNER 2025-07-08 14:17:54Z ERR  Terminal] WRITE ERROR: An error occurred: Not configured. Run config.(sh/cmd) to configure the runner.
-An error occurred: Not configured. Run config.(sh/cmd) to configure the runner.
-[RUNNER 2025-07-08 14:17:54Z ERR  Listener] GitHub.Runner.Common.NonRetryableException: Not configured. Run config.(sh/cmd) to configure the runner.
-[RUNNER 2025-07-08 14:17:54Z ERR  Listener]    at GitHub.Runner.Listener.Configuration.ConfigurationManager.LoadSettings()
-[RUNNER 2025-07-08 14:17:54Z ERR  Listener]    at GitHub.Runner.Listener.Runner.ExecuteCommand(CommandSettings command)
-[RUNNER 2025-07-08 14:17:54Z ERR  Listener]    at GitHub.Runner.Listener.Program.MainAsync(IHostContext context, String[] args)
-Runner listener exit with terminated error, stop the service, no retry needed.
-Exiting runner...
+Subject: Referral for Senior Data Scientist & AI Architect Role
+
+Hi [Director's Name] and [HR Head's Name],
+
+I hope you're doing well.
+
+I’d like to refer a highly experienced candidate for any suitable openings in our organization. He is a Data Scientist & AI Architect with 18+ years of experience, including a strong background in designing enterprise-scale ML platforms and AI-driven products at Microsoft.
+
+He is actively exploring new opportunities and would be very keen to contribute to our organization if there is a suitable role.
+
+Core Skills & Expertise:
+
+AI/ML & Generative AI (LLMs, LangChain, Prompt Engineering, Agentic AI)
+
+Cloud & Platform (Microsoft Azure, Azure OpenAI, Synapse, Cloud Migration)
+
+Data Engineering (Azure Data Factory, Feature Engineering, MLOps)
+
+Programming: Python, SQL
+
+Strategy & Leadership (AI Architecture, Engineering Excellence, Leadership Excellence)
+
+Cost Optimization & Applied Analytics
+
+ITIL Foundation Certified
+
+I’m attaching his resume for your reference. Kindly let me know if any opportunity aligns with his profile or if the Talent Acquisition team can connect with him directly.
+
+Thank you for considering the referral.
