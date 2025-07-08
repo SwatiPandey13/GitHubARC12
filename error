@@ -1,3 +1,3 @@
-[3/3] STEP 15/16: RUN echo -e '#!/bin/sh\nif [ "$1" = "java" ] || [ "$1" = "javac" ] || [ "$1" = "mvn" ]; then\n    exec "$@"\nelse\n    cd /home/runner\n    exec ./run.sh "$@"\nfi' > /entrypoint.sh &&     chmod +x /entrypoint.sh
-/bin/sh: /entrypoint.sh: Permission denied
-Error: building at STEP "RUN echo -e '#!/bin/sh\nif [ "$1" = "java" ] || [ "$1" = "javac" ] || [ "$1" = "mvn" ]; then\n    exec "$@"\nelse\n    cd /home/runner\n    exec ./run.sh "$@"\nfi' > /entrypoint.sh &&     chmod +x /entrypoint.sh": while running runtime: exit status 1
+Error: building at STEP "RUN echo -e '#!/bin/sh\nif [ "$1" = "java" ] || [ "$1" = "javac" ] || [ "$1" = "mvn" ]; then\n    exec "$@"\nelse\n    cd /home/runner\n    exec ./run.sh "$@"\nfi' > /entrypoint.sh &&     chmod +x /entrypoint.sh &&     chown 1001:0 /entrypoint.sh": determining run uid: user: unknown user error looking up user "root  # Temporarily become root"
+[root@pshklaac9855 action_runner_dockerfile]# Error: building at STEP "RUN echo -e '#!/bin/sh\nif [ "$1" = "java" ] || [ "$1" = "javac" ] || [ "$1" = "mvn" ]; then\n    exec "$@"\nelse\n    cd /home/runner\n    exec ./run.sh "$@"\nfi' > /entrypoint.sh &&     chmod +x /entrypoint.sh &&     chown 1001:0 /entrypoint.sh": determining run uid: user: unknown user error looking up user "root  # Temporarily become root"
+-bash: !/bin/sh\nif: event not found
