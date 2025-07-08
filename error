@@ -1,6 +1,7 @@
-[1/3] STEP 2/3: USER root
---> 98acf78ef112
-[1/3] STEP 3/3: RUN microdnf update -y &&     microdnf install -y wget tar gzip which &&     microdnf clean all
-Downloading metadata...
-error: cannot update repo 'ubi-8-baseos-rpms': Cannot download repomd.xml: Cannot download repodata/repomd.xml: All mirrors were tried; Last error: Curl error (60): Peer certificate cannot be authenticated with given CA certificates for https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi8/8/x86_64/baseos/os/repodata/repomd.xml [SSL certificate problem: unable to get local issuer certificate]
-Error: building at STEP "RUN microdnf update -y &&     microdnf install -y wget tar gzip which &&     microdnf clean all": while running runtime: exit status 1
+[3/3] STEP 1/13: FROM 42f5a021f38217e7cde712671a9ab5b9700f556301a334c83ee42c99d59afc11
+[3/3] STEP 2/13: COPY --from=runner /home/runner /home/runner
+--> 8596556a4dfc
+[3/3] STEP 3/13: COPY --from=runner /usr/local/bin/ /usr/local/bin/
+--> 295f17a92670
+[3/3] STEP 4/13: COPY --from=runner /entrypoint.sh /entrypoint.sh
+Error: building at STEP "COPY --from=runner /entrypoint.sh /entrypoint.sh": checking on sources under "/var/lib/containers/storage/overlay/a0dc2ddc9eafd812bc91cfb36d3c0cf49b6157adb323237677228bf9437ea1ed/merged": copier: stat: "/entrypoint.sh": no such file or directory
