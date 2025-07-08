@@ -1,2 +1,18 @@
-[3/3] STEP 6/15: COPY --from=artifactory.voya.net/docker-virtual/rhel8-openjdk8-11-devil@sha256:6cd89d364732c3bfd8ea4b1847a8dbccba29d966606513567e6291463eb6c954     /usr/lib/jvm/jdk-8 /usr/lib/jvm/jdk8
-Error: building at STEP "COPY --from=artifactory.voya.net/docker-virtual/rhel8-openjdk8-11-devil@sha256:6cd89d364732c3bfd8ea4b1847a8dbccba29d966606513567e6291463eb6c954 /usr/lib/jvm/jdk-8 /usr/lib/jvm/jdk8": checking on sources under "/var/lib/containers/storage/overlay/77ff8599fb5dafb97e9ae67316b2e082ebce5026bb7f9e485d0096290c60d987/merged": copier: stat: "/usr/lib/jvm/jdk-8": no such file or directory
+Azure DevOps (ADO) CD Automation
+
+Onboarded Azure DevOps (ADO) and created an end-to-end proof of concept (POC) demonstrating automated deployment using Azure DevOps Pipelines.
+
+Set up both Linux and Windows build agents to validate the automation of deployment using existing codebases.
+
+Containerized the Azure DevOps agents using Dockerfiles, custom images, and Podman to dynamically spin up and spin down agents based on pipeline load and frequency.
+
+GitHub Enterprise CI/CD Automation:
+
+Currently working on onboarding GitHub Enterprise and exploring how to automate build pipelines using GitHub Workflows.
+
+Collaborated with the Platform team to implement GitHub Actions Runner Controller (ARC) to auto-scale GitHub runners based on workload.
+
+Configured existing Linux and Windows virtual machines as self-hosted GitHub runners to validate workflows and ensure GitHub Actions operate correctly.
+
+Developing reusable container images preconfigured with essential build tools (e.g., Maven, .NET, Node.js, etc.) to support multi-technology application builds without the need to install software at runtime.
+
