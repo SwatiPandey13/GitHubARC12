@@ -1,71 +1,65 @@
-# STAGE 1: Use UBI8 with OpenJDK 8 as base
+# ==============================================
+# STAGE 1: Start with UBI8 + OpenJDK 8 base image
+# ==============================================
 FROM artifactory.voya.net/docker-virtual/openshift/ubi8/openjdk-8:latest
 
-
-# STAGE 2: Add GitHub Actions Runner
-FROM artifactory.voya.net/docker-virtual/openshift/actions/action-runner:latest
-
-# STAGE 3: Final image combining both with additional JDKs
-FROM jdk-base
-
-# Set maintainer label
-LABEL maintainer="your.name@voya.com"
-
-# Install basic tools
+# Install essential tools
 USER root
 RUN microdnf update -y && \
     microdnf install -y wget tar gzip which && \
     microdnf clean all
 
-# 1. Install JDK 8 (from your specified repository)
-RUN wget --no-check-certificate \
-    https://artifactory.voya.net/artifactory/docker-virtual/rhel8-openjdk8-11-devil/latest/openjdk-8.tar.gz \
-    -O /tmp/jdk8.tar.gz && \
-    tar -xzf /tmp/jdk8.tar.gz -C /usr/lib/jvm && \
-    rm /tmp/jdk8.tar.gz
+# ==============================================
+# STAGE 2: Incorporate GitHub Actions Runner
+# ==============================================
+FROM artifactory.voya.net/docker-virtual/openshift/actions/action-runner:latest
 
-# 2. Install JDK 11 (from your specified repository)
-RUN wget --no-check-certificate \
-    https://artifactory.voya.net/artifactory/docker-virtual/rhel8-openjdk8-11-devil/latest/openjdk-11.tar.gz \
-    -O /tmp/jdk11.tar.gz && \
-    tar -xzf /tmp/jdk11.tar.gz -C /usr/lib/jvm && \
-    rm /tmp/jdk11.tar.gz
+# ==============================================
+# STAGE 3: Final image combining all components
+# ==============================================
+FROM base
 
-# Configure Java alternatives
-RUN alternatives --install "/usr/bin/java" "java" "/usr/lib/jvm/jdk1.8.0/bin/java" 1 && \
-    alternatives --install "/usr/bin/java" "java" "/usr/lib/jvm/jdk-11.0/bin/java" 2 && \
-    alternatives --install "/usr/bin/javac" "javac" "/usr/lib/jvm/jdk1.8.0/bin/javac" 1 && \
-    alternatives --install "/usr/bin/javac" "javac" "/usr/lib/jvm/jdk-11.0/bin/javac" 2 && \
-    alternatives --set java "/usr/lib/jvm/jdk1.8.0/bin/java" && \
-    alternatives --set javac "/usr/lib/jvm/jdk1.8.0/bin/javac"
-
-# 3. Copy GitHub Actions Runner from the runner image
+# 1. Copy GitHub Actions Runner components first
 COPY --from=runner /home/runner /home/runner
 COPY --from=runner /usr/local/bin/ /usr/local/bin/
 COPY --from=runner /entrypoint.sh /entrypoint.sh
 
-# Install Maven 3.8.8
-RUN wget --no-check-certificate \
-    https://archive.apache.org/dist/maven/maven-3/3.8.8/binaries/apache-maven-3.8.8-bin.tar.gz \
-    -O /tmp/maven.tar.gz && \
-    tar -xzf /tmp/maven.tar.gz -C /opt && \
-    ln -s /opt/apache-maven-3.8.8 /opt/maven && \
-    rm /tmp/maven.tar.gz
+# 2. Install JDK 8 and 11 from the combined image
+COPY --from=artifactory.voya.net/artifactory/docker-virtual/rhel8-openjdk8-11-devil/latest /usr/lib/jvm/jdk-8 /usr/lib/jvm/jdk8
+COPY --from=artifactory.voya.net/artifactory/docker-virtual/rhel8-openjdk8-11-devil/latest /usr/lib/jvm/jdk-11 /usr/lib/jvm/jdk11
 
-# Set environment variables
-ENV JAVA_HOME=/usr/lib/jvm/jdk1.8.0 \
-    JAVA_HOME_8=/usr/lib/jvm/jdk1.8.0 \
-    JAVA_HOME_11=/usr/lib/jvm/jdk-11.0 \
+# Configure Java alternatives
+RUN alternatives --install "/usr/bin/java" "java" "/usr/lib/jvm/jdk8/bin/java" 1 \
+    && alternatives --install "/usr/bin/java" "java" "/usr/lib/jvm/jdk11/bin/java" 2 \
+    && alternatives --install "/usr/bin/javac" "javac" "/usr/lib/jvm/jdk8/bin/javac" 1 \
+    && alternatives --install "/usr/bin/javac" "javac" "/usr/lib/jvm/jdk11/bin/javac" 2 \
+    && alternatives --set java "/usr/lib/jvm/jdk8/bin/java" \
+    && alternatives --set javac "/usr/lib/jvm/jdk8/bin/javac"
+
+# Install Maven 3.8.8
+RUN wget https://archive.apache.org/dist/maven/maven-3/3.8.8/binaries/apache-maven-3.8.8-bin.tar.gz -O /tmp/maven.tar.gz \
+    && tar -xzf /tmp/maven.tar.gz -C /opt \
+    && ln -s /opt/apache-maven-3.8.8 /opt/maven \
+    && rm /tmp/maven.tar.gz
+
+# Environment configuration
+ENV JAVA_HOME=/usr/lib/jvm/jdk8 \
+    JAVA_HOME_8=/usr/lib/jvm/jdk8 \
+    JAVA_HOME_11=/usr/lib/jvm/jdk11 \
     MAVEN_HOME=/opt/maven \
     PATH="${JAVA_HOME}/bin:${MAVEN_HOME}/bin:${PATH}:/home/runner/bin"
 
 # OpenShift permissions
-RUN chown -R 1001:0 /home/runner /usr/lib/jvm /opt/maven && \
-    chmod -R g+rw /home/runner /usr/lib/jvm /opt/maven && \
-    chmod +x /entrypoint.sh
+RUN chown -R 1001:0 /home/runner /usr/lib/jvm /opt/maven \
+    && chmod -R g+rw /home/runner /usr/lib/jvm /opt/maven \
+    && chmod +x /entrypoint.sh
 
 # Switch to runner user
 USER 1001
 
-# Verification command
-CMD ["sh", "-c", "java -version && javac -version && mvn -v"]
+# Health verification
+HEALTHCHECK --interval=30s --timeout=10s \
+    CMD java -version && javac -version && mvn -v
+
+# Preserve original runner entrypoint
+ENTRYPOINT ["/entrypoint.sh"]
