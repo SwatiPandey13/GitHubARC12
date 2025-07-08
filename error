@@ -1,9 +1,6 @@
-# 1. Build the image
-docker build -t artifactory.voya.net/docker-virtual/openshift/custom-runner:latest .
-
-# 2. Test the runner
-docker run --rm artifactory.voya.net/docker-virtual/openshift/custom-runner:latest
-
-# 3. Verify Java versions
-docker run --rm artifactory.voya.net/docker-virtual/openshift/custom-runner:latest \
-  sh -c "java -version && /usr/lib/jvm/jdk11/bin/java -version"
+[1/3] STEP 2/3: USER root
+--> 98acf78ef112
+[1/3] STEP 3/3: RUN microdnf update -y &&     microdnf install -y wget tar gzip which &&     microdnf clean all
+Downloading metadata...
+error: cannot update repo 'ubi-8-baseos-rpms': Cannot download repomd.xml: Cannot download repodata/repomd.xml: All mirrors were tried; Last error: Curl error (60): Peer certificate cannot be authenticated with given CA certificates for https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi8/8/x86_64/baseos/os/repodata/repomd.xml [SSL certificate problem: unable to get local issuer certificate]
+Error: building at STEP "RUN microdnf update -y &&     microdnf install -y wget tar gzip which &&     microdnf clean all": while running runtime: exit status 1
