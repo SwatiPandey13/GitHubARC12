@@ -36,9 +36,9 @@ RUN echo -e '#!/bin/sh\ncd /home/runner\nexec ./run.sh "$@"' > /entrypoint.sh &&
     chmod +x /home/runner/run.sh
 
 # 3. Install JDK 8 and 11 from the combined image
-COPY --from=artifactory.voya.net/docker-virtual/rhel8-openjdk8-11-devil@sha256:6cd89d364732c3bfd8ea4b1847a8dbccba29d966606513567e6291463eb6c954 \
+COPY --from=artifactory.voya.net/docker-virtual/rhel8-openjdk8-11-devil:latest \
     /usr/lib/jvm/java-1.8.0-openjdk /usr/lib/jvm/jdk8
-COPY --from=artifactory.voya.net/docker-virtual/rhel8-openjdk8-11-devil@sha256:6cd89d364732c3bfd8ea4b1847a8dbccba29d966606513567e6291463eb6c954 \
+COPY --from=artifactory.voya.net/docker-virtual/rhel8-openjdk8-11-devil:latest \
     /usr/lib/jvm/java-11-openjdk /usr/lib/jvm/jdk11
 
 # Configure Java alternatives
