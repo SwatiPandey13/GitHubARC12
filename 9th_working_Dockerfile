@@ -11,12 +11,13 @@ COPY voya_ecc_root.crx /etc/pki/ca-trust/source/anchors/
 COPY voyarootca.cer    /etc/pki/ca-trust/source/anchors/
 COPY voya_rsa_root.crx /etc/pki/ca-trust/source/anchors/
 COPY zscalerrootca.cer /etc/pki/ca-trust/source/anchors/
+COPY settings.xml /etc/maven/settings.xml
 RUN update-ca-trust extract
 
 RUN microdnf install -y ca-certificates && \
     update-ca-trust && \
     microdnf update -y && \
-    microdnf install -y wget tar gzip which libicu && \
+    microdnf install -y vim nano wget tar gzip which libicu git && \
     microdnf clean all
 
 # STAGE 2: GitHub Runner (using exact SHA256 from your inspect output)
@@ -78,10 +79,12 @@ ENV JAVA_HOME=/usr/lib/jvm/jdk8 \
 RUN chown -R 1001:0 /home/runner /usr/lib/jvm /opt/maven && \
     chmod -R g+rw /home/runner /usr/lib/jvm /opt/maven
 
-# Create entrypoint (must be done as root)
+# Create smart entrypoint (must be done as root)
 USER root
 RUN echo -e '#!/bin/sh\n\
-if [ "$1" = "java" ] || [ "$1" = "javac" ] || [ "$1" = "mvn" ]; then\n\
+if [ "$1" = "shell" ]; then\n\
+    exec /bin/bash\n\
+elif [ "$1" = "java" ] || [ "$1" = "javac" ] || [ "$1" = "mvn" ]; then\n\
     exec "$@"\n\
 else\n\
     cd /home/runner\n\
@@ -95,3 +98,4 @@ USER 1001
 WORKDIR /home/runner
 
 ENTRYPOINT ["/entrypoint.sh"]
+CMD ["run"]
