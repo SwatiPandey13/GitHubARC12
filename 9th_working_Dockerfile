@@ -1,0 +1,97 @@
+ARG DOCKER_REGISTRY=artifactory.voya.net/docker-virtual
+
+# STAGE 1: Base image
+FROM ${DOCKER_REGISTRY}/openshift/ubi8/openjdk-8:latest AS base
+
+# Install tools and certificates
+USER root
+
+# Copy corporate certificates
+COPY voya_ecc_root.crx /etc/pki/ca-trust/source/anchors/
+COPY voyarootca.cer    /etc/pki/ca-trust/source/anchors/
+COPY voya_rsa_root.crx /etc/pki/ca-trust/source/anchors/
+COPY zscalerrootca.cer /etc/pki/ca-trust/source/anchors/
+RUN update-ca-trust extract
+
+RUN microdnf install -y ca-certificates && \
+    update-ca-trust && \
+    microdnf update -y && \
+    microdnf install -y wget tar gzip which libicu && \
+    microdnf clean all
+
+# STAGE 2: GitHub Runner (using exact SHA256 from your inspect output)
+FROM ${DOCKER_REGISTRY}/openshift/actions/actions-runner@sha256:8975102ef76de619ff3bd316209bee1eb51e0153d7b4c72d807d396152d8ce5d AS runner
+
+# STAGE 3: Final image
+FROM base
+
+# 1. Copy runner files (verified paths from inspect output)
+COPY --from=runner /home/runner /home/runner
+COPY --from=runner /usr/local/bin/ /usr/local/bin/
+COPY --from=runner /usr/local/lib/docker/cli-plugins/docker-buildx /usr/local/lib/docker/cli-plugins/docker-buildx
+
+# 2. Create proper entrypoint (matches original runner behavior)
+RUN echo -e '#!/bin/sh\ncd /home/runner\nexec ./run.sh "$@"' > /entrypoint.sh && \
+    chmod +x /entrypoint.sh && \
+    chmod +x /home/runner/run.sh
+
+# 3. Install JDK 8 and 11 from the combined image
+COPY --from=artifactory.voya.net/docker-virtual/rhel8-openjdk8-11-devil:latest \
+    /usr/lib/jvm/java-1.8.0-openjdk /usr/lib/jvm/jdk8
+COPY --from=artifactory.voya.net/docker-virtual/rhel8-openjdk8-11-devil:latest \
+    /usr/lib/jvm/java-11-openjdk /usr/lib/jvm/jdk11
+
+# Configure Java alternatives
+RUN alternatives --install "/usr/bin/java" "java" "/usr/lib/jvm/jdk8/bin/java" 1 && \
+    alternatives --install "/usr/bin/java" "java" "/usr/lib/jvm/jdk11/bin/java" 2 && \
+    alternatives --install "/usr/bin/javac" "javac" "/usr/lib/jvm/jdk8/bin/javac" 1 && \
+    alternatives --install "/usr/bin/javac" "javac" "/usr/lib/jvm/jdk11/bin/javac" 2 && \
+    alternatives --set java "/usr/lib/jvm/jdk8/bin/java" && \
+    alternatives --set javac "/usr/lib/jvm/jdk8/bin/javac"
+
+# Install Maven 3.8.8 with certificate verification
+RUN wget --no-check-certificate \
+    https://archive.apache.org/dist/maven/maven-3/3.8.8/binaries/apache-maven-3.8.8-bin.tar.gz \
+    -O /tmp/maven.tar.gz && \
+    tar -xzf /tmp/maven.tar.gz -C /opt && \
+    ln -s /opt/apache-maven-3.8.8 /opt/maven && \
+    rm /tmp/maven.tar.gz
+
+# Environment configuration (including all required vars from inspect output)
+ENV JAVA_HOME=/usr/lib/jvm/jdk8 \
+    JAVA_HOME_8=/usr/lib/jvm/jdk8 \
+    JAVA_HOME_11=/usr/lib/jvm/jdk11 \
+    MAVEN_HOME=/opt/maven \
+    PATH="${JAVA_HOME}/bin:${MAVEN_HOME}/bin:${PATH}:/home/runner:/usr/local/bin" \
+    APP_UID=1654 \
+    ASPNETCORE_HTTP_PORTS=8080 \
+    DOTNET_RUNNING_IN_CONTAINER=true \
+    DEBIAN_FRONTEND=noninteractive \
+    RUNNER_MANUALLY_TRAP_SIG=1 \
+    ACTIONS_RUNNER_PRINT_LOG_TO_STDOUT=1 \
+    ImageOS=ubuntu22 \
+    DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=0 \
+    LC_ALL=en_US.UTF-8 \
+    LANG=en_US.UTF-8
+
+# OpenShift permissions (run as root)
+RUN chown -R 1001:0 /home/runner /usr/lib/jvm /opt/maven && \
+    chmod -R g+rw /home/runner /usr/lib/jvm /opt/maven
+
+# Create entrypoint (must be done as root)
+USER root
+RUN echo -e '#!/bin/sh\n\
+if [ "$1" = "java" ] || [ "$1" = "javac" ] || [ "$1" = "mvn" ]; then\n\
+    exec "$@"\n\
+else\n\
+    cd /home/runner\n\
+    exec ./run.sh "$@"\n\
+fi' > /entrypoint.sh && \
+    chmod +x /entrypoint.sh && \
+    chown 1001:0 /entrypoint.sh
+
+# Switch to runner user (must be the last USER command)
+USER 1001
+WORKDIR /home/runner
+
+ENTRYPOINT ["/entrypoint.sh"]
