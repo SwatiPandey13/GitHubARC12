@@ -1,29 +1,3 @@
-Subject: Referral for Senior Data Scientist & AI Architect Role
-
-Hi [Director's Name] and [HR Head's Name],
-
-I hope you're doing well.
-
-I’d like to refer a highly experienced candidate for any suitable openings in our organization. He is a Data Scientist & AI Architect with 18+ years of experience, including a strong background in designing enterprise-scale ML platforms and AI-driven products at Microsoft.
-
-He is actively exploring new opportunities and would be very keen to contribute to our organization if there is a suitable role.
-
-Core Skills & Expertise:
-
-AI/ML & Generative AI (LLMs, LangChain, Prompt Engineering, Agentic AI)
-
-Cloud & Platform (Microsoft Azure, Azure OpenAI, Synapse, Cloud Migration)
-
-Data Engineering (Azure Data Factory, Feature Engineering, MLOps)
-
-Programming: Python, SQL
-
-Strategy & Leadership (AI Architecture, Engineering Excellence, Leadership Excellence)
-
-Cost Optimization & Applied Analytics
-
-ITIL Foundation Certified
-
-I’m attaching his resume for your reference. Kindly let me know if any opportunity aligns with his profile or if the Talent Acquisition team can connect with him directly.
-
-Thank you for considering the referral.
+[3/3] STEP 6/16: COPY --from=artifactory.voya.net/docker-virtual/rhel8-openjdk8-11-devil@sha256:6cd89d364732c3bfd8ea4b1847a8dbccba29d966606513567e6291463eb6c954     /usr/lib/jvm/java-1.8.0-openjdk /usr/lib/jvm/jdk8
+Trying to pull artifactory.voya.net/docker-virtual/rhel8-openjdk8-11-devil@sha256:6cd89d364732c3bfd8ea4b1847a8dbccba29d966606513567e6291463eb6c954...
+Error: COPY --from=artifactory.voya.net/docker-virtual/rhel8-openjdk8-11-devil@sha256:6cd89d364732c3bfd8ea4b1847a8dbccba29d966606513567e6291463eb6c954: no stage or image found with that name
