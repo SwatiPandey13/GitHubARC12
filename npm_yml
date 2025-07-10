@@ -1,0 +1,52 @@
+ARG DOCKER_REGISTRY=artifactory.voya.net/docker-virtual
+FROM ${DOCKER_REGISTRY}/openshift/ubi8:latest
+
+# Install system dependencies
+USER root
+RUN microdnf install -y tar gzip which git && \
+    microdnf clean all
+
+# Install Node.js versions using NodeSource
+RUN curl -sL https://rpm.nodesource.com/setup_18.x | bash - && \
+    curl -sL https://rpm.nodesource.com/setup_20.x | bash - && \
+    curl -sL https://rpm.nodesource.com/setup_22.x | bash - && \
+    microdnf install -y \
+    nodejs-18.20.5 \
+    nodejs-20.18.1 \
+    nodejs-22.12.0 && \
+    microdnf clean all
+
+# Install Node.js 23 manually (not available via NodeSource yet)
+RUN curl -o node-v23.4.0-linux-x64.tar.gz https://nodejs.org/dist/v23.4.0/node-v23.4.0-linux-x64.tar.gz && \
+    tar -xzf node-v23.4.0-linux-x64.tar.gz -C /opt && \
+    ln -s /opt/node-v23.4.0-linux-x64/bin/node /usr/local/bin/node23 && \
+    ln -s /opt/node-v23.4.0-linux-x64/bin/npm /usr/local/bin/npm23 && \
+    rm node-v23.4.0-linux-x64.tar.gz
+
+# Set up version switching
+RUN alternatives --install /usr/local/bin/node node /usr/bin/node 10 \
+    --slave /usr/local/bin/npm npm /usr/bin/npm && \
+    alternatives --install /usr/local/bin/node node /usr/bin/node20 20 \
+    --slave /usr/local/bin/npm npm /usr/bin/npm && \
+    alternatives --install /usr/local/bin/node node /usr/bin/node18 18 \
+    --slave /usr/local/bin/npm npm /usr/bin/npm && \
+    alternatives --install /usr/local/bin/node node /usr/local/bin/node23 23 \
+    --slave /usr/local/bin/npm npm /usr/local/bin/npm23
+
+# Default to Node.js 20
+RUN alternatives --set node /usr/bin/node20
+
+# Verify installations
+RUN node --version && npm --version && \
+    node18 --version && npm18 --version && \
+    node20 --version && npm20 --version && \
+    node23 --version && npm23 --version
+
+# OpenShift compatibility
+RUN chown -R 1001:0 /opt && \
+    chmod -R g+rw /opt
+
+USER 1001
+WORKDIR /app
+
+ENTRYPOINT ["/bin/bash"]
