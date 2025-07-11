@@ -1,0 +1,18 @@
+FROM ghcr.io/actions/actions-runner:latest
+
+USER root
+
+# Install OpenJDK on UBI/RHEL base
+RUN microdnf install -y \
+    java-17-openjdk-devel \
+    && microdnf clean all
+
+# Set environment variables
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk
+ENV PATH="${JAVA_HOME}/bin:${PATH}"
+
+# OpenShift permissions
+RUN chgrp -R 0 /home/runner && \
+    chmod -R g=u /home/runner
+
+USER 1001
