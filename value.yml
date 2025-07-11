@@ -1,0 +1,86 @@
+githubConfigSecret: "arc-unit-github-app-secret"
+githubConfigUrl: "https://github.com/Unit-Voya-Repos/github-arc-poc"
+
+minRunners: 1
+maxRunners: 3
+
+#containerMode:
+#  type: "none"
+
+# This section configures the LISTENER pod.
+listenerTemplate:
+  spec:
+    containers:
+      - name: listener
+        env:
+          - name: SSL_CERT_FILE
+            value: /etc/arc/certs/ca.crt
+          - name: NODE_EXTRA_CA_CERTS
+            value: /etc/arc/certs/ca.crt
+        volumeMounts:
+          - name: custom-ca-volume
+            mountPath: /etc/arc/certs/ca.crt
+            subPath: ca.crt
+            readOnly: true
+    volumes:
+      - name: custom-ca-volume
+        configMap:
+          name: custom-ca
+
+# This section is the TEMPLATE for the RUNNER pods.
+template:
+  spec:
+    serviceAccountName: arc-runner-sa
+    imagePullSecrets:
+      - name: regcred
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 1001
+      runAsGroup: 123
+      fsGroup: 123
+    volumes:
+      - name: custom-ca-volume
+        configMap:
+          name: custom-ca
+          
+    containers:
+      - name: runner
+        image: artifactory.voya.net/docker-virtual/openshift/actions/custom-runner:v1.0.1
+        command: ["/home/runner/run.sh"]
+        env:
+          - name: SSL_CERT_FILE
+            value: /etc/arc/certs/ca.crt
+          - name: NODE_EXTRA_CA_CERTS
+            value: /etc/arc/certs/ca.crt
+          - name: ACTIONS_RUNNER_REQUIRE_JOB_CONTAINER
+            value: "false"
+        volumeMounts:
+          - name: custom-ca-volume
+            mountPath: /etc/arc/certs/ca.crt
+            subPath: ca.crt
+            readOnly: true
+        # --- START: Add this lifecycle hook ---
+        lifecycle:
+          postStart:
+            exec:
+              command:
+                - "/bin/sh"
+                - "-c"
+                - "git config --global http.sslCAInfo /etc/arc/certs/ca.crt"
+        # --- END: Add this lifecycle hook ---
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "1Gi"
+          limits:
+            cpu: "2"
+            memory: "4Gi"
+
+controllerServiceAccount:
+  namespace: github-arc-system
+  name: github-arc-system-gha-rs-controller
