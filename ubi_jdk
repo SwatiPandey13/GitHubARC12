@@ -1,9 +1,19 @@
+Error: FROM requires either one argument, or three: FROM <source> [as <name>]
+
 # Stage 1: UBI with JDK
-FROM registry.access.redhat.com/ubi8/ubi-minimal:8.8 as jdk
+FROM artifactory.voya.net/docker-virtual/openshift/ubi8/openjdk-8:latest as jdk
+
+# corporate certificates
+COPY voya_ecc_root.crx /etc/pki/ca-trust/source/anchors/
+COPY voyarootca.cer    /etc/pki/ca-trust/source/anchors/
+COPY voya_rsa_root.crx /etc/pki/ca-trust/source/anchors/
+COPY zscalerrootca.cer /etc/pki/ca-trust/source/anchors/
+RUN update-ca-trust extract
+
 RUN microdnf install -y java-17-openjdk-devel && microdnf clean all
 
 # Stage 2: GitHub Runner
-FROM ghcr.io/actions/actions-runner:latest
+FROM FROM artifactory.voya.net/docker-virtual/openshift/actions/actions-runner:latest
 
 # Copy JDK from UBI image
 COPY --from=jdk /usr/lib/jvm/java-17-openjdk /usr/lib/jvm/java-17-openjdk
