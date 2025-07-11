@@ -1,5 +1,23 @@
-mvn help:effective-pom -Doutput=effective-pom.xml
-[ERROR] Error executing Maven.
-[ERROR] 1 problem was encountered while building the effective settings
-[FATAL] Non-readable settings /usr/share/maven/conf/settings.xml: /usr/share/maven/conf/settings.xml (Permission denied) @ /usr/share/maven/conf/settings.xml
-
+Process terminated. Couldn't find a valid ICU package installed on the system. Please install libicu (or icu-libs) using your package manager and try again. Alternatively you can set the configuration flag System.Globalization.Invariant to true if you want to run with no globalization support. Please see https://aka.ms/dotnet-missing-libicu for more information.
+   at System.Environment.FailFast(System.String)
+   at System.Globalization.GlobalizationMode+Settings..cctor()
+   at System.Globalization.GlobalizationMode+Settings.get_Invariant()
+   at System.Globalization.GlobalizationMode.get_Invariant()
+   at System.Globalization.CultureData.CreateCultureWithInvariantData()
+   at System.Globalization.CultureData.get_Invariant()
+   at System.Globalization.CultureInfo..cctor()
+   at System.Globalization.CultureInfo.get_CachedCulturesByName()
+   at System.Globalization.CultureInfo.GetCultureInfo(System.String)
+   at System.Reflection.RuntimeAssembly.GetLocale()
+   at System.Reflection.RuntimeAssembly.GetName(Boolean)
+   at System.Reflection.Assembly.GetName()
+   at Dynatrace.OneAgent.Core.Boot.AgentBootService.GetAssemblyName(System.Reflection.Assembly)
+   at Dynatrace.OneAgent.Core.Boot.AgentBootService.TryFindAssembly(System.String, System.Reflection.Assembly ByRef)
+   at Dynatrace.OneAgent.Core.Boot.AgentBootService.InitSingle(System.String)
+   at Dynatrace.OneAgent.Core.Boot.AgentBootIntrospection.OnModuleInit(System.String)
+   at Dynatrace.OneAgent.Core.Boot.PROXY_AgentBootIntrospection._OnModuleInit(System.String)
+   at Dynatrace.OneAgent.Core.Boot.PROXY_AgentBootIntrospection.OnModuleInit(System.String)
+   at <Module>..cctor()
+/home/runner/run-helper.sh: line 36:    16 Aborted                 (core dumped) "$DIR"/bin/Runner.Listener run $*
+Exiting with unknown error code: 134
+Exiting runner...
