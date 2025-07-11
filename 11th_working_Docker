@@ -1,0 +1,87 @@
+ARG DOCKER_REGISTRY=artifactory.voya.net/docker-virtual
+
+# STAGE 1: Base image (UBI8 with OpenJDK)
+FROM ${DOCKER_REGISTRY}/openshift/ubi8/openjdk-8:latest AS base
+
+# Install tools and certificates
+USER root
+
+# Copy corporate certificates
+COPY voya_ecc_root.crx /etc/pki/ca-trust/source/anchors/
+COPY voyarootca.cer /etc/pki/ca-trust/source/anchors/
+COPY voya_rsa_root.crx /etc/pki/ca-trust/source/anchors/
+COPY zscalerrootca.cer /etc/pki/ca-trust/source/anchors/
+RUN update-ca-trust extract
+
+# Core packages with cleanup
+RUN microdnf install -y \
+    ca-certificates \
+    wget \
+    git \
+    tar \
+    gzip \
+    which \
+    && microdnf clean all \
+    && rm -rf /var/cache/yum
+
+# STAGE 2: GitHub Runner
+FROM ${DOCKER_REGISTRY}/openshift/actions/actions-runner@sha256:8975102ef76de619ff3bd316209bee1eb51e0153d7b4c72d807d396152d8ce5d AS runner
+
+# STAGE 3: Final image
+FROM base
+
+# Copy runner files
+COPY --from=runner /home/runner /home/runner
+COPY --from=runner /usr/local/bin/ /usr/local/bin/
+COPY --from=runner /usr/local/lib/docker/cli-plugins/docker-buildx /usr/local/lib/docker/cli-plugins/docker-buildx
+
+# Java installation
+COPY --from=artifactory.voya.net/docker-virtual/rhel8-openjdk8-11-devil:latest \
+    /usr/lib/jvm/java-1.8.0-openjdk /usr/lib/jvm/jdk8
+COPY --from=artifactory.voya.net/docker-virtual/rhel8-openjdk8-11-devil:latest \
+    /usr/lib/jvm/java-11-openjdk /usr/lib/jvm/jdk11
+
+RUN alternatives --install "/usr/bin/java" "java" "/usr/lib/jvm/jdk8/bin/java" 1 \
+    && alternatives --set java "/usr/lib/jvm/jdk8/bin/java"
+
+# Maven installation
+RUN wget --no-check-certificate \
+    https://archive.apache.org/dist/maven/maven-3/3.8.8/binaries/apache-maven-3.8.8-bin.tar.gz \
+    -O /tmp/maven.tar.gz \
+    && tar -xzf /tmp/maven.tar.gz -C /opt \
+    && ln -s /opt/apache-maven-3.8.8 /opt/maven \
+    && ln -s /opt/maven/bin/mvn /usr/local/bin/mvn \
+    && rm /tmp/maven.tar.gz
+
+# Maven configuration
+RUN mkdir -p /opt/maven/conf /home/runner/.m2 \
+    && chown -R 1001:123 /opt/maven /home/runner/.m2 \
+    && chmod -R g+rw /opt/maven /home/runner/.m2
+
+COPY settings.xml /opt/maven/conf/settings.xml
+RUN chmod 644 /opt/maven/conf/settings.xml \
+    && ln -sf /opt/maven/conf/settings.xml /home/runner/.m2/settings.xml
+
+# Environment configuration
+ENV JAVA_HOME=/usr/lib/jvm/jdk8 \
+    MAVEN_HOME=/opt/maven \
+    MAVEN_CONFIG=/opt/maven/conf \
+    RUNNER_ALLOW_RUNASROOT="1" \
+    ACTIONS_RUNNER_PRINT_LOG_TO_STDOUT="1" \
+    ACTIONS_RUNNER_REQUIRE_JOB_CONTAINER="false" \
+    SSL_CERT_FILE=/etc/arc/certs/ca.crt \
+    NODE_EXTRA_CA_CERTS=/etc/arc/certs/ca.crt \
+    GIT_SSL_CAINFO=/etc/arc/certs/ca.crt \
+    PATH="${JAVA_HOME}/bin:${MAVEN_HOME}/bin:${PATH}"
+
+# OpenShift permissions (matches your values.yml)
+RUN chown -R 1001:123 /home/runner \
+    && chmod -R g+rw /home/runner \
+    && mkdir -p /etc/arc/certs \
+    && chown 1001:123 /etc/arc/certs
+
+# Final setup
+USER 1001
+WORKDIR /home/runner
+
+# Note: ARC will override the command with "/home/runner/run.sh" as per your values.yml
