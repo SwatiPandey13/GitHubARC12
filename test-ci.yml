@@ -1,38 +1,99 @@
-# [...] (keep all previous sections until Maven installation)
+ARG DOCKER_REGISTRY=artifactory.voya.net/docker-virtual
 
-# Install Maven 3.8.8 with certificate verification
+# STAGE 1: Base image
+FROM ${DOCKER_REGISTRY}/openshift/ubi8/openjdk-8:latest AS base
+
+# Install tools and certificates
+USER root
+
+# Copy corporate certificates
+COPY voya_ecc_root.crx /etc/pki/ca-trust/source/anchors/
+COPY voyarootca.cer    /etc/pki/ca-trust/source/anchors/
+COPY voya_rsa_root.crx /etc/pki/ca-trust/source/anchors/
+COPY zscalerrootca.cer /etc/pki/ca-trust/source/anchors/
+RUN update-ca-trust extract
+
+# Core packages with clean up
+RUN microdnf install -y ca-certificates vim nano wget tar gzip which libicu git && \
+    microdnf update -y && \
+    microdnf clean all && \
+    rm -rf /var/cache/yum
+
+# STAGE 2: GitHub Runner
+FROM ${DOCKER_REGISTRY}/openshift/actions/actions-runner@sha256:8975102ef76de619ff3bd316209bee1eb51e0153d7b4c72d807d396152d8ce5d AS runner
+
+# STAGE 3: Final image
+FROM base
+
+# 1. Copy runner files with verification
+COPY --from=runner /home/runner /home/runner
+COPY --from=runner /usr/local/bin/ /usr/local/bin/
+COPY --from=runner /usr/local/lib/docker/cli-plugins/docker-buildx /usr/local/lib/docker/cli-plugins/docker-buildx
+
+# 2. Java installation with alternatives
+COPY --from=artifactory.voya.net/docker-virtual/rhel8-openjdk8-11-devil:latest \
+    /usr/lib/jvm/java-1.8.0-openjdk /usr/lib/jvm/jdk8
+COPY --from=artifactory.voya.net/docker-virtual/rhel8-openjdk8-11-devil:latest \
+    /usr/lib/jvm/java-11-openjdk /usr/lib/jvm/jdk11
+
+RUN alternatives --install "/usr/bin/java" "java" "/usr/lib/jvm/jdk8/bin/java" 1 && \
+    alternatives --install "/usr/bin/java" "java" "/usr/lib/jvm/jdk11/bin/java" 2 && \
+    alternatives --set java "/usr/lib/jvm/jdk8/bin/java"
+
+# 3. Maven installation with validation
 RUN wget --no-check-certificate \
     https://archive.apache.org/dist/maven/maven-3/3.8.8/binaries/apache-maven-3.8.8-bin.tar.gz \
     -O /tmp/maven.tar.gz && \
     tar -xzf /tmp/maven.tar.gz -C /opt && \
     ln -s /opt/apache-maven-3.8.8 /opt/maven && \
-    rm /tmp/maven.tar.gz
-
-# ▼▼▼ CRITICAL FIXES ▼▼▼
-# Remove conflicting Maven installations
-RUN rm -rf /usr/share/maven /usr/local/apache-maven && \
-    # Ensure Maven bin is in PATH
     ln -s /opt/maven/bin/mvn /usr/local/bin/mvn && \
-    # Create conf directory with correct permissions
-    mkdir -p /opt/maven/conf && \
-    chown -R 1001:0 /opt/maven && \
-    chmod -R g+rw /opt/maven
+    rm /tmp/maven.tar.gz && \
+    mvn --version
 
-# Copy settings.xml
+# Maven configuration with OpenShift permissions
+RUN mkdir -p /opt/maven/conf /home/runner/.m2 && \
+    chown -R 1001:0 /opt/maven /home/runner/.m2 && \
+    chmod -R g+rw /opt/maven /home/runner/.m2
 COPY settings.xml /opt/maven/conf/settings.xml
-RUN chmod 644 /opt/maven/conf/settings.xml && \
-    # Setup user-level config
-    mkdir -p /home/runner/.m2 && \
-    chown -R 1001:0 /home/runner/.m2 && \
-    chmod -R g+rw /home/runner/.m2 && \
-    ln -sf /opt/maven/conf/settings.xml /home/runner/.m2/settings.xml
-# ▲▲▲ END FIXES ▲▲▲
+RUN ln -sf /opt/maven/conf/settings.xml /home/runner/.m2/settings.xml
 
 # Environment configuration
 ENV JAVA_HOME=/usr/lib/jvm/jdk8 \
-    JAVA_HOME_8=/usr/lib/jvm/jdk8 \
-    JAVA_HOME_11=/usr/lib/jvm/jdk11 \
     MAVEN_HOME=/opt/maven \
     MAVEN_CONFIG=/opt/maven/conf \
-    PATH="${JAVA_HOME}/bin:${MAVEN_HOME}/bin:/usr/local/bin:${PATH}:/home/runner" \
-    # [...] (rest of your existing ENV vars)
+    RUNNER_ALLOW_RUNASROOT="1" \
+    ACTIONS_RUNNER_PRINT_LOG_TO_STDOUT="1" \
+    DOTNET_SYSTEM_GLOBALIZATION_INVARIANT="0" \
+    PATH="${JAVA_HOME}/bin:${MAVEN_HOME}/bin:${PATH}"
+
+# OpenShift permissions
+RUN chown -R 1001:0 /home/runner && \
+    chmod -R g+rw /home/runner
+
+# Enhanced entrypoint with logging and lifecycle hooks
+USER root
+RUN mkdir -p /home/runner/logs && \
+    chown 1001:0 /home/runner/logs && \
+    echo -e '#!/bin/sh\n\
+if [ "$1" = "shell" ]; then\n\
+    exec /bin/bash\n\
+elif [ "$1" = "java" ] || [ "$1" = "mvn" ]; then\n\
+    exec "$@"\n\
+else\n\
+    cd /home/runner\n\
+    echo "$(date) - Starting ephemeral runner" > /home/runner/logs/startup.log\n\
+    while :; do\n\
+        ./run.sh "$@" 2>&1 | tee -a /home/runner/logs/runner.log\n\
+        EXIT_CODE=$?\n\
+        echo "$(date) - Runner exited with $EXIT_CODE" >> /home/runner/logs/status.log\n\
+        [ $EXIT_CODE -eq 0 ] && break\n\
+        sleep $(( RANDOM % 10 + 5 ))\n\
+    done\n\
+fi' > /entrypoint.sh && \
+    chmod +x /entrypoint.sh && \
+    chown 1001:0 /entrypoint.sh
+
+USER 1001
+WORKDIR /home/runner
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["--ephemeral", "--disableupdate", "--name", "$(HOSTNAME)"]
