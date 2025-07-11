@@ -1,11 +1,14 @@
+# Stage 1: UBI with JDK
+FROM registry.access.redhat.com/ubi8/ubi-minimal:8.8 as jdk
+RUN microdnf install -y java-17-openjdk-devel && microdnf clean all
+
+# Stage 2: GitHub Runner
 FROM ghcr.io/actions/actions-runner:latest
 
-USER root
+# Copy JDK from UBI image
+COPY --from=jdk /usr/lib/jvm/java-17-openjdk /usr/lib/jvm/java-17-openjdk
 
-# Install OpenJDK on UBI/RHEL base
-RUN microdnf install -y \
-    java-17-openjdk-devel \
-    && microdnf clean all
+USER root
 
 # Set environment variables
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk
