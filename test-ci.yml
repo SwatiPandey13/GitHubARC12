@@ -6,25 +6,24 @@ USER root
 # 1. Install both JDKs from copied directories
 COPY --from=artifactory.voya.net/docker-virtual/rhel8-openjdk8-11-devil:latest \
     /usr/lib/jvm/java-1.8.0-openjdk /usr/lib/jvm/jdk8
-    
+
 COPY --from=artifactory.voya.net/docker-virtual/rhel8-openjdk8-11-devil:latest \
     /usr/lib/jvm/java-11-openjdk /usr/lib/jvm/jdk11
 
 # 2. Set default JDK (JDK 11) and environment variables
 ENV JAVA_HOME=/usr/lib/jvm/jdk11 \
     JDK8_HOME=/usr/lib/jvm/jdk8 \
-    JDK11_HOME=/usr/lib/jvm/jdk11
-    
-ENV PATH="${JAVA_HOME}/bin:${PATH}"
+    JDK11_HOME=/usr/lib/jvm/jdk11\
+    PATH="${JAVA_HOME}/bin:${PATH}"
+
+#ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
 # 3. Configure alternatives system (for compatibility)
 RUN update-alternatives --install "/usr/bin/java" "java" "${JAVA_HOME}/bin/java" 1100 \
  && update-alternatives --install "/usr/bin/javac" "javac" "${JAVA_HOME}/bin/javac" 1100 \
- && update-alternatives --install "/usr/bin/javaws" "javaws" "${JAVA_HOME}/bin/javaws" 1100 \
  && update-alternatives --install "/usr/bin/jar" "jar" "${JAVA_HOME}/bin/jar" 1100 \
  && update-alternatives --set java "${JAVA_HOME}/bin/java" \
  && update-alternatives --set javac "${JAVA_HOME}/bin/javac" \
- && update-alternatives --set javaws "${JAVA_HOME}/bin/javaws" \
  && update-alternatives --set jar "${JAVA_HOME}/bin/jar"
 
 # 4. Install Maven (same as before)
@@ -46,8 +45,8 @@ RUN mkdir -p /home/runner/.m2 && \
     chmod -R g+rw /home/runner/.m2
 
 # 7. Fix Java security configuration (critical fix)
-RUN cp ${JAVA_HOME}/conf/security/java.security ${JAVA_HOME}/conf/security/java.security.orig && \
-    sed -i 's|^securerandom.source=.*|securerandom.source=file:/dev/urandom|' ${JAVA_HOME}/conf/security/java.security
+#RUN cp ${JAVA_HOME}/conf/security/java.security ${JAVA_HOME}/conf/security/java.security.orig && \
+#    sed -i 's|^securerandom.source=.*|securerandom.source=file:/dev/urandom|' ${JAVA_HOME}/conf/security/java.security
 
 # 8. OpenShift permissions
 RUN chgrp -R 0 /home/runner /opt/maven /opt/apache-maven-3.8.8 /usr/lib/jvm && \
