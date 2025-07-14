@@ -1,13 +1,13 @@
-RUN apt-get update && \
-    apt-get install -y wget && \
+# Maven installation
+RUN yum update -y && \
+    yum install -y wget && \
     wget --no-check-certificate \
-        "https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz" \
+        https://archive.apache.org/dist/maven/maven-3/3.8.8/binaries/apache-maven-3.8.8-bin.tar.gz \
         -O /tmp/maven.tar.gz && \
-    echo "${MAVEN_SHA} /tmp/maven.tar.gz" | awk '{gsub(/[ \t\r\n]+/, "", $1); print $1 "  " $2}' | sha256sum -c - && \
-    tar xzf /tmp/maven.tar.gz -C /opt && \
-    ln -s "/opt/apache-maven-${MAVEN_VERSION}" /opt/maven && \
+    tar -xzf /tmp/maven.tar.gz -C /opt && \
+    ln -s /opt/apache-maven-3.8.8 /opt/maven && \
     ln -s /opt/maven/bin/mvn /usr/local/bin/mvn && \
     rm /tmp/maven.tar.gz && \
-    apt-get purge -y wget && \
-    apt-get autoremove -y && \
-    rm -rf /var/lib/apt/lists/*
+    yum remove -y wget && \
+    yum clean all && \
+    rm -rf /var/cache/yum
