@@ -1,14 +1,14 @@
-STEP 7/13: RUN for version in $NODE_VERSIONS; do       curl -k -fsSL https://nodejs.org/dist/v$version/node-v$version-linux-x64.tar.xz -o /tmp/node-$version.tar.xz &&       mkdir -p $NODE_DIR/$version &&       tar -xJf /tmp/node-$version.tar.xz -C $NODE_DIR/$version --strip-components=1 &&       rm /tmp/node-$version.tar.xz;     done
-/usr/bin/xz: 1: Not: not found
-tar: Child returned status 127
+STEP 6/12: RUN mkdir -p $NODE_DIR &&     for version in $NODE_VERSIONS; do       curl -k -fsSL https://nodejs.org/dist/v$version/node-v$version-linux-x64.tar.xz -o /tmp/node-$version.tar.xz &&       mkdir -p $NODE_DIR/$version &&       tar -xJf /tmp/node-$version.tar.xz -C $NODE_DIR/$version --strip-components=1 &&       rm /tmp/node-$version.tar.xz;     done
+/usr/bin/xz: 2: Syntax error: newline unexpected
+tar: Child returned status 2
 tar: Error is not recoverable: exiting now
-/usr/bin/xz: 1: Not: not found
-tar: Child returned status 127
+/usr/bin/xz: 2: Syntax error: newline unexpected
+tar: Child returned status 2
 tar: Error is not recoverable: exiting now
-/usr/bin/xz: 1: Not: not found
-tar: Child returned status 127
+/usr/bin/xz: 2: Syntax error: newline unexpected
+tar: Child returned status 2
 tar: Error is not recoverable: exiting now
-/usr/bin/xz: 1: Not: not found
-tar: Child returned status 127
+/usr/bin/xz: 2: Syntax error: newline unexpected
+tar: Child returned status 2
 tar: Error is not recoverable: exiting now
-Error: building at STEP "RUN for version in $NODE_VERSIONS; do       curl -k -fsSL https://nodejs.org/dist/v$version/node-v$version-linux-x64.tar.xz -o /tmp/node-$version.tar.xz &&       mkdir -p $NODE_DIR/$version &&       tar -xJf /tmp/node-$version.tar.xz -C $NODE_DIR/$version --strip-components=1 &&       rm /tmp/node-$version.tar.xz;     done": while running runtime: exit status 2
+Error: building at STEP "RUN mkdir -p $NODE_DIR &&     for version in $NODE_VERSIONS; do       curl -k -fsSL https://nodejs.org/dist/v$version/node-v$version-linux-x64.tar.xz -o /tmp/node-$version.tar.xz &&       mkdir -p $NODE_DIR/$version &&       tar -xJf /tmp/node-$version.tar.xz -C $NODE_DIR/$version --strip-components=1 &&       rm /tmp/node-$version.tar.xz;     done": while running runtime: exit status 2
