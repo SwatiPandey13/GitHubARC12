@@ -1,3 +1,11 @@
-RUN mkdir -p ${JAVA_HOME}/conf/security &&     if [ ! -f "${JAVA_HOME}/conf/security/java.security" ]; then         echo "Creating java.security file";         echo "# Minimal security configuration" > ${JAVA_HOME}/conf/security/java.security;         echo "securerandom.source=file:/dev/urandom" >> ${JAVA_HOME}/conf/security/java.security;     fi
-mkdir: cannot create directory '/usr/lib/jvm/jdk11/conf': File exists
-Error: building at STEP "RUN mkdir -p ${JAVA_HOME}/conf/security &&     if [ ! -f "${JAVA_HOME}/conf/security/java.security" ]; then         echo "Creating java.security file";         echo "# Minimal security configuration" > ${JAVA_HOME}/conf/security/java.security;         echo "securerandom.source=file:/dev/urandom" >> ${JAVA_HOME}/conf/security/java.security;     fi": while running runtime: exit status 1
+RUN mkdir -p /usr/share/maven /usr/share/maven/ref &&     curl -L -o /tmp/maven.tar.gz https://archive.apache.org/dist/maven/maven-3/3.8.8/binaries/apache-maven-3.8.8-bin.tar.gz &&     tar -xzf /tmp/maven.tar.gz -C /usr/share/maven --strip-components=1 &&     rm -f /tmp/maven.tar.gz &&     ln -s /usr/share/maven/bin/mvn /usr/bin/mvn
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+curl: (60) SSL certificate problem: unable to get local issuer certificate
+More details here: https://curl.se/docs/sslcerts.html
+
+curl failed to verify the legitimacy of the server and therefore could not
+establish a secure connection to it. To learn more about this situation and
+how to fix it, please visit the web page mentioned above.
+Error: building at STEP "RUN mkdir -p /usr/share/maven /usr/share/maven/ref &&     curl -L -o /tmp/maven.tar.gz https://archive.apache.org/dist/maven/maven-3/3.8.8/binaries/apache-maven-3.8.8-bin.tar.gz &&     tar -xzf /tmp/maven.tar.gz -C /usr/share/maven --strip-components=1 &&     rm -f /tmp/maven.tar.gz &&     ln -s /usr/share/maven/bin/mvn /usr/bin/mvn": while running runtime: exit status 60
