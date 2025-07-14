@@ -1,23 +1,2 @@
-Process terminated. Couldn't find a valid ICU package installed on the system. Please install libicu (or icu-libs) using your package manager and try again. Alternatively you can set the configuration flag System.Globalization.Invariant to true if you want to run with no globalization support. Please see https://aka.ms/dotnet-missing-libicu for more information.
-   at System.Environment.FailFast(System.String)
-   at System.Globalization.GlobalizationMode+Settings..cctor()
-   at System.Globalization.GlobalizationMode+Settings.get_Invariant()
-   at System.Globalization.GlobalizationMode.get_Invariant()
-   at System.Globalization.CultureData.CreateCultureWithInvariantData()
-   at System.Globalization.CultureData.get_Invariant()
-   at System.Globalization.CultureInfo..cctor()
-   at System.Globalization.CultureInfo.get_CachedCulturesByName()
-   at System.Globalization.CultureInfo.GetCultureInfo(System.String)
-   at System.Reflection.RuntimeAssembly.GetLocale()
-   at System.Reflection.RuntimeAssembly.GetName(Boolean)
-   at System.Reflection.Assembly.GetName()
-   at Dynatrace.OneAgent.Core.Boot.AgentBootService.GetAssemblyName(System.Reflection.Assembly)
-   at Dynatrace.OneAgent.Core.Boot.AgentBootService.TryFindAssembly(System.String, System.Reflection.Assembly ByRef)
-   at Dynatrace.OneAgent.Core.Boot.AgentBootService.InitSingle(System.String)
-   at Dynatrace.OneAgent.Core.Boot.AgentBootIntrospection.OnModuleInit(System.String)
-   at Dynatrace.OneAgent.Core.Boot.PROXY_AgentBootIntrospection._OnModuleInit(System.String)
-   at Dynatrace.OneAgent.Core.Boot.PROXY_AgentBootIntrospection.OnModuleInit(System.String)
-   at <Module>..cctor()
-/home/runner/run-helper.sh: line 36:    16 Aborted                 (core dumped) "$DIR"/bin/Runner.Listener run $*
-Exiting with unknown error code: 134
-Exiting runner...
+sha256sum: 'standard input': no properly formatted SHA256 checksum lines found
+Error: building at STEP "RUN apt-get update &&     apt-get install -y wget &&     wget --no-check-certificate         https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz         -O /tmp/maven.tar.gz &&     echo "${MAVEN_SHA}  /tmp/maven.tar.gz" | sha256sum -c - &&     tar xzf /tmp/maven.tar.gz -C /opt &&     ln -s /opt/apache-maven-${MAVEN_VERSION} /opt/maven &&     ln -s /opt/maven/bin/mvn /usr/local/bin/mvn &&     rm /tmp/maven.tar.gz &&     apt-get purge -y wget &&     apt-get autoremove -y &&     rm -rf /var/lib/apt/lists/*": while running runtime: exit status 1
