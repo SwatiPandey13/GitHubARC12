@@ -16,7 +16,31 @@ ENV JDK8_HOME=/usr/lib/jvm/jdk8 \
     JAVA_HOME=/usr/lib/jvm/jdk11 \
     PATH="${JAVA_HOME}/bin:${PATH}"
 
-# 3. Configure alternatives system (for compatibility)
+# 3. Fix Java security configuration - CRITICAL FIX
+# First, find the actual location of java.security in the JDK
+RUN find /usr/lib/jvm/jdk11 -name java.security
+
+# Then ensure the security directory exists and create the file if missing
+RUN mkdir -p ${JAVA_HOME}/conf/security && \
+    if [ ! -f "${JAVA_HOME}/conf/security/java.security" ]; then \
+        echo "Creating java.security file"; \
+        echo "# Minimal security configuration" > ${JAVA_HOME}/conf/security/java.security; \
+        echo "securerandom.source=file:/dev/urandom" >> ${JAVA_HOME}/conf/security/java.security; \
+    fi
+
+# Now update the security configuration
+RUN if [ -f "${JAVA_HOME}/conf/security/java.security" ]; then \
+        cp ${JAVA_HOME}/conf/security/java.security ${JAVA_HOME}/conf/security/java.security.orig; \
+        sed -i 's|^securerandom.source=.*|securerandom.source=file:/dev/urandom|' ${JAVA_HOME}/conf/security/java.security; \
+    else \
+        echo "ERROR: java.security file still missing!"; exit 1; \
+    fi
+
+# 4. Set correct permissions for Java installation
+RUN chmod -R a+r /usr/lib/jvm/jdk11 && \
+    find /usr/lib/jvm/jdk11 -type d -exec chmod a+rx {} \;
+
+# 5. Configure alternatives system
 RUN update-alternatives --install "/usr/bin/java" "java" "${JAVA_HOME}/bin/java" 1100 \
  && update-alternatives --install "/usr/bin/javac" "javac" "${JAVA_HOME}/bin/javac" 1100 \
  && update-alternatives --install "/usr/bin/jar" "jar" "${JAVA_HOME}/bin/jar" 1100 \
@@ -24,27 +48,20 @@ RUN update-alternatives --install "/usr/bin/java" "java" "${JAVA_HOME}/bin/java"
  && update-alternatives --set javac "${JAVA_HOME}/bin/javac" \
  && update-alternatives --set jar "${JAVA_HOME}/bin/jar"
 
-# 4. Install Maven - improved method
-RUN mkdir -p /usr/share/maven /usr/share/maven/ref && \
+# 6. Install Maven
+RUN mkdir -p /usr/share/maven && \
     curl -k -L -o /tmp/maven.tar.gz \
         https://archive.apache.org/dist/maven/maven-3/3.8.8/binaries/apache-maven-3.8.8-bin.tar.gz && \
     tar -xzf /tmp/maven.tar.gz -C /usr/share/maven --strip-components=1 && \
     rm -f /tmp/maven.tar.gz && \
     ln -s /usr/share/maven/bin/mvn /usr/bin/mvn
 
-# 5. Set Maven environment variables
+# 7. Set Maven environment
 ENV MAVEN_HOME=/usr/share/maven \
-    MAVEN_CONFIG=/home/runner/.m2
+    MAVEN_CONFIG=/home/runner/.m2 \
+    PATH="${MAVEN_HOME}/bin:${PATH}"
 
-# 6. Update PATH for all users
-ENV PATH="${MAVEN_HOME}/bin:${JAVA_HOME}/bin:${PATH}"
-
-# 7. Verify Java and Maven installations
-RUN java -version && \
-    javac -version && \
-    mvn --version
-
-# 8. Create Maven directory with proper permissions
+# 8. Create Maven directory
 RUN mkdir -p /home/runner/.m2 && \
     chown -R 1001:123 /home/runner/.m2 && \
     chmod -R g+rw /home/runner/.m2
@@ -53,9 +70,10 @@ RUN mkdir -p /home/runner/.m2 && \
 RUN chgrp -R 0 /home/runner /usr/share/maven /usr/lib/jvm && \
     chmod -R g=u /home/runner /usr/share/maven /usr/lib/jvm
 
-# 10. Fix potential security issues
-RUN if [ -f "${JAVA_HOME}/conf/security/java.security" ]; then \
-        sed -i 's|^securerandom.source=.*|securerandom.source=file:/dev/urandom|' "${JAVA_HOME}/conf/security/java.security"; \
-    fi
+# 10. Verify Java installation
+RUN java -version && javac -version
+
+# 11. Verify Maven installation
+RUN mvn --version
 
 USER 1001
