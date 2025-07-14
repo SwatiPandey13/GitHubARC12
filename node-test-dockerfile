@@ -1,40 +1,12 @@
-# Stage 1: GitHub Runner base
-FROM artifactory.voya.net/docker-virtual/openshift/actions/actions-runner:latest
+# Install xz manually
+RUN curl -k -LO https://vault.centos.org/8.5.2111/BaseOS/x86_64/os/Packages/xz-5.2.4-3.el8.x86_64.rpm && \
+    rpm -ivh xz-5.2.4-3.el8.x86_64.rpm && \
+    rm -f xz-5.2.4-3.el8.x86_64.rpm
 
-USER root
-
-# 1. Define Node versions to install
-ENV NODE_VERSIONS="23.4.0 22.12.0 20.18.1 18.20.5"
-ENV NODE_DIR=/opt/node
-
-# 2. Create base install directory
-RUN mkdir -p ${NODE_DIR}
-
-# 3. Install each Node.js version from official Node.js site
+# Now install all Node versions
 RUN for version in $NODE_VERSIONS; do \
       curl -k -fsSL https://nodejs.org/dist/v$version/node-v$version-linux-x64.tar.xz -o /tmp/node-$version.tar.xz && \
       mkdir -p $NODE_DIR/$version && \
       tar -xJf /tmp/node-$version.tar.xz -C $NODE_DIR/$version --strip-components=1 && \
       rm /tmp/node-$version.tar.xz; \
     done
-
-# 4. Set default Node version (change this if needed)
-ENV DEFAULT_NODE_VERSION=20.18.1
-
-# 5. Add symlinks for default Node and npm
-RUN ln -s $NODE_DIR/$DEFAULT_NODE_VERSION/bin/node /usr/bin/node && \
-    ln -s $NODE_DIR/$DEFAULT_NODE_VERSION/bin/npm /usr/bin/npm && \
-    ln -s $NODE_DIR/$DEFAULT_NODE_VERSION/bin/npx /usr/bin/npx
-
-# 6. Set Node.js environment
-ENV NODE_HOME=$NODE_DIR/$DEFAULT_NODE_VERSION \
-    PATH="$NODE_DIR/$DEFAULT_NODE_VERSION/bin:$PATH"
-
-# 7. Validate installation
-RUN node -v && npm -v
-
-# 8. Set OpenShift-compatible permissions
-RUN chgrp -R 0 $NODE_DIR && \
-    chmod -R g=u $NODE_DIR
-
-USER 1001
