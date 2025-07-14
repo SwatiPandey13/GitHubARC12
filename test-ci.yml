@@ -1,4 +1,4 @@
-# Stage 1: UBI with JDK
+# Stage 1: UBI with JDK (Keep as-is)
 FROM artifactory.voya.net/docker-virtual/openshift/ubi8/openjdk-8:latest AS jdk
 
 # Corporate certificates
@@ -8,59 +8,49 @@ COPY voya_rsa_root.crx /etc/pki/ca-trust/source/anchors/
 COPY zscalerrootca.cer /etc/pki/ca-trust/source/anchors/
 RUN update-ca-trust extract
 
-
-# Core packages with cleanup
-#RUN microdnf install -y \
-#    ca-certificates \
-#    java-17-openjdk-devel \
-#    wget \
- #   tar \
-  #  && microdnf clean all
-
 # Install JDK 17
 RUN microdnf install -y java-17-openjdk-devel && microdnf clean all
 
 # Stage 2: GitHub Runner
 FROM artifactory.voya.net/docker-virtual/openshift/actions/actions-runner:latest
 
-# Copy JDK from UBI image
-COPY --from=jdk /usr/lib/jvm/java-17-openjdk /usr/lib/jvm/java-17-openjdk
-
-# Copy certificates from UBI image
-COPY --from=jdk /etc/pki/ca-trust /etc/pki/ca-trust
-
 USER root
 
-# Set Java environment variables
+# 1. Fix Java security configuration
+COPY --from=jdk /usr/lib/jvm/java-17-openjdk/conf/security/java.security /tmp/java.security.original
+RUN mkdir -p /usr/lib/jvm/java-17-openjdk/conf/security && \
+    cp /tmp/java.security.original /usr/lib/jvm/java-17-openjdk/conf/security/java.security
+
+# 2. Copy entire JDK structure
+COPY --from=jdk /usr/lib/jvm/java-17-openjdk /usr/lib/jvm/java-17-openjdk
+
+# 3. Verify JDK structure (debugging step)
+RUN ls -l /usr/lib/jvm/java-17-openjdk/conf/security
+
+# 4. Set Java environment
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
-# Install Maven 3.8.8 with checksum verification
-#ENV MAVEN_VERSION=3.8.8 \
-#    MAVEN_SHA=2e181515ce9ae19f4f4ab9bde9822a2a1a0c1d6d4b8b3b8629b858c4d4c7f8d
-
-
-# Maven installation using curl (no package manager needed)
+# 5. Install Maven (simplified)
 RUN curl -k -L -o /tmp/maven.tar.gz \
-        https://archive.apache.org/dist/maven/maven-3/3.8.8/binaries/apache-maven-3.8.8-bin.tar.gz \
+    https://archive.apache.org/dist/maven/maven-3/3.8.8/binaries/apache-maven-3.8.8-bin.tar.gz \
     && tar -xzf /tmp/maven.tar.gz -C /opt \
     && ln -s /opt/apache-maven-3.8.8 /opt/maven \
     && ln -s /opt/maven/bin/mvn /usr/local/bin/mvn \
     && rm /tmp/maven.tar.gz
 
+# 6. Fix permissions (critical)
+RUN chmod -R g+rwX,o+rX-w /usr/lib/jvm/java-17-openjdk && \
+    chmod -R g+rwX,o+rX-w /opt/maven && \
+    chmod -R g+rwX,o+rX-w /opt/apache-maven-3.8.8
 
-# Set Maven environment variables
-ENV MAVEN_HOME=/opt/maven \
-    MAVEN_CONFIG=/home/runner/.m2 \
-    PATH="${MAVEN_HOME}/bin:${PATH}"
-
-# Create Maven directory and configure permissions
+# 7. Create Maven directory
 RUN mkdir -p /home/runner/.m2 && \
     chown -R 1001:123 /home/runner/.m2 && \
     chmod -R g+rw /home/runner/.m2
 
-# OpenShift permissions
-RUN chgrp -R 0 /home/runner /opt/maven /opt/apache-maven-3.8.8 && \
-    chmod -R g=u /home/runner /opt/maven /opt/apache-maven-3.8.8
+# 8. OpenShift permissions
+RUN chgrp -R 0 /home/runner /opt/maven /opt/apache-maven-3.8.8 /usr/lib/jvm/java-17-openjdk && \
+    chmod -R g=u /home/runner /opt/maven /opt/apache-maven-3.8.8 /usr/lib/jvm/java-17-openjdk
 
 USER 1001
