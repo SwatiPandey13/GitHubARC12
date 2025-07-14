@@ -1,13 +1,14 @@
 # Stage 1: UBI with JDK
-FROM artifactory.voya.net/docker-virtual/openshift/ubi8/openjdk-8:latest as jdk
+FROM artifactory.voya.net/docker-virtual/openshift/ubi8/openjdk-8:latest AS jdk
 
-# corporate certificates
+# Corporate certificates
 COPY voya_ecc_root.crx /etc/pki/ca-trust/source/anchors/
-COPY voyarootca.cer    /etc/pki/ca-trust/source/anchors/
+COPY voyarootca.cer /etc/pki/ca-trust/source/anchors/
 COPY voya_rsa_root.crx /etc/pki/ca-trust/source/anchors/
 COPY zscalerrootca.cer /etc/pki/ca-trust/source/anchors/
 RUN update-ca-trust extract
 
+# Install JDK 17
 RUN microdnf install -y java-17-openjdk-devel && microdnf clean all
 
 # Stage 2: GitHub Runner
@@ -16,14 +17,45 @@ FROM artifactory.voya.net/docker-virtual/openshift/actions/actions-runner:latest
 # Copy JDK from UBI image
 COPY --from=jdk /usr/lib/jvm/java-17-openjdk /usr/lib/jvm/java-17-openjdk
 
+# Copy certificates from UBI image
+COPY --from=jdk /etc/pki/ca-trust /etc/pki/ca-trust
+
 USER root
 
-# Set environment variables
+# Set Java environment variables
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
+# Install Maven 3.8.8 with checksum verification
+ENV MAVEN_VERSION=3.8.8 \
+    MAVEN_SHA=2e181515ce9ae19f4f4ab9bde9822a2a1a0c1d6d4b8b3b8629b858c4d4c7f8d
+
+RUN apt-get update && \
+    apt-get install -y wget && \
+    wget --no-check-certificate \
+        https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz \
+        -O /tmp/maven.tar.gz && \
+    echo "${MAVEN_SHA}  /tmp/maven.tar.gz" | sha256sum -c - && \
+    tar xzf /tmp/maven.tar.gz -C /opt && \
+    ln -s /opt/apache-maven-${MAVEN_VERSION} /opt/maven && \
+    ln -s /opt/maven/bin/mvn /usr/local/bin/mvn && \
+    rm /tmp/maven.tar.gz && \
+    apt-get purge -y wget && \
+    apt-get autoremove -y && \
+    rm -rf /var/lib/apt/lists/*
+
+# Set Maven environment variables
+ENV MAVEN_HOME=/opt/maven \
+    MAVEN_CONFIG=/home/runner/.m2 \
+    PATH="${MAVEN_HOME}/bin:${PATH}"
+
+# Create Maven directory and configure permissions
+RUN mkdir -p /home/runner/.m2 && \
+    chown -R 1001:123 /home/runner/.m2 && \
+    chmod -R g+rw /home/runner/.m2
+
 # OpenShift permissions
-RUN chgrp -R 0 /home/runner && \
-    chmod -R g=u /home/runner
+RUN chgrp -R 0 /home/runner /opt/maven /opt/apache-maven-${MAVEN_VERSION} && \
+    chmod -R g=u /home/runner /opt/maven /opt/apache-maven-${MAVEN_VERSION}
 
 USER 1001
