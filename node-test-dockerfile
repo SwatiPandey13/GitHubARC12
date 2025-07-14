@@ -1,41 +1,45 @@
-# GitHub Runner Base Image
 FROM artifactory.voya.net/docker-virtual/openshift/actions/actions-runner:latest
 
 USER root
 
-# 1. Install 'xz' using BusyBox static binary (for tar -xJf support)
-RUN curl -k -L -o /bin/busybox https://busybox.net/downloads/binaries/1.36.0-i686/busybox && \
-    chmod +x /bin/busybox && \
-    ln -s /bin/busybox /bin/xz
+# 1. Install static xz binary (64‑bit) from GitHub release
+RUN curl -k -L -o /tmp/xz.tar.gz \
+      https://github.com/therootcompany/xz-static/releases/download/v5.2.5/xz-5.2.5-linux-x86_64.tar.gz && \
+    tar -xzf /tmp/xz.tar.gz -C /tmp && \
+    mv /tmp/xz-*/xz /usr/bin/xz && \
+    chmod +x /usr/bin/xz && \
+    rm -rf /tmp/xz*
 
-# 2. Define Node.js versions to install
+# 2. Define Node.js versions
 ENV NODE_VERSIONS="23.4.0 22.12.0 20.18.1 18.20.5"
 ENV NODE_DIR=/opt/node
 
-# 3. Create Node directory and install all versions
-RUN mkdir -p $NODE_DIR && \
-    for version in $NODE_VERSIONS; do \
+# 3. Create node directory
+RUN mkdir -p $NODE_DIR
+
+# 4. Download & extract Node.js versions
+RUN for version in $NODE_VERSIONS; do \
       curl -k -fsSL https://nodejs.org/dist/v$version/node-v$version-linux-x64.tar.xz -o /tmp/node-$version.tar.xz && \
       mkdir -p $NODE_DIR/$version && \
       tar -xJf /tmp/node-$version.tar.xz -C $NODE_DIR/$version --strip-components=1 && \
       rm /tmp/node-$version.tar.xz; \
     done
 
-# 4. Set default Node.js version
+# 5. Set default Node.js version
 ENV DEFAULT_NODE_VERSION=20.18.1
 
-# 5. Add symlinks to make default node/npm globally available
+# 6. Symlink default executables
 RUN ln -sf $NODE_DIR/$DEFAULT_NODE_VERSION/bin/node /usr/bin/node && \
     ln -sf $NODE_DIR/$DEFAULT_NODE_VERSION/bin/npm /usr/bin/npm && \
     ln -sf $NODE_DIR/$DEFAULT_NODE_VERSION/bin/npx /usr/bin/npx
 
-# 6. Export path for Node.js
+# 7. Update PATH
 ENV PATH="$NODE_DIR/$DEFAULT_NODE_VERSION/bin:$PATH"
 
-# 7. Validate
+# 8. Validate installation
 RUN node -v && npm -v
 
-# 8. OpenShift compatible permissions
+# 9. Fix permissions
 RUN chgrp -R 0 $NODE_DIR && chmod -R g=u $NODE_DIR
 
 USER 1001
