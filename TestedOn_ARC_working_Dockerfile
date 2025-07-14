@@ -1,0 +1,29 @@
+# Stage 1: UBI with JDK
+FROM artifactory.voya.net/docker-virtual/openshift/ubi8/openjdk-8:latest as jdk
+
+# corporate certificates
+COPY voya_ecc_root.crx /etc/pki/ca-trust/source/anchors/
+COPY voyarootca.cer    /etc/pki/ca-trust/source/anchors/
+COPY voya_rsa_root.crx /etc/pki/ca-trust/source/anchors/
+COPY zscalerrootca.cer /etc/pki/ca-trust/source/anchors/
+RUN update-ca-trust extract
+
+RUN microdnf install -y java-17-openjdk-devel && microdnf clean all
+
+# Stage 2: GitHub Runner
+FROM artifactory.voya.net/docker-virtual/openshift/actions/actions-runner:latest
+
+# Copy JDK from UBI image
+COPY --from=jdk /usr/lib/jvm/java-17-openjdk /usr/lib/jvm/java-17-openjdk
+
+USER root
+
+# Set environment variables
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk
+ENV PATH="${JAVA_HOME}/bin:${PATH}"
+
+# OpenShift permissions
+RUN chgrp -R 0 /home/runner && \
+    chmod -R g=u /home/runner
+
+USER 1001
