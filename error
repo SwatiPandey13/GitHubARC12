@@ -1,4 +1,4 @@
-gzip: stdin: not in gzip format
-tar: Child returned status 1
-tar: Error is not recoverable: exiting now
-Error: building at STEP "RUN curl -k -L -o /tmp/xz.tar.gz       https://github.com/therootcompany/xz-static/releases/download/v5.2.5/xz-5.2.5-linux-x86_64.tar.gz &&     tar -xzf /tmp/xz.tar.gz -C /tmp &&     mv /tmp/xz-*/xz /usr/bin/xz &&     chmod +x /usr/bin/xz &&     rm -rf /tmp/xz*": while running runtime: exit status 2
+STEP 12/32: RUN microdnf install -y     git     curl     jq     unzip     zip     sudo     shadow-utils     which &&     microdnf clean all
+Downloading metadata...
+error: cannot update repo 'ubi-8-baseos-rpms': Cannot download repomd.xml: Cannot download repodata/repomd.xml: All mirrors were tried; Last error: Curl error (60): Peer certificate cannot be authenticated with given CA certificates for https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi8/8/x86_64/baseos/os/repodata/repomd.xml [SSL certificate problem: unable to get local issuer certificate]
+Error: building at STEP "RUN microdnf install -y     git     curl     jq     unzip     zip     sudo     shadow-utils     which &&     microdnf clean all": while running runtime: exit status 1
