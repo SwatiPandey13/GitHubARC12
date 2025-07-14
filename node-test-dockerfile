@@ -1,3 +1,44 @@
-# 1. Download static xz binary to enable tar -xJf
+# Stage 1: GitHub Runner base
+FROM artifactory.voya.net/docker-virtual/openshift/actions/actions-runner:latest
+
+USER root
+
+# 1. Define Node.js versions
+ENV NODE_VERSIONS="23.4.0 22.12.0 20.18.1 18.20.5"
+ENV NODE_DIR=/opt/node
+
+# 2. Create base directory for Node installations
+RUN mkdir -p ${NODE_DIR}
+
+# 3. Install static xz binary (since tar -xJf requires xz)
 RUN curl -k -L -o /usr/bin/xz https://github.com/tukaani-project/xz/releases/download/v5.4.5/xz-5.4.5-linux-x86_64 && \
     chmod +x /usr/bin/xz
+
+# 4. Download and extract Node.js versions
+RUN for version in $NODE_VERSIONS; do \
+      curl -k -fsSL https://nodejs.org/dist/v$version/node-v$version-linux-x64.tar.xz -o /tmp/node-$version.tar.xz && \
+      mkdir -p $NODE_DIR/$version && \
+      tar -xJf /tmp/node-$version.tar.xz -C $NODE_DIR/$version --strip-components=1 && \
+      rm /tmp/node-$version.tar.xz; \
+    done
+
+# 5. Set default Node version
+ENV DEFAULT_NODE_VERSION=20.18.1
+
+# 6. Link default node, npm, and npx binaries
+RUN ln -s $NODE_DIR/$DEFAULT_NODE_VERSION/bin/node /usr/bin/node && \
+    ln -s $NODE_DIR/$DEFAULT_NODE_VERSION/bin/npm /usr/bin/npm && \
+    ln -s $NODE_DIR/$DEFAULT_NODE_VERSION/bin/npx /usr/bin/npx
+
+# 7. Set environment variables
+ENV NODE_HOME=$NODE_DIR/$DEFAULT_NODE_VERSION \
+    PATH="$NODE_DIR/$DEFAULT_NODE_VERSION/bin:$PATH"
+
+# 8. Verify installation
+RUN node -v && npm -v
+
+# 9. OpenShift-compatible permissions
+RUN chgrp -R 0 $NODE_DIR && \
+    chmod -R g=u $NODE_DIR
+
+USER 1001
