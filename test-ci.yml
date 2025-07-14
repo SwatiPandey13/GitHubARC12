@@ -3,55 +3,38 @@ FROM artifactory.voya.net/docker-virtual/openshift/actions/actions-runner:latest
 
 USER root
 
-# 1. Install both JDKs from copied directories
-COPY --from=artifactory.voya.net/docker-virtual/rhel8-openjdk8-11-devil:latest \
-    /usr/lib/jvm/java-1.8.0-openjdk /usr/lib/jvm/jdk8
+# 1. Install required tools
+RUN microdnf install -y curl tar gzip ca-certificates && microdnf clean all
 
-COPY --from=artifactory.voya.net/docker-virtual/rhel8-openjdk8-11-devil:latest \
-    /usr/lib/jvm/java-11-openjdk /usr/lib/jvm/jdk11
+# 2. Download and install JDK 8 (Temurin)
+RUN curl -L -o /tmp/openjdk8.tar.gz https://github.com/adoptium/temurin8-binaries/releases/download/jdk8u412-b08/OpenJDK8U-jdk_x64_linux_hotspot_8u412b08.tar.gz && \
+    mkdir -p /usr/lib/jvm/jdk8 && \
+    tar -xzf /tmp/openjdk8.tar.gz -C /usr/lib/jvm/jdk8 --strip-components=1 && \
+    rm /tmp/openjdk8.tar.gz
 
-# 2. Set default JDK (JDK 11) and environment variables
+# 3. Download and install JDK 11 (Temurin)
+RUN curl -L -o /tmp/openjdk11.tar.gz https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.23+9/OpenJDK11U-jdk_x64_linux_hotspot_11.0.23_9.tar.gz && \
+    mkdir -p /usr/lib/jvm/jdk11 && \
+    tar -xzf /tmp/openjdk11.tar.gz -C /usr/lib/jvm/jdk11 --strip-components=1 && \
+    rm /tmp/openjdk11.tar.gz
+
+# 4. Set environment variables
 ENV JDK8_HOME=/usr/lib/jvm/jdk8 \
     JDK11_HOME=/usr/lib/jvm/jdk11 \
     JAVA_HOME=/usr/lib/jvm/jdk11 \
-    PATH="${JAVA_HOME}/bin:${PATH}"
+    PATH="/usr/lib/jvm/jdk11/bin:${PATH}"
 
-# 3. Fix Java security configuration - CRITICAL FIX
-# First, find the actual location of java.security in the JDK
-RUN find /usr/lib/jvm/jdk11 -name java.security
-
-# Then ensure the security directory exists and create the file if missing
-RUN mkdir -p ${JAVA_HOME}/conf/security && \
-    if [ ! -f "${JAVA_HOME}/conf/security/java.security" ]; then \
-        echo "Creating java.security file"; \
-        echo "# Minimal security configuration" > ${JAVA_HOME}/conf/security/java.security; \
-        echo "securerandom.source=file:/dev/urandom" >> ${JAVA_HOME}/conf/security/java.security; \
-    fi
-
-# Now update the security configuration
-RUN if [ -f "${JAVA_HOME}/conf/security/java.security" ]; then \
-        cp ${JAVA_HOME}/conf/security/java.security ${JAVA_HOME}/conf/security/java.security.orig; \
-        sed -i 's|^securerandom.source=.*|securerandom.source=file:/dev/urandom|' ${JAVA_HOME}/conf/security/java.security; \
-    else \
-        echo "ERROR: java.security file still missing!"; exit 1; \
-    fi
-
-# 4. Set correct permissions for Java installation
-RUN chmod -R a+r /usr/lib/jvm/jdk11 && \
-    find /usr/lib/jvm/jdk11 -type d -exec chmod a+rx {} \;
-
-# 5. Configure alternatives system
-RUN update-alternatives --install "/usr/bin/java" "java" "${JAVA_HOME}/bin/java" 1100 \
- && update-alternatives --install "/usr/bin/javac" "javac" "${JAVA_HOME}/bin/javac" 1100 \
- && update-alternatives --install "/usr/bin/jar" "jar" "${JAVA_HOME}/bin/jar" 1100 \
- && update-alternatives --set java "${JAVA_HOME}/bin/java" \
- && update-alternatives --set javac "${JAVA_HOME}/bin/javac" \
- && update-alternatives --set jar "${JAVA_HOME}/bin/jar"
+# 5. Configure alternatives
+RUN update-alternatives --install "/usr/bin/java" "java" "${JAVA_HOME}/bin/java" 1100 && \
+    update-alternatives --install "/usr/bin/javac" "javac" "${JAVA_HOME}/bin/javac" 1100 && \
+    update-alternatives --install "/usr/bin/jar" "jar" "${JAVA_HOME}/bin/jar" 1100 && \
+    update-alternatives --set java "${JAVA_HOME}/bin/java" && \
+    update-alternatives --set javac "${JAVA_HOME}/bin/javac" && \
+    update-alternatives --set jar "${JAVA_HOME}/bin/jar"
 
 # 6. Install Maven
-RUN mkdir -p /usr/share/maven && \
-    curl -k -L -o /tmp/maven.tar.gz \
-        https://archive.apache.org/dist/maven/maven-3/3.8.8/binaries/apache-maven-3.8.8-bin.tar.gz && \
+RUN mkdir -p /usr/share/maven /usr/share/maven/ref && \
+    curl -L -o /tmp/maven.tar.gz https://archive.apache.org/dist/maven/maven-3/3.8.8/binaries/apache-maven-3.8.8-bin.tar.gz && \
     tar -xzf /tmp/maven.tar.gz -C /usr/share/maven --strip-components=1 && \
     rm -f /tmp/maven.tar.gz && \
     ln -s /usr/share/maven/bin/mvn /usr/bin/mvn
@@ -61,19 +44,21 @@ ENV MAVEN_HOME=/usr/share/maven \
     MAVEN_CONFIG=/home/runner/.m2 \
     PATH="${MAVEN_HOME}/bin:${PATH}"
 
-# 8. Create Maven directory
+# 8. Validate installations
+RUN java -version && javac -version && mvn -version
+
+# 9. Setup Maven cache and permissions
 RUN mkdir -p /home/runner/.m2 && \
     chown -R 1001:123 /home/runner/.m2 && \
     chmod -R g+rw /home/runner/.m2
 
-# 9. OpenShift permissions
+# 10. OpenShift permissions
 RUN chgrp -R 0 /home/runner /usr/share/maven /usr/lib/jvm && \
     chmod -R g=u /home/runner /usr/share/maven /usr/lib/jvm
 
-# 10. Verify Java installation
-RUN java -version && javac -version
-
-# 11. Verify Maven installation
-RUN mvn --version
+# 11. SecureRandom fix (for JVM entropy issues)
+RUN if [ -f "${JAVA_HOME}/conf/security/java.security" ]; then \
+        sed -i 's|^securerandom.source=.*|securerandom.source=file:/dev/urandom|' "${JAVA_HOME}/conf/security/java.security"; \
+    fi
 
 USER 1001
