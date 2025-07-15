@@ -1,2 +1,5 @@
+https://github.com/actions/actions-runner-controller/blob/master/runner/actions-runner.ubuntu-24.04.dockerfile
+
+
 error: cannot update repo 'ubi-8-baseos-rpms': Cannot download repomd.xml: Cannot download repodata/repomd.xml: All mirrors were tried; Last error: Curl error (60): Peer certificate cannot be authenticated with given CA certificates for https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi8/8/x86_64/baseos/os/repodata/repomd.xml [SSL certificate problem: unable to get local issuer certificate]
 Error: building at STEP "RUN microdnf install -y     git     curl     jq     unzip     zip     sudo     shadow-utils     which &&     microdnf clean all": while running runtime: exit status 1
