@@ -11,8 +11,15 @@ ARG DUMB_INIT_VERSION=1.2.5
 ARG RUNNER_USER_UID=1001
 ARG DOCKER_GROUP_GID=121
 
+# corporate certificates
+COPY voya_ecc_root.crx /etc/pki/ca-trust/source/anchors/
+COPY voyarootca.cer    /etc/pki/ca-trust/source/anchors/
+COPY voya_rsa_root.crx /etc/pki/ca-trust/source/anchors/
+COPY zscalerrootca.cer /etc/pki/ca-trust/source/anchors/
+RUN update-ca-trust extract
+
 # Install base packages and runner dependencies
-RUN yum install -y \
+RUN microdnf install -y \
         curl \
         ca-certificates \
         git \
@@ -20,6 +27,7 @@ RUN yum install -y \
         sudo \
         unzip \
         zip \
+        dnf \
         # Runner dependencies
         libicu \
         krb5-libs \
@@ -28,12 +36,12 @@ RUN yum install -y \
         openssl-libs \
         # Ruby dependencies
         libyaml-devel \
-    && yum clean all
+    && microdnf clean all
 
 # Install git-lfs (requires EPEL)
-RUN yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm \
-    && yum install -y git-lfs \
-    && yum clean all
+RUN dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm \
+    && dnf install -y git-lfs \
+    && dnf clean all
 
 # Create runner user and setup groups
 RUN useradd -m -d /home/runner -u $RUNNER_USER_UID runner \
