@@ -11,40 +11,47 @@ ARG DUMB_INIT_VERSION=1.2.5
 ARG RUNNER_USER_UID=1001
 ARG DOCKER_GROUP_GID=121
 
-ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update -y \
-    && apt-get install -y software-properties-common \
-    && add-apt-repository -y ppa:git-core/ppa \
-    && apt-get update -y \
-    && apt-get install -y --no-install-recommends \
-    curl \
-    ca-certificates \
-    git \
-    jq \
-    sudo \
-    unzip \
-    zip \
-    && rm -rf /var/lib/apt/lists/*
+# Install base packages and runner dependencies
+RUN yum install -y \
+        curl \
+        ca-certificates \
+        git \
+        jq \
+        sudo \
+        unzip \
+        zip \
+        # Runner dependencies
+        libicu \
+        krb5-libs \
+        lttng-ust \
+        zlib \
+        openssl-libs \
+        # Ruby dependencies
+        libyaml-devel \
+    && yum clean all
 
-# Download latest git-lfs version
-RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash && \
-    apt-get install -y --no-install-recommends git-lfs
+# Install git-lfs (requires EPEL)
+RUN yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm \
+    && yum install -y git-lfs \
+    && yum clean all
 
-RUN adduser --disabled-password --gecos "" --uid $RUNNER_USER_UID runner \
+# Create runner user and setup groups
+RUN useradd -m -d /home/runner -u $RUNNER_USER_UID runner \
     && groupadd docker --gid $DOCKER_GROUP_GID \
     && usermod -aG sudo runner \
     && usermod -aG docker runner \
-    && echo "%sudo   ALL=(ALL:ALL) NOPASSWD:ALL" > /etc/sudoers \
-    && echo "Defaults env_keep += \"DEBIAN_FRONTEND\"" >> /etc/sudoers
+    && echo "%sudo   ALL=(ALL:ALL) NOPASSWD:ALL" > /etc/sudoers
 
 ENV HOME=/home/runner
 
+# Install dumb-init
 RUN export ARCH=$(echo ${TARGETPLATFORM} | cut -d / -f2) \
     && if [ "$ARCH" = "arm64" ]; then export ARCH=aarch64 ; fi \
     && if [ "$ARCH" = "amd64" ] || [ "$ARCH" = "i386" ]; then export ARCH=x86_64 ; fi \
     && curl -fLo /usr/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v${DUMB_INIT_VERSION}/dumb-init_${DUMB_INIT_VERSION}_${ARCH} \
     && chmod +x /usr/bin/dumb-init
 
+# Setup runner
 ENV RUNNER_ASSETS_DIR=/runnertmp
 RUN export ARCH=$(echo ${TARGETPLATFORM} | cut -d / -f2) \
     && if [ "$ARCH" = "amd64" ] || [ "$ARCH" = "x86_64" ] || [ "$ARCH" = "i386" ]; then export ARCH=x64 ; fi \
@@ -53,24 +60,22 @@ RUN export ARCH=$(echo ${TARGETPLATFORM} | cut -d / -f2) \
     && curl -fLo runner.tar.gz https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-${ARCH}-${RUNNER_VERSION}.tar.gz \
     && tar xzf ./runner.tar.gz \
     && rm runner.tar.gz \
-    && ./bin/installdependencies.sh \
-    && mv ./externals ./externalstmp \
-    # libyaml-dev is required for ruby/setup-ruby action.
-    # It is installed after installdependencies.sh and before removing /var/lib/apt/lists
-    # to avoid rerunning apt-update on its own.
-    && apt-get install -y libyaml-dev \
-    && rm -rf /var/lib/apt/lists/*
+    # Skip Debian-specific dependency script
+    && mv ./externals ./externalstmp
 
+# Setup tool cache
 ENV RUNNER_TOOL_CACHE=/opt/hostedtoolcache
 RUN mkdir /opt/hostedtoolcache \
     && chgrp docker /opt/hostedtoolcache \
     && chmod g+rwx /opt/hostedtoolcache
 
+# Install container hooks
 RUN cd "$RUNNER_ASSETS_DIR" \
     && curl -fLo runner-container-hooks.zip https://github.com/actions/runner-container-hooks/releases/download/v${RUNNER_CONTAINER_HOOKS_VERSION}/actions-runner-hooks-k8s-${RUNNER_CONTAINER_HOOKS_VERSION}.zip \
     && unzip ./runner-container-hooks.zip -d ./k8s \
     && rm -f runner-container-hooks.zip
 
+# Install Docker
 RUN set -vx; \
     export ARCH=$(echo ${TARGETPLATFORM} | cut -d / -f2) \
     && if [ "$ARCH" = "arm64" ]; then export ARCH=aarch64 ; fi \
@@ -80,6 +85,7 @@ RUN set -vx; \
     && install -o root -g root -m 755 docker/docker /usr/bin/docker \
     && rm -rf docker docker.tgz
 
+# Install Docker Compose
 RUN export ARCH=$(echo ${TARGETPLATFORM} | cut -d / -f2) \
     && if [ "$ARCH" = "arm64" ]; then export ARCH=aarch64 ; fi \
     && if [ "$ARCH" = "amd64" ] || [ "$ARCH" = "i386" ]; then export ARCH=x86_64 ; fi \
@@ -87,32 +93,19 @@ RUN export ARCH=$(echo ${TARGETPLATFORM} | cut -d / -f2) \
     && curl -fLo /usr/libexec/docker/cli-plugins/docker-compose https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-linux-${ARCH} \
     && chmod +x /usr/libexec/docker/cli-plugins/docker-compose \
     && ln -s /usr/libexec/docker/cli-plugins/docker-compose /usr/bin/docker-compose \
-    && which docker-compose \
     && docker compose version
 
-# We place the scripts in `/usr/bin` so that users who extend this image can
-# override them with scripts of the same name placed in `/usr/local/bin`.
+# Copy scripts
 COPY entrypoint.sh startup.sh logger.sh graceful-stop.sh update-status /usr/bin/
-
-# Copy the docker shim which propagates the docker MTU to underlying networks
-# to replace the docker binary in the PATH.
 COPY docker-shim.sh /usr/local/bin/docker
-
-# Configure hooks folder structure.
 COPY hooks /etc/arc/hooks/
 
-# Add the Python "User Script Directory" to the PATH
+# Final environment setup
 ENV PATH="${PATH}:${HOME}/.local/bin/"
 ENV ImageOS=ubuntu24
-
 RUN echo "PATH=${PATH}" > /etc/environment \
     && echo "ImageOS=${ImageOS}" >> /etc/environment
 
 USER runner
-
 ENTRYPOINT ["/bin/bash", "-c"]
 CMD ["entrypoint.sh"]
-
-STEP 12/32: RUN apt-get update -y     && apt-get install -y software-properties-common     && add-apt-repository -y ppa:git-core/ppa     && apt-get update -y     && apt-get install -y --no-install-recommends     curl     ca-certificates     git     jq     sudo     unzip     zip     && rm -rf /var/lib/apt/lists/*
-/bin/sh: apt-get: command not found
-Error: building at STEP "RUN apt-get update -y     && apt-get install -y software-properties-common     && add-apt-repository -y ppa:git-core/ppa     && apt-get update -y     && apt-get install -y --no-install-recommends     curl     ca-certificates     git     jq     sudo     unzip     zip     && rm -rf /var/lib/apt/lists/*": while running runtime: exit status 127
