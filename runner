@@ -44,7 +44,8 @@ RUN dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.n
     && dnf clean all
 
 # Create runner user and setup groups
-RUN useradd -m -d /home/runner -u $RUNNER_USER_UID runner \
+RUN groupadd sudo && \
+    useradd -m -d /home/runner -u $RUNNER_USER_UID runner \
     && groupadd docker --gid $DOCKER_GROUP_GID \
     && usermod -aG sudo runner \
     && usermod -aG docker runner \
