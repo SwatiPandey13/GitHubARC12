@@ -1,6 +1,2 @@
-STEP 25/36: RUN cd "$RUNNER_ASSETS_DIR"     && curl -fLo runner-container-hooks.zip https://github.com/actions/runner-container-hooks/releases/download/v${RUNNER_CONTAINER_HOOKS_VERSION}/actions-runner-hooks-k8s-${RUNNER_CONTAINER_HOOKS_VERSION}.zip     && unzip ./runner-container-hooks.zip -d ./k8s     && rm -f runner-container-hooks.zip
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
-curl: (22) The requested URL returned error: 404
-Error: building at STEP "RUN cd "$RUNNER_ASSETS_DIR"     && curl -fLo runner-container-hooks.zip https://github.com/actions/runner-container-hooks/releases/download/v${RUNNER_CONTAINER_HOOKS_VERSION}/actions-runner-hooks-k8s-${RUNNER_CONTAINER_HOOKS_VERSION}.zip     && unzip ./runner-container-hooks.zip -d ./k8s     && rm -f runner-container-hooks.zip": while running runtime: exit status 22
+STEP 28/36: COPY entrypoint.sh startup.sh logger.sh graceful-stop.sh update-status /usr/bin/
+Error: building at STEP "COPY entrypoint.sh startup.sh logger.sh graceful-stop.sh update-status /usr/bin/": checking on sources under "/root/runner": copier: stat: "/update-status": no such file or directory
