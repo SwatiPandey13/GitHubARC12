@@ -1,39 +1,24 @@
 #!/bin/bash
-source /usr/bin/logger.sh
+log() {
+    local level=$1
+    local message=$2
+    echo "$(date -u +"%Y-%m-%dT%H:%M:%SZ") [${level}] ${message}"
+}
 
-RUNNER_GRACEFUL_STOP_TIMEOUT=${RUNNER_GRACEFUL_STOP_TIMEOUT:-25}
+log.error() {
+    log "ERROR" "$1"
+}
 
-graceful_stop() {
-  log.notice "Initiating graceful stop"
-  
-  local runner_home=${RUNNER_HOME:-/home/runner}
-  local runner_pid=$(pgrep -f "Runner.Listener")
-  
-  # Deregister runner if registered
-  if [ -f "${runner_home}/.runner" ]; then
-    log.notice "Deregistering runner"
-    cd "${runner_home}" && ./config.sh remove --token "${RUNNER_TOKEN}" || true
-  fi
-  
-  # Stop runner process if running
-  if [ -n "${runner_pid}" ]; then
-    log.notice "Sending SIGTERM to Runner.Listener (PID: ${runner_pid})"
-    kill -TERM "${runner_pid}"
-    
-    # Wait for process to exit
-    timeout_counter=0
-    while kill -0 "${runner_pid}" 2>/dev/null && \
-          [ $timeout_counter -lt $RUNNER_GRACEFUL_STOP_TIMEOUT ]; do
-      sleep 1
-      timeout_counter=$((timeout_counter+1))
-    done
-    
-    # Force kill if still running
-    if kill -0 "${runner_pid}" 2>/dev/null; then
-      log.notice "Sending SIGKILL to Runner.Listener"
-      kill -9 "${runner_pid}"
+log.notice() {
+    log "NOTICE" "$1"
+}
+
+log.debug() {
+    if [ "${DEBUG}" == "true" ]; then
+        log "DEBUG" "$1"
     fi
-  fi
-  
-  log.notice "Graceful stop completed"
+}
+
+log.warning() {
+    log "WARNING" "$1"
 }
