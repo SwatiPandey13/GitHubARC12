@@ -1,24 +1,3 @@
-#!/bin/bash
-log() {
-    local level=$1
-    local message=$2
-    echo "$(date -u +"%Y-%m-%dT%H:%M:%SZ") [${level}] ${message}"
-}
-
-log.error() {
-    log "ERROR" "$1"
-}
-
-log.notice() {
-    log "NOTICE" "$1"
-}
-
-log.debug() {
-    if [ "${DEBUG}" == "true" ]; then
-        log "DEBUG" "$1"
-    fi
-}
-
-log.warning() {
-    log "WARNING" "$1"
-}
+STEP 34/38: RUN chgrp -R 0 $HOME /opt /etc/arc /usr/bin /var/run/docker.sock &&     chmod -R g=u $HOME /opt /etc/arc /usr/bin /var/run/docker.sock &&     chmod g=u /etc/passwd
+chgrp: cannot access '/var/run/docker.sock': No such file or directory
+Error: building at STEP "RUN chgrp -R 0 $HOME /opt /etc/arc /usr/bin /var/run/docker.sock &&     chmod -R g=u $HOME /opt /etc/arc /usr/bin /var/run/docker.sock &&     chmod g=u /etc/passwd": while running runtime: exit status 1
