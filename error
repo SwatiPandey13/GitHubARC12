@@ -26,6 +26,7 @@ RUN dnf update -y && \
         shadow-utils \
         findutils \
         libyaml-devel \
+        procps-ng \
     && dnf clean all
 
 RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.rpm.sh | bash && \
@@ -57,7 +58,7 @@ RUN ARCH=$(echo ${TARGETPLATFORM} | cut -d / -f2) && \
     ./bin/installdependencies.sh && \
     mv ./externals ./externalstmp
 
-# FIX: Use numeric UID/GID instead of names
+# Copy runner to home directory
 RUN cp -r $RUNNER_ASSETS_DIR/* $HOME/ && \
     chown -R $RUNNER_USER_UID:$DOCKER_GROUP_GID $HOME
 
@@ -81,11 +82,23 @@ ENV ImageOS=rhel8
 RUN echo "PATH=${PATH}" > /etc/environment && \
     echo "ImageOS=${ImageOS}" >> /etc/environment
 
+# Set execute permissions
 RUN chmod +x /usr/bin/entrypoint.sh /usr/bin/startup.sh /usr/bin/logger.sh /usr/bin/graceful-stop.sh /usr/local/bin/docker
+
+# Add debug tools and ensure scripts are executable
+RUN chmod +x $HOME/run.sh $HOME/bin/*.sh
+
+# Create symlink to runner scripts in PATH
+RUN ln -s $HOME/run.sh /usr/bin/run.sh
+
+# Fix for OpenShift arbitrary user IDs
+RUN chgrp -R 0 $HOME /opt/hostedtoolcache /etc/arc && \
+    chmod -R g=u $HOME /opt/hostedtoolcache /etc/arc
 
 WORKDIR $HOME
 
-USER runner
+# Important: Use numeric UID for OpenShift compatibility
+USER $RUNNER_USER_UID
 
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
-CMD ["/bin/bash", "-c", "entrypoint.sh"]
+CMD ["/bin/bash", "-c", "source /etc/environment && /usr/bin/entrypoint.sh"]
