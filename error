@@ -1,7 +1,1 @@
-# Replace the container hooks installation with this hardcoded version
-RUN cd /home/runner \
-    && echo "Downloading container hooks" \
-    && curl -fL -o actions-runner-hooks.tar.gz \
-        "https://github.com/actions/runner-container-hooks/releases/download/v0.3.2/actions-runner-hooks-0.3.2-noarch.tar.gz" \
-    && tar xzf actions-runner-hooks.tar.gz \
-    && rm actions-runner-hooks.tar.gz
+https://github.com/actions/actions-runner-controller/blob/master/runner/actions-runner.ubuntu-24.04.dockerfile
