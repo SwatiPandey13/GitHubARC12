@@ -1,0 +1,63 @@
+#!/bin/bash
+
+# Align timeout with OpenShift's default terminationGracePeriodSeconds (30s)
+RUNNER_GRACEFUL_STOP_TIMEOUT=${RUNNER_GRACEFUL_STOP_TIMEOUT:-25}
+
+graceful_stop() {
+  log.notice "Graceful stop initiated (OpenShift/RHEL compatible version)"
+
+  # Check dockerd accessibility
+  if ! docker info >/dev/null 2>&1; then
+    log.warning "Dockerd inaccessible. Ensure RUNNER_USER has /var/run/docker.sock access."
+  fi
+
+  if ! pushd "$RUNNER_HOME" 2>/dev/null; then
+    log.error "Cannot access ${RUNNER_HOME}. Permission issue?"
+    exit 1
+  fi
+
+  log.notice "Waiting for runner registration..."
+  while ! [ -f .runner ]; do
+    sleep 1
+  done
+
+  if ! /runner/config.sh remove --token "$RUNNER_TOKEN" >/dev/null 2>&1; then
+    log.notice "Awaiting self-termination (timeout: ${RUNNER_GRACEFUL_STOP_TIMEOUT}s)"
+    timeout_counter=0
+    while [[ $timeout_counter -lt $RUNNER_GRACEFUL_STOP_TIMEOUT ]]; do
+      sleep 1
+      if ! pgrep -f "Runner.Listener" >/dev/null; then
+        log.notice "Runner exited pre-timeout"
+        break
+      fi
+      timeout_counter=$((timeout_counter+1))
+    done
+  fi
+
+  popd >/dev/null || true
+
+  if pgrep -f "Runner.Listener" >/dev/null; then
+    runner_pid=$(pgrep -f "Runner.Listener")
+    log.notice "Sending SIGTERM to Runner.Listener (PID: ${runner_pid})"
+    kill -TERM "$runner_pid"
+    
+    # Wait for process exit
+    timeout_counter=0
+    while [[ $timeout_counter -lt $RUNNER_GRACEFUL_STOP_TIMEOUT ]]; do
+      sleep 1
+      if ! pgrep -f "Runner.Listener" >/dev/null; then
+        break
+      fi
+      timeout_counter=$((timeout_counter+1))
+    done
+  fi
+
+  # Cleanup init process
+  if [ -n "$RUNNER_INIT_PID" ] && ps -p "$RUNNER_INIT_PID" >/dev/null; then
+    log.notice "Terminating init process (PID: ${RUNNER_INIT_PID})"
+    kill -TERM "$RUNNER_INIT_PID" 2>/dev/null
+    wait "$RUNNER_INIT_PID" || true
+  fi
+
+  log.notice "Graceful stop completed"
+}
