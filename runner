@@ -1,5 +1,27 @@
-# Authentication
-
-Http response code: NotFound from 'POST https://api.github.com/actions/runner-registration' (Request Id: 897C:B31DE:43636C:883E80:6877E1C5)
-{"message":"Not Found","documentation_url":"https://docs.github.com/rest","status":"404"}
-Response status code does not indicate success: 404 (Not Found).
+curl -H "Authorization: token test_token" https://api.github.com/orgs/Unit-Voya-Repos
+{
+  "login": "Unit-Voya-Repos",
+  "id": 213803396,
+  "node_id": "O_kgDODL5hhA",
+  "url": "https://api.github.com/orgs/Unit-Voya-Repos",
+  "repos_url": "https://api.github.com/orgs/Unit-Voya-Repos/repos",
+  "events_url": "https://api.github.com/orgs/Unit-Voya-Repos/events",
+  "hooks_url": "https://api.github.com/orgs/Unit-Voya-Repos/hooks",
+  "issues_url": "https://api.github.com/orgs/Unit-Voya-Repos/issues",
+  "members_url": "https://api.github.com/orgs/Unit-Voya-Repos/members{/member}",
+  "public_members_url": "https://api.github.com/orgs/Unit-Voya-Repos/public_members{/member}",
+  "avatar_url": "https://avatars.githubusercontent.com/u/213803396?v=4",
+  "description": null,
+  "is_verified": false,
+  "has_organization_projects": true,
+  "has_repository_projects": true,
+  "public_repos": 0,
+  "public_gists": 0,
+  "followers": 0,
+  "following": 0,
+  "html_url": "https://github.com/Unit-Voya-Repos",
+  "created_at": "2025-05-28T12:51:30Z",
+  "updated_at": "2025-06-11T20:42:01Z",
+  "archived_at": null,
+  "type": "Organization"
+}
