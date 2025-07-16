@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Ensure environment is loaded
+[ -f /etc/environment ] && source /etc/environment
+
+# Start the runner
+./run.sh
+
+=====
+
+#!/bin/bash
+
+graceful_stop() {
+  log.notice "Gracefully stopping GitHub Actions Runner..."
+  ./bin/Runner.Listener remove --unattended --token "$RUNNER_TOKEN"
+  exit 0
+}
