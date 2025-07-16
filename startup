@@ -1,17 +1,143 @@
 #!/bin/bash
+source /usr/bin/logger.sh
 
-# Ensure environment is loaded
-[ -f /etc/environment ] && source /etc/environment
+# Set home directory explicitly for OpenShift
+RUNNER_HOME=${RUNNER_HOME:-/home/runner}
+RUNNER_ASSETS_DIR=${RUNNER_ASSETS_DIR:-/runnertmp}
 
-# Start the runner
-./run.sh
+# Export hooks with absolute paths
+export ACTIONS_RUNNER_HOOK_JOB_STARTED=/etc/arc/hooks/job-started.sh
+export ACTIONS_RUNNER_HOOK_JOB_COMPLETED=/etc/arc/hooks/job-completed.sh
 
-=====
+if [ -n "${STARTUP_DELAY_IN_SECONDS}" ]; then
+  log.notice "Delaying startup by ${STARTUP_DELAY_IN_SECONDS} seconds"
+  sleep "${STARTUP_DELAY_IN_SECONDS}"
+fi
 
-#!/bin/bash
+if [ -z "${GITHUB_URL}" ]; then
+  log.debug 'Working with public GitHub'
+  GITHUB_URL="https://github.com/"
+else
+  length=${#GITHUB_URL}
+  last_char=${GITHUB_URL:length-1:1}
 
-graceful_stop() {
-  log.notice "Gracefully stopping GitHub Actions Runner..."
-  ./bin/Runner.Listener remove --unattended --token "$RUNNER_TOKEN"
-  exit 0
-}
+  [[ $last_char != "/" ]] && GITHUB_URL="$GITHUB_URL/"; :
+  log.debug "Github endpoint URL ${GITHUB_URL}"
+fi
+
+if [ -z "${RUNNER_NAME}" ]; then
+  log.error 'RUNNER_NAME must be set'
+  exit 1
+fi
+
+if [ -n "${RUNNER_ORG}" ] && [ -n "${RUNNER_REPO}" ] && [ -n "${RUNNER_ENTERPRISE}" ]; then
+  ATTACH="${RUNNER_ORG}/${RUNNER_REPO}"
+elif [ -n "${RUNNER_ORG}" ]; then
+  ATTACH="${RUNNER_ORG}"
+elif [ -n "${RUNNER_REPO}" ]; then
+  ATTACH="${RUNNER_REPO}"
+elif [ -n "${RUNNER_ENTERPRISE}" ]; then
+  ATTACH="enterprises/${RUNNER_ENTERPRISE}"
+else
+  log.error 'At least one of RUNNER_ORG, RUNNER_REPO, or RUNNER_ENTERPRISE must be set'
+  exit 1
+fi
+
+if [ -z "${RUNNER_TOKEN}" ]; then
+  log.error 'RUNNER_TOKEN must be set'
+  exit 1
+fi
+
+if [ -z "${RUNNER_REPO}" ] && [ -n "${RUNNER_GROUP}" ]; then
+  RUNNER_GROUPS=${RUNNER_GROUP}
+fi
+
+# OpenShift compatibility: Remove sudo usage
+if [[ "${UNITTEST:-}" == '' ]]; then
+  # Remove sudo from this command
+  chown -R ${RUNNER_USER_UID}:${DOCKER_GROUP_GID} "$RUNNER_HOME"
+  
+  shopt -s dotglob
+  # Skip copy if assets directory doesn't exist
+  if [ -d "$RUNNER_ASSETS_DIR" ]; then
+    cp -r "$RUNNER_ASSETS_DIR"/* "$RUNNER_HOME"/
+  fi
+  shopt -u dotglob
+fi
+
+if ! cd "${RUNNER_HOME}"; then
+  log.error "Failed to cd into ${RUNNER_HOME}"
+  exit 1
+fi
+
+config_args=()
+if [ "${RUNNER_FEATURE_FLAG_ONCE:-}" != "true" ] && [ "${RUNNER_EPHEMERAL}" == "true" ]; then
+  config_args+=(--ephemeral)
+  log.debug 'Passing --ephemeral to config.sh'
+fi
+if [ "${DISABLE_RUNNER_UPDATE:-}" == "true" ]; then
+  config_args+=(--disableupdate)
+  log.debug 'Passing --disableupdate to config.sh'
+fi
+
+update-status "Registering"
+
+retries_left=10
+while [[ ${retries_left} -gt 0 ]]; do
+  log.debug 'Configuring the runner.'
+  ./config.sh --unattended --replace \
+    --name "${RUNNER_NAME}" \
+    --url "${GITHUB_URL}${ATTACH}" \
+    --token "${RUNNER_TOKEN}" \
+    --runnergroup "${RUNNER_GROUPS}" \
+    --labels "${RUNNER_LABELS}" \
+    --work "${RUNNER_WORKDIR:-${RUNNER_HOME}/work}" "${config_args[@]}"
+
+  if [ -f .runner ]; then
+    log.debug 'Runner successfully configured.'
+    break
+  fi
+
+  log.debug 'Configuration failed. Retrying'
+  retries_left=$((retries_left - 1))
+  sleep 1
+done
+
+if [ ! -f .runner ]; then
+  log.error 'Configuration failed!'
+  exit 2
+fi
+
+cat .runner
+
+# Handle externals if needed
+if [ -z "${UNITTEST:-}" ] && [ -e ./externalstmp ]; then
+  mkdir -p ./externals
+  mv ./externalstmp/* ./externals/
+fi
+
+# Docker wait check (modified for OpenShift)
+WAIT_FOR_DOCKER_SECONDS=${WAIT_FOR_DOCKER_SECONDS:-120}
+if [[ "${DISABLE_WAIT_FOR_DOCKER}" != "true" ]] && [[ "${DOCKER_ENABLED}" == "true" ]]; then
+    log.debug 'Waiting for Docker daemon'
+    if ! timeout "${WAIT_FOR_DOCKER_SECONDS}s" bash -c 'until docker ps >/dev/null 2>&1; do sleep 1; done'; then
+      log.notice "Docker not available within ${WAIT_FOR_DOCKER_SECONDS} seconds"
+      exit 1
+    fi
+else
+  log.notice 'Skipping Docker wait'
+fi
+
+# Clean up sensitive environment variables
+unset RUNNER_NAME RUNNER_REPO RUNNER_TOKEN STARTUP_DELAY_IN_SECONDS
+
+# Load system environment variables
+if [ -z "${UNITTEST:-}" ] && [ -f /etc/environment ]; then
+  mapfile -t env </etc/environment
+fi
+
+update-status "Idle"
+
+# Use absolute path for run.sh
+log.notice "Starting runner"
+exec env -- "${env[@]}" ./run.sh
