@@ -1,9 +1,13 @@
-STEP 12/18: RUN export ARCH=$(echo ${TARGETPLATFORM} | cut -d '/' -f2)     && curl -L https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-${ARCH}-${RUNNER_VERSION}.tar.gz | tar xz -C /home/runner
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-100     9  100     9    0     0     45      0 --:--:-- --:--:-- --:--:--    45
-
-gzip: stdin: not in gzip format
-tar: Child returned status 1
-tar: Error is not recoverable: exiting now
-Error: building at STEP "RUN export ARCH=$(echo ${TARGETPLATFORM} | cut -d '/' -f2)     && curl -L https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-${ARCH}-${RUNNER_VERSION}.tar.gz | tar xz -C /home/runner": while running runtime: exit status 2
+# Replace the problematic RUN command with this corrected version
+# Install GitHub Actions Runner with proper architecture mapping
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
+        RUNNER_ARCH="x64"; \
+    elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
+        RUNNER_ARCH="arm64"; \
+    else \
+        echo "Unsupported platform: $TARGETPLATFORM"; exit 1; \
+    fi \
+    && curl -L -o actions-runner.tar.gz \
+        "https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-${RUNNER_ARCH}-${RUNNER_VERSION}.tar.gz" \
+    && tar xzf actions-runner.tar.gz -C /home/runner \
+    && rm actions-runner.tar.gz
