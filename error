@@ -1,7 +1,10 @@
-STEP 13/18: RUN if [ -z "${RUNNER_CONTAINER_HOOKS_VERSION}" ]; then         echo "ERROR: RUNNER_CONTAINER_HOOKS_VERSION not set!"; exit 1;     fi     && cd /home/runner     && echo "Downloading container hooks version: ${RUNNER_CONTAINER_HOOKS_VERSION}"     && curl -fL -o actions-runner-hooks.tar.gz         "https://github.com/actions/runner-container-hooks/releases/download/v${RUNNER_CONTAINER_HOOKS_VERSION}/actions-runner-hooks.tar.gz"     && tar xzf actions-runner-hooks.tar.gz     && rm actions-runner-hooks.tar.gz
-Downloading container hooks version: 0.3.2
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
-curl: (22) The requested URL returned error: 404
-Error: building at STEP "RUN if [ -z "${RUNNER_CONTAINER_HOOKS_VERSION}" ]; then         echo "ERROR: RUNNER_CONTAINER_HOOKS_VERSION not set!"; exit 1;     fi     && cd /home/runner     && echo "Downloading container hooks version: ${RUNNER_CONTAINER_HOOKS_VERSION}"     && curl -fL -o actions-runner-hooks.tar.gz         "https://github.com/actions/runner-container-hooks/releases/download/v${RUNNER_CONTAINER_HOOKS_VERSION}/actions-runner-hooks.tar.gz"     && tar xzf actions-runner-hooks.tar.gz     && rm actions-runner-hooks.tar.gz": while running runtime: exit status 22
+# Replace the container hooks installation with this corrected version
+RUN if [ -z "${RUNNER_CONTAINER_HOOKS_VERSION}" ]; then \
+        echo "ERROR: RUNNER_CONTAINER_HOOKS_VERSION not set!"; exit 1; \
+    fi \
+    && cd /home/runner \
+    && echo "Downloading container hooks version: ${RUNNER_CONTAINER_HOOKS_VERSION}" \
+    && curl -fL -o actions-runner-hooks.tar.gz \
+        "https://github.com/actions/runner-container-hooks/releases/download/v${RUNNER_CONTAINER_HOOKS_VERSION}/actions-runner-hooks-${RUNNER_CONTAINER_HOOKS_VERSION}-noarch.tar.gz" \
+    && tar xzf actions-runner-hooks.tar.gz \
+    && rm actions-runner-hooks.tar.gz
