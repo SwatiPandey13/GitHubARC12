@@ -1,3 +1,42 @@
-STEP 34/38: RUN chgrp -R 0 $HOME /opt /etc/arc /usr/bin /var/run/docker.sock &&     chmod -R g=u $HOME /opt /etc/arc /usr/bin /var/run/docker.sock &&     chmod g=u /etc/passwd
-chgrp: cannot access '/var/run/docker.sock': No such file or directory
-Error: building at STEP "RUN chgrp -R 0 $HOME /opt /etc/arc /usr/bin /var/run/docker.sock &&     chmod -R g=u $HOME /opt /etc/arc /usr/bin /var/run/docker.sock &&     chmod g=u /etc/passwd": while running runtime: exit status 1
+podman run -it -e RUNNER_NAME=test-runner -e RUNNER_TOKEN=token_value -e DEBUG=true artifactory.voya.net/docker-virtual/openshift/actions/testing:v1.0.11
++ source /usr/bin/logger.sh
++ log.notice 'starting entrypoint.sh'
++ log NOTICE 'starting entrypoint.sh'
++ local level=NOTICE
++ local 'message=starting entrypoint.sh'
+++ date -u +%Y-%m-%dT%H:%M:%SZ
++ echo '2025-07-16T17:25:56Z [NOTICE] starting entrypoint.sh'
+2025-07-16T17:25:56Z [NOTICE] starting entrypoint.sh
++ source /usr/bin/graceful-stop.sh
+++ source /usr/bin/logger.sh
+++ RUNNER_GRACEFUL_STOP_TIMEOUT=25
++ trap graceful_stop TERM
++ log.notice 'Starting GitHub Actions Runner'
++ log NOTICE 'Starting GitHub Actions Runner'
++ local level=NOTICE
++ local 'message=Starting GitHub Actions Runner'
+++ date -u +%Y-%m-%dT%H:%M:%SZ
++ echo '2025-07-16T17:25:56Z [NOTICE] Starting GitHub Actions Runner'
+2025-07-16T17:25:56Z [NOTICE] Starting GitHub Actions Runner
++ RUNNER_PID=10
++ wait 10
++ /usr/bin/startup.sh
+2025-07-16T17:25:56Z [DEBUG] Working with public GitHub
+2025-07-16T17:25:56Z [ERROR] At least one of RUNNER_ORG, RUNNER_REPO, or RUNNER_ENTERPRISE must be set
++ RUNNER_EXIT_CODE=1
++ log.notice 'Runner process exited with code 1'
++ log NOTICE 'Runner process exited with code 1'
++ local level=NOTICE
++ local 'message=Runner process exited with code 1'
+++ date -u +%Y-%m-%dT%H:%M:%SZ
++ echo '2025-07-16T17:25:56Z [NOTICE] Runner process exited with code 1'
+2025-07-16T17:25:56Z [NOTICE] Runner process exited with code 1
++ '[' -f /home/runner/.runner ']'
++ log.notice 'Exiting container'
++ log NOTICE 'Exiting container'
++ local level=NOTICE
++ local 'message=Exiting container'
+++ date -u +%Y-%m-%dT%H:%M:%SZ
++ echo '2025-07-16T17:25:56Z [NOTICE] Exiting container'
+2025-07-16T17:25:56Z [NOTICE] Exiting container
++ exit 1
