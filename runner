@@ -1,8 +1,14 @@
+Dockerfile
+
 FROM artifactory.voya.net/docker-virtual/openshift/ubi8/openjdk-8:latest
 
 ARG TARGETPLATFORM
-ARG RUNNER_VERSION="2.316.1"
-ARG RUNNER_CONTAINER_HOOKS_VERSION="0.3.2"
+ARG RUNNER_VERSION
+ARG RUNNER_CONTAINER_HOOKS_VERSION
+ARG CHANNEL=stable
+ARG DOCKER_VERSION=24.0.7
+ARG DOCKER_COMPOSE_VERSION=v2.23.0
+ARG DUMB_INIT_VERSION=1.2.5
 ARG RUNNER_USER_UID=1001
 ARG DOCKER_GROUP_GID=121
 
@@ -10,52 +16,351 @@ ARG DOCKER_GROUP_GID=121
 COPY voya_ecc_root.crx voyarootca.cer voya_rsa_root.crx zscalerrootca.cer /etc/pki/ca-trust/source/anchors/
 RUN update-ca-trust extract
 
-# 2. Install dependencies
-RUN microdnf install -y \
+RUN microdnf update -y && \
+    microdnf install -y \
         curl \
+        ca-certificates \
         git \
+        dnf \
+        yum \
         jq \
         sudo \
         unzip \
         zip \
-        dnf \
         libicu \
         krb5-libs \
-        lttng-ust \
         zlib \
         openssl-libs \
+        shadow-utils \
+        findutils \
         libyaml-devel \
-    && microdnf clean all
-
-# 3. Install git-lfs
-RUN dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm \
-    && dnf install -y git-lfs \
+        procps-ng \
     && dnf clean all
 
-# 4. Create runner user and directories
-RUN groupadd -g $DOCKER_GROUP_GID docker \
-    && useradd -m -u $RUNNER_USER_UID runner \
-    && usermod -aG docker runner \
-    && mkdir -p /home/runner /runnertmp \
-    && chown -R runner:runner /home/runner /runnertmp
+RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.rpm.sh | bash && \
+    dnf install -y git-lfs && \
+    git lfs install
 
-# 5. Install GitHub Actions Runner
-RUN export ARCH=$(echo ${TARGETPLATFORM} | cut -d '/' -f2) \
-    && curl -L https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-${ARCH}-${RUNNER_VERSION}.tar.gz | tar xz -C /home/runner
+RUN groupadd --gid $DOCKER_GROUP_GID docker && \
+    useradd --uid $RUNNER_USER_UID -g $DOCKER_GROUP_GID --create-home runner && \
+    usermod -aG wheel runner && \
+    echo "%wheel        ALL=(ALL)       NOPASSWD: ALL" > /etc/sudoers.d/wheel && \
+    chmod 0440 /etc/sudoers.d/wheel
 
-# 6. Install container hooks
-RUN cd /home/runner \
-    && curl -O -L https://github.com/actions/runner-container-hooks/releases/download/v${RUNNER_CONTAINER_HOOKS_VERSION}/actions-runner-hooks-${RUNNER_CONTAINER_HOOKS_VERSION}-noarch.tar.gz \
-    && tar xzf actions-runner-hooks-${RUNNER_CONTAINER_HOOKS_VERSION}-noarch.tar.gz \
-    && rm actions-runner-hooks-*.tar.gz
+ENV HOME=/home/runner
 
-# 7. Copy run script and set permissions
-COPY run.sh /home/runner/run.sh
-RUN chmod +x /home/runner/run.sh
+RUN ARCH=$(echo ${TARGETPLATFORM} | cut -d / -f2) && \
+    if [ "$ARCH" = "arm64" ]; then ARCH=aarch64; fi && \
+    if [ "$ARCH" = "amd64" ] || [ "$ARCH" = "i386" ]; then ARCH=x86_64; fi && \
+    curl -fLo /usr/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v${DUMB_INIT_VERSION}/dumb-init_${DUMB_INIT_VERSION}_${ARCH} && \
+    chmod +x /usr/bin/dumb-init
 
-# 8. Switch to runner user
-USER runner
-WORKDIR /home/runner
+ENV RUNNER_ASSETS_DIR=/runnertmp
+RUN ARCH=$(echo ${TARGETPLATFORM} | cut -d / -f2) && \
+    if [ "$ARCH" = "amd64" ] || [ "$ARCH" = "x86_64" ] || [ "$ARCH" = "i386" ]; then ARCH=x64; fi && \
+    mkdir -p "$RUNNER_ASSETS_DIR" && \
+    cd "$RUNNER_ASSETS_DIR" && \
+    curl -fLo runner.tar.gz https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-${ARCH}-${RUNNER_VERSION}.tar.gz && \
+    tar xzf ./runner.tar.gz && \
+    rm runner.tar.gz && \
+    ./bin/installdependencies.sh && \
+    mv ./externals ./externalstmp
 
-# 9. Set entrypoint
-ENTRYPOINT ["./run.sh"]
+# Copy runner to home directory
+RUN cp -r $RUNNER_ASSETS_DIR/* $HOME/ && \
+    chown -R $RUNNER_USER_UID:$DOCKER_GROUP_GID $HOME
+
+ENV RUNNER_TOOL_CACHE=/opt/hostedtoolcache
+RUN mkdir /opt/hostedtoolcache && \
+    chgrp $DOCKER_GROUP_GID /opt/hostedtoolcache && \
+    chmod g+rwx /opt/hostedtoolcache
+
+RUN cd "$RUNNER_ASSETS_DIR" && \
+    curl -fLo runner-container-hooks.zip https://github.com/actions/runner-container-hooks/releases/download/v${RUNNER_CONTAINER_HOOKS_VERSION}/actions-runner-hooks-k8s-${RUNNER_CONTAINER_HOOKS_VERSION}.zip && \
+    unzip ./runner-container-hooks.zip -d ./k8s && \
+    rm -f runner-container-hooks.zip
+
+COPY entrypoint.sh startup.sh logger.sh graceful-stop.sh update-status /usr/bin/
+COPY docker-shim.sh /usr/local/bin/docker
+COPY hooks /etc/arc/hooks/
+
+ENV PATH="${PATH}:${HOME}/.local/bin"
+ENV ImageOS=rhel8
+
+RUN echo "PATH=${PATH}" > /etc/environment && \
+    echo "ImageOS=${ImageOS}" >> /etc/environment
+
+# Set execute permissions
+RUN chmod +x /usr/bin/entrypoint.sh /usr/bin/startup.sh /usr/bin/logger.sh /usr/bin/graceful-stop.sh /usr/local/bin/docker
+
+# Add debug tools and ensure scripts are executable
+RUN chmod +x $HOME/run.sh $HOME/bin/*.sh
+
+# Create symlink to runner scripts in PATH
+RUN ln -s $HOME/run.sh /usr/bin/run.sh
+
+# Fix for OpenShift arbitrary user IDs
+RUN chgrp -R 0 $HOME /opt/hostedtoolcache /etc/arc && \
+    chmod -R g=u $HOME /opt/hostedtoolcache /etc/arc
+
+WORKDIR $HOME
+
+# Important: Use numeric UID for OpenShift compatibility
+USER $RUNNER_USER_UID
+
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]
+CMD ["/bin/bash", "-c", "source /etc/environment && /usr/bin/entrypoint.sh"]
+
+
+===========================================================================================
+
+startup.sh
+
+#!/bin/bash
+source logger.sh
+
+RUNNER_ASSETS_DIR=${RUNNER_ASSETS_DIR:-/runnertmp}
+RUNNER_HOME=${RUNNER_HOME:-/runner}
+
+# Let GitHub runner execute these hooks. These environment variables are used by GitHub's Runner as described here
+# https://github.com/actions/runner/blob/main/docs/adrs/1751-runner-job-hooks.md
+# Scripts referenced in the ACTIONS_RUNNER_HOOK_ environment variables must end in .sh or .ps1
+# for it to become a valid hook script, otherwise GitHub will fail to run the hook
+export ACTIONS_RUNNER_HOOK_JOB_STARTED=/etc/arc/hooks/job-started.sh
+export ACTIONS_RUNNER_HOOK_JOB_COMPLETED=/etc/arc/hooks/job-completed.sh
+
+if [ -n "${STARTUP_DELAY_IN_SECONDS}" ]; then
+  log.notice "Delaying startup by ${STARTUP_DELAY_IN_SECONDS} seconds"
+  sleep "${STARTUP_DELAY_IN_SECONDS}"
+fi
+
+if [ -z "${GITHUB_URL}" ]; then
+  log.debug 'Working with public GitHub'
+  GITHUB_URL="https://github.com/"
+else
+  length=${#GITHUB_URL}
+  last_char=${GITHUB_URL:length-1:1}
+
+  [[ $last_char != "/" ]] && GITHUB_URL="$GITHUB_URL/"; :
+  log.debug "Github endpoint URL ${GITHUB_URL}"
+fi
+
+if [ -z "${RUNNER_NAME}" ]; then
+  log.error 'RUNNER_NAME must be set'
+  exit 1
+fi
+
+if [ -n "${RUNNER_ORG}" ] && [ -n "${RUNNER_REPO}" ] && [ -n "${RUNNER_ENTERPRISE}" ]; then
+  ATTACH="${RUNNER_ORG}/${RUNNER_REPO}"
+elif [ -n "${RUNNER_ORG}" ]; then
+  ATTACH="${RUNNER_ORG}"
+elif [ -n "${RUNNER_REPO}" ]; then
+  ATTACH="${RUNNER_REPO}"
+elif [ -n "${RUNNER_ENTERPRISE}" ]; then
+  ATTACH="enterprises/${RUNNER_ENTERPRISE}"
+else
+  log.error 'At least one of RUNNER_ORG, RUNNER_REPO, or RUNNER_ENTERPRISE must be set'
+  exit 1
+fi
+
+if [ -z "${RUNNER_TOKEN}" ]; then
+  log.error 'RUNNER_TOKEN must be set'
+  exit 1
+fi
+
+if [ -z "${RUNNER_REPO}" ] && [ -n "${RUNNER_GROUP}" ];then
+  RUNNER_GROUPS=${RUNNER_GROUP}
+fi
+
+# Hack due to https://github.com/actions/actions-runner-controller/issues/252#issuecomment-758338483
+if [ ! -d "${RUNNER_HOME}" ]; then
+  log.error "$RUNNER_HOME should be an emptyDir mount. Please fix the pod spec."
+  exit 1
+fi
+
+# if this is not a testing environment
+if [[ "${UNITTEST:-}" == '' ]]; then
+  sudo chown -R runner:docker "$RUNNER_HOME"
+  # enable dotglob so we can copy a ".env" file to load in env vars as part of the service startup if one is provided
+  # loading a .env from the root of the service is part of the actions/runner logic
+  shopt -s dotglob
+  # use cp instead of mv to avoid issues when src and dst are on different devices
+  cp -r "$RUNNER_ASSETS_DIR"/* "$RUNNER_HOME"/
+  shopt -u dotglob
+fi
+
+if ! cd "${RUNNER_HOME}"; then
+  log.error "Failed to cd into ${RUNNER_HOME}"
+  exit 1
+fi
+
+# past that point, it's all relative pathes from /runner
+
+config_args=()
+if [ "${RUNNER_FEATURE_FLAG_ONCE:-}" != "true" ] && [ "${RUNNER_EPHEMERAL}" == "true" ]; then
+  config_args+=(--ephemeral)
+  log.debug 'Passing --ephemeral to config.sh to enable the ephemeral runner.'
+fi
+if [ "${DISABLE_RUNNER_UPDATE:-}" == "true" ]; then
+  config_args+=(--disableupdate)
+  log.debug 'Passing --disableupdate to config.sh to disable automatic runner updates.'
+fi
+
+update-status "Registering"
+
+retries_left=10
+while [[ ${retries_left} -gt 0 ]]; do
+  log.debug 'Configuring the runner.'
+  ./config.sh --unattended --replace \
+    --name "${RUNNER_NAME}" \
+    --url "${GITHUB_URL}${ATTACH}" \
+    --token "${RUNNER_TOKEN}" \
+    --runnergroup "${RUNNER_GROUPS}" \
+    --labels "${RUNNER_LABELS}" \
+    --work "${RUNNER_WORKDIR}" "${config_args[@]}"
+
+  if [ -f .runner ]; then
+    log.debug 'Runner successfully configured.'
+    break
+  fi
+
+  log.debug 'Configuration failed. Retrying'
+  retries_left=$((retries_left - 1))
+  sleep 1
+done
+
+if [ ! -f .runner ]; then
+  # we couldn't configure and register the runner; no point continuing
+  log.error 'Configuration failed!'
+  exit 2
+fi
+
+cat .runner
+# Note: the `.runner` file's content should be something like the below:
+#
+# $ cat /runner/.runner
+# {
+# "agentId": 117, #=> corresponds to the ID of the runner
+# "agentName": "THE_RUNNER_POD_NAME",
+# "poolId": 1,
+# "poolName": "Default",
+# "serverUrl": "https://pipelines.actions.githubusercontent.com/SOME_RANDOM_ID",
+# "gitHubUrl": "https://github.com/USER/REPO",
+# "workFolder": "/some/work/dir" #=> corresponds to Runner.Spec.WorkDir
+# }
+#
+# Especially `agentId` is important, as other than listing all the runners in the repo,
+# this is the only change we could get the exact runnner ID which can be useful for further
+# GitHub API call like the below. Note that 171 is the agentId seen above.
+#   curl \
+#     -H "Accept: application/vnd.github.v3+json" \
+#     -H "Authorization: bearer ${GITHUB_TOKEN}"
+#     https://api.github.com/repos/USER/REPO/actions/runners/171
+
+# Hack due to the DinD volumes
+if [ -z "${UNITTEST:-}" ] && [ -e ./externalstmp ]; then
+  mkdir -p ./externals
+  mv ./externalstmp/* ./externals/
+fi
+
+WAIT_FOR_DOCKER_SECONDS=${WAIT_FOR_DOCKER_SECONDS:-120}
+if [[ "${DISABLE_WAIT_FOR_DOCKER}" != "true" ]] && [[ "${DOCKER_ENABLED}" == "true" ]]; then
+    log.debug 'Docker enabled runner detected and Docker daemon wait is enabled'
+    log.debug "Waiting until Docker is available or the timeout of ${WAIT_FOR_DOCKER_SECONDS} seconds is reached"
+    if ! timeout "${WAIT_FOR_DOCKER_SECONDS}s" bash -c 'until docker ps ;do sleep 1; done'; then
+      log.notice "Docker has not become available within ${WAIT_FOR_DOCKER_SECONDS} seconds. Exiting with status 1."
+      exit 1
+    fi
+else
+  log.notice 'Docker wait check skipped. Either Docker is disabled or the wait is disabled, continuing with entrypoint'
+fi
+
+# Unset entrypoint environment variables so they don't leak into the runner environment
+unset RUNNER_NAME RUNNER_REPO RUNNER_TOKEN STARTUP_DELAY_IN_SECONDS DISABLE_WAIT_FOR_DOCKER
+
+# Docker ignores PAM and thus never loads the system environment variables that
+# are meant to be set in every environment of every user. We emulate the PAM
+# behavior by reading the environment variables without interpreting them.
+#
+# https://github.com/actions/actions-runner-controller/issues/1135
+# https://github.com/actions/runner/issues/1703
+
+# /etc/environment may not exist when running unit tests depending on the platform being used
+# (e.g. Mac OS) so we just skip the mapping entirely
+if [ -z "${UNITTEST:-}" ]; then
+  mapfile -t env </etc/environment
+fi
+
+log.notice "WARNING LATEST TAG HAS BEEN DEPRECATED. SEE GITHUB ISSUE FOR DETAILS:"
+log.notice "https://github.com/actions/actions-runner-controller/issues/2056"
+
+update-status "Idle"
+exec env -- "${env[@]}" ./run.sh
+
+==============================================================================================================
+
+gracceful_stop.sh
+
+#!/bin/bash
+
+# Align timeout with OpenShift's default terminationGracePeriodSeconds (30s)
+RUNNER_GRACEFUL_STOP_TIMEOUT=${RUNNER_GRACEFUL_STOP_TIMEOUT:-25}
+
+graceful_stop() {
+  log.notice "Graceful stop initiated (OpenShift/RHEL compatible version)"
+
+  # Check dockerd accessibility
+  if ! docker info >/dev/null 2>&1; then
+    log.warning "Dockerd inaccessible. Ensure RUNNER_USER has /var/run/docker.sock access."
+  fi
+
+  if ! pushd "$RUNNER_HOME" 2>/dev/null; then
+    log.error "Cannot access ${RUNNER_HOME}. Permission issue?"
+    exit 1
+  fi
+
+  log.notice "Waiting for runner registration..."
+  while ! [ -f .runner ]; do
+    sleep 1
+  done
+
+  if ! /runner/config.sh remove --token "$RUNNER_TOKEN" >/dev/null 2>&1; then
+    log.notice "Awaiting self-termination (timeout: ${RUNNER_GRACEFUL_STOP_TIMEOUT}s)"
+    timeout_counter=0
+    while [[ $timeout_counter -lt $RUNNER_GRACEFUL_STOP_TIMEOUT ]]; do
+      sleep 1
+      if ! pgrep -f "Runner.Listener" >/dev/null; then
+        log.notice "Runner exited pre-timeout"
+        break
+      fi
+      timeout_counter=$((timeout_counter+1))
+    done
+  fi
+
+  popd >/dev/null || true
+
+  if pgrep -f "Runner.Listener" >/dev/null; then
+    runner_pid=$(pgrep -f "Runner.Listener")
+    log.notice "Sending SIGTERM to Runner.Listener (PID: ${runner_pid})"
+    kill -TERM "$runner_pid"
+
+    # Wait for process exit
+    timeout_counter=0
+    while [[ $timeout_counter -lt $RUNNER_GRACEFUL_STOP_TIMEOUT ]]; do
+      sleep 1
+      if ! pgrep -f "Runner.Listener" >/dev/null; then
+        break
+      fi
+      timeout_counter=$((timeout_counter+1))
+    done
+  fi
+
+  # Cleanup init process
+  if [ -n "$RUNNER_INIT_PID" ] && ps -p "$RUNNER_INIT_PID" >/dev/null; then
+    log.notice "Terminating init process (PID: ${RUNNER_INIT_PID})"
+    kill -TERM "$RUNNER_INIT_PID" 2>/dev/null
+    wait "$RUNNER_INIT_PID" || true
+  fi
+
+  log.notice "Graceful stop completed"
+}
