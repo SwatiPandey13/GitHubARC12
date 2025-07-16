@@ -111,6 +111,44 @@ USER $RUNNER_USER_UID
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 CMD ["/bin/bash", "-c", "source /etc/environment && /usr/bin/entrypoint.sh"]
 
+===========================================================================================
+
+entrypoint.sh
+
+#!/bin/bash
+source /usr/bin/logger.sh
+source /usr/bin/graceful-stop.sh
+trap graceful_stop TERM
+
+# Change to runner home directory - CRITICAL FIX
+cd "${HOME}"
+
+/usr/bin/dumb-init bash <<'SCRIPT' &
+source /usr/bin/logger.sh
+
+# Use absolute path for startup.sh
+/usr/bin/startup.sh
+SCRIPT
+
+RUNNER_INIT_PID=$!
+log.notice "Runner init started with pid $RUNNER_INIT_PID"
+wait $RUNNER_INIT_PID
+log.notice "Runner init exited. Exiting this process with code 0 so that the container and the pod is GC'ed Kubernetes soon."
+
+# Use $HOME instead of fixed /runner path
+if [ -f "${HOME}/.runner" ]; then
+  echo "Removing the .runner file"
+  rm -f "${HOME}/.runner"
+fi
+
+trap - TERM
+
+set -x  # Enable debug mode
+echo "### Starting entrypoint.sh ###"
+env
+echo "WORKDIR: $(pwd)"
+echo "Runner files:"
+ls -al
 
 ===========================================================================================
 
