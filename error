@@ -1,9 +1,6 @@
-STEP 13/18: RUN cd /home/runner     && curl -O -L https://github.com/actions/runner-container-hooks/releases/download/v${RUNNER_CONTAINER_HOOKS_VERSION}/actions-runner-hooks-${RUNNER_CONTAINER_HOOKS_VERSION}-noarch.tar.gz     && tar xzf actions-runner-hooks-${RUNNER_CONTAINER_HOOKS_VERSION}-noarch.tar.gz     && rm actions-runner-hooks-*.tar.gz
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-100     9  100     9    0     0     37      0 --:--:-- --:--:-- --:--:--    36
-
-gzip: stdin: not in gzip format
-tar: Child returned status 1
-tar: Error is not recoverable: exiting now
-Error: building at STEP "RUN cd /home/runner     && curl -O -L https://github.com/actions/runner-container-hooks/releases/download/v${RUNNER_CONTAINER_HOOKS_VERSION}/actions-runner-hooks-${RUNNER_CONTAINER_HOOKS_VERSION}-noarch.tar.gz     && tar xzf actions-runner-hooks-${RUNNER_CONTAINER_HOOKS_VERSION}-noarch.tar.gz     && rm actions-runner-hooks-*.tar.gz": while running runtime: exit status 2
+# Replace the container hooks installation with this corrected version
+RUN cd /home/runner \
+    && curl -fL -o actions-runner-hooks.tar.gz \
+        "https://github.com/actions/runner-container-hooks/releases/download/v${RUNNER_CONTAINER_HOOKS_VERSION}/actions-runner-hooks-${RUNNER_CONTAINER_HOOKS_VERSION}-noarch.tar.gz" \
+    && tar xzf actions-runner-hooks.tar.gz \
+    && rm actions-runner-hooks.tar.gz
