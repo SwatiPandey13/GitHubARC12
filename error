@@ -1,3 +1,1 @@
-STEP 21/43: RUN if [ -e /var/spool/mail ]; then rm -f /var/spool/mail; fi &&     ln -s /dev/null /var/spool/mail
-rm: cannot remove '/var/spool/mail': Is a directory
-Error: building at STEP "RUN if [ -e /var/spool/mail ]; then rm -f /var/spool/mail; fi &&     ln -s /dev/null /var/spool/mail": while running runtime: exit status 1
+Error: writing blob: adding layer with blob "sha256:d10e886baad915de165418242de40baaf7d65153f117a1ffcde3f87e4148591a": processing tar file(potentially insufficient UIDs or GIDs available in user namespace (requested 0:12 for /var/spool/mail): Check /etc/subuid and /etc/subgid if configured locally and run "podman system migrate": lchown /var/spool/mail: invalid argument): exit status 1
