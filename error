@@ -1,2 +1,3 @@
-RUN if [ -e /var/spool/mail ]; then rm -f /var/spool/mail; fi && \
-    ln -s /dev/null /var/spool/mail
+STEP 21/43: RUN if [ -e /var/spool/mail ]; then rm -f /var/spool/mail; fi &&     ln -s /dev/null /var/spool/mail
+rm: cannot remove '/var/spool/mail': Is a directory
+Error: building at STEP "RUN if [ -e /var/spool/mail ]; then rm -f /var/spool/mail; fi &&     ln -s /dev/null /var/spool/mail": while running runtime: exit status 1
