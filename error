@@ -1,3 +1,2 @@
-# Fix mail spool directory issue
-RUN rm -f /var/spool/mail && \
+RUN if [ -e /var/spool/mail ]; then rm -f /var/spool/mail; fi && \
     ln -s /dev/null /var/spool/mail
