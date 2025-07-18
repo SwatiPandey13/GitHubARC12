@@ -1,11 +1,4 @@
-# Replace existing SonarScanner installation with this
-ARG SONAR_SCANNER_VERSION=4.8.0.2856
-RUN cd /tmp && \
-    curl -fLO https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}-linux.zip && \
-    unzip sonar-scanner-cli-${SONAR_SCANNER_VERSION}-linux.zip -d /opt/ && \
-    rm -f sonar-scanner-cli-${SONAR_SCANNER_VERSION}-linux.zip && \
-    mv /opt/sonar-scanner-${SONAR_SCANNER_VERSION}-linux /opt/sonar-scanner && \
-    ln -s /opt/sonar-scanner/bin/sonar-scanner /usr/bin/sonar-scanner
+java.lang.UnsupportedClassVersionError: org/sonarsource/scanner/maven/SonarQubeMojo has been compiled by a more recent version of the Java Runtime (class file version 55.0), this version of the Java Runtime only recognizes class file versions up to 52.0
 
 
 
