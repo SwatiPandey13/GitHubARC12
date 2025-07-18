@@ -4,8 +4,6 @@ ARG TARGETPLATFORM
 ARG RUNNER_VERSION
 ARG RUNNER_CONTAINER_HOOKS_VERSION
 ARG CHANNEL=stable
-ARG DOCKER_VERSION=24.0.7
-ARG DOCKER_COMPOSE_VERSION=v2.23.0
 ARG DUMB_INIT_VERSION=1.2.5
 ARG RUNNER_USER_UID=1001
 ARG DOCKER_GROUP_GID=121
@@ -48,19 +46,50 @@ RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.r
     dnf install -y git-lfs && \
     git lfs install
 
+# Install Podman and related tools
+RUN dnf install -y podman buildah crun fuse-overlayfs slirp4netns && \
+    dnf clean all
+
+# Create docker group and runner user
 RUN groupadd --gid $DOCKER_GROUP_GID docker && \
     useradd --uid $RUNNER_USER_UID -g $DOCKER_GROUP_GID --create-home runner && \
+    usermod -a -G docker runner && \
     chmod g+w /etc/passwd
 
+# Setup directories for rootless Podman
 ENV HOME=/home/runner
 ENV RUNNER_HOME=/home/runner
+RUN mkdir -p $HOME/.local/share/containers && \
+    chown -R $RUNNER_USER_UID:$DOCKER_GROUP_GID $HOME/.local
 
+# Create and configure containers.conf
+RUN mkdir -p /etc/containers && \
+    echo -e '[containers]\nuserns = "host"\n' > /etc/containers/containers.conf && \
+    echo -e '[storage]\ndriver = "overlay"\nignore_chown_errors = "true"\n' >> /etc/containers/containers.conf && \
+    echo -e '[engine]\ncgroup_manager = "cgroupfs"\nevents_logger = "file"\n' >> /etc/containers/containers.conf && \
+    chmod 644 /etc/containers/containers.conf
+
+# Prepare subuid/subgid files
+RUN touch /etc/subuid /etc/subgid && \
+    chgrp 0 /etc/subuid /etc/subgid && \
+    chmod g+rw /etc/subuid /etc/subgid
+
+# Mail spool fix
+RUN rm -rf /var/spool/mail && \
+    mkdir -p /var/spool/mail && \
+    groupadd -g 12 mail || true && \
+    chgrp mail /var/spool/mail && \
+    chmod 1777 /var/spool/mail && \
+    usermod -a -G mail runner
+
+# Install dumb-init
 RUN ARCH=$(echo ${TARGETPLATFORM} | cut -d / -f2) && \
     if [ "$ARCH" = "arm64" ]; then ARCH=aarch64; fi && \
     if [ "$ARCH" = "amd64" ] || [ "$ARCH" = "i386" ]; then ARCH=x86_64; fi && \
     curl -fLo /usr/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v${DUMB_INIT_VERSION}/dumb-init_${DUMB_INIT_VERSION}_${ARCH} && \
     chmod +x /usr/bin/dumb-init
 
+# Install GitHub runner
 ENV RUNNER_ASSETS_DIR=/runnertmp
 RUN ARCH=$(echo ${TARGETPLATFORM} | cut -d / -f2) && \
     if [ "$ARCH" = "amd64" ] || [ "$ARCH" = "x86_64" ] || [ "$ARCH" = "i386" ]; then ARCH=x64; fi && \
@@ -70,52 +99,48 @@ RUN ARCH=$(echo ${TARGETPLATFORM} | cut -d / -f2) && \
     tar xzf ./runner.tar.gz && \
     rm runner.tar.gz && \
     ./bin/installdependencies.sh
-# mv ./externals ./externalstmp
 
 # Copy runner to home directory
 RUN cp -r $RUNNER_ASSETS_DIR/* $HOME/ && \
     chown -R $RUNNER_USER_UID:$DOCKER_GROUP_GID $HOME
 
+# Set up tool cache
 ENV RUNNER_TOOL_CACHE=/opt/hostedtoolcache
 RUN mkdir /opt/hostedtoolcache && \
     chgrp $DOCKER_GROUP_GID /opt/hostedtoolcache && \
     chmod g+rwx /opt/hostedtoolcache
 
+# Install container hooks
 RUN cd "$RUNNER_ASSETS_DIR" && \
     curl -fLo runner-container-hooks.zip https://github.com/actions/runner-container-hooks/releases/download/v${RUNNER_CONTAINER_HOOKS_VERSION}/actions-runner-hooks-k8s-${RUNNER_CONTAINER_HOOKS_VERSION}.zip && \
     unzip ./runner-container-hooks.zip -d ./k8s && \
-    rm -f runner-container-hooks.zip
+    rm -f runner-container-hooks.zip && \
+    mkdir -p /etc/arc/hooks && \
+    cp -r ./k8s/* /etc/arc/hooks/ && \
+    chmod -R +x /etc/arc/hooks
 
+# Copy scripts
 COPY entrypoint.sh startup.sh logger.sh graceful-stop.sh update-status /usr/bin/
 COPY docker-shim.sh /usr/local/bin/docker
-COPY hooks /etc/arc/hooks/
 
+# Environment setup
 ENV PATH="${PATH}:${HOME}/.local/bin"
 ENV ImageOS=rhel8
-
 RUN echo "PATH=${PATH}" > /etc/environment && \
-    echo "ImageOS=${ImageOS}" >> /etc/environment
+    echo "ImageOS=${ImageOS}" >> /etc/environment && \
+    echo "CONTAINERS_CONF=/etc/containers/containers.conf" >> /etc/environment
 
-# Set execute permissions
-RUN chmod 755 /usr/bin/entrypoint.sh /usr/bin/startup.sh /usr/bin/logger.sh /usr/bin/graceful-stop.sh /usr/local/bin/docker
-
-# Add debug tools and ensure scripts are executable
-RUN chmod +x $HOME/run.sh $HOME/bin/*.sh
-
-# Create symlink to runner scripts in PATH
-RUN ln -s $HOME/run.sh /usr/bin/run.sh
-
-# Fix for OpenShift arbitrary user IDs
-RUN chgrp -R 0 $HOME /opt /etc/arc /usr/bin && \
-    chmod -R g=u $HOME /opt /etc/arc /usr/bin && \
+# Set permissions
+RUN chmod 755 /usr/bin/entrypoint.sh /usr/bin/startup.sh /usr/bin/logger.sh /usr/bin/graceful-stop.sh /usr/local/bin/docker && \
+    chmod +x $HOME/run.sh $HOME/bin/*.sh && \
+    ln -s $HOME/run.sh /usr/bin/run.sh && \
+    # OpenShift permissions
+    chgrp -R 0 $HOME /opt /etc/arc /usr/bin /etc/containers && \
+    chmod -R g=u $HOME /opt /etc/arc /usr/bin /etc/containers && \
     chmod g+rw /etc/passwd && \
-    chmod 755 /usr/bin/entrypoint.sh /usr/bin/startup.sh /usr/bin/logger.sh /usr/bin/graceful-stop.sh
-
-RUN ls -l /usr/bin/entrypoint.sh
+    find $HOME -type d -exec chmod g+x {} +
 
 WORKDIR $HOME
-
-# Important: Use numeric UID for OpenShift compatibility
 USER $RUNNER_USER_UID
 
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
