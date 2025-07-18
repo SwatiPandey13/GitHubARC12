@@ -1,0 +1,8 @@
+Error:  Failed to execute goal on project volo: Could not resolve dependencies for project com.generate.project.parent:volo:pom:1.0.0: Could not find artifact sun.jdk:tools:jar:1.8 at specified path /usr/lib/jvm/java-11-openjdk/lib/tools.jar -> [Help 1]
+Error:  
+Error:  To see the full stack trace of the errors, re-run Maven with the -e switch.
+Error:  Re-run Maven using the -X switch to enable full debug logging.
+Error:  
+Error:  For more information about the errors and possible solutions, please read the following articles:
+Error:  [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/DependencyResolutionException
+Error: Process completed with exit code 1.
