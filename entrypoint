@@ -1,34 +1,30 @@
 #!/bin/bash
+set -x
 source /usr/bin/logger.sh
+log.notice "starting entrypoint.sh"
+
 source /usr/bin/graceful-stop.sh
-trap graceful_stop TERM
 
-# Change to runner home directory - CRITICAL FIX
-cd "${HOME}"
+# Set up signal handler
+trap 'graceful_stop' TERM
 
-/usr/bin/dumb-init bash <<'SCRIPT' &
-source /usr/bin/logger.sh
+log.notice "Starting GitHub Actions Runner"
 
-# Use absolute path for startup.sh
-/usr/bin/startup.sh
-SCRIPT
+# Start the runner in background
+/usr/bin/startup.sh &
+RUNNER_PID=$!
 
-RUNNER_INIT_PID=$!
-log.notice "Runner init started with pid $RUNNER_INIT_PID"
-wait $RUNNER_INIT_PID
-log.notice "Runner init exited. Exiting this process with code 0 so that the container and the pod is GC'ed Kubernetes soon."
+# Wait for runner to exit
+wait $RUNNER_PID
+RUNNER_EXIT_CODE=$?
 
-# Use $HOME instead of fixed /runner path
+log.notice "Runner process exited with code ${RUNNER_EXIT_CODE}"
+
+# Clean up .runner file if exists
 if [ -f "${HOME}/.runner" ]; then
-  echo "Removing the .runner file"
+  log.notice "Removing .runner file"
   rm -f "${HOME}/.runner"
 fi
 
-trap - TERM
-
-set -x  # Enable debug mode
-echo "### Starting entrypoint.sh ###"
-env
-echo "WORKDIR: $(pwd)"
-echo "Runner files:"
-ls -al
+log.notice "Exiting container"
+exit $RUNNER_EXIT_CODE
