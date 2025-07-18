@@ -1,7 +1,16 @@
-STEP 30/40: RUN curl -fLo /tmp/sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip   && echo "${SONAR_SCANNER_SHA} /tmp/sonar-scanner.zip" | sha256sum -c -   && unzip /tmp/sonar-scanner.zip -d /opt/   && rm -f /tmp/sonar-scanner.zip   && mv /opt/sonar-scanner-${SONAR_SCANNER_VERSION} /opt/sonar-scanner   && ln -s /opt/sonar-scanner/bin/sonar-scanner /usr/bin/sonar-scanner
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-100  577k  100  577k    0     0  1607k      0 --:--:-- --:--:-- --:--:-- 1607k
-/tmp/sonar-scanner.zip: FAILED
-sha256sum: WARNING: 1 computed checksum did NOT match
-Error: building at STEP "RUN curl -fLo /tmp/sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip   && echo "${SONAR_SCANNER_SHA} /tmp/sonar-scanner.zip" | sha256sum -c -   && unzip /tmp/sonar-scanner.zip -d /opt/   && rm -f /tmp/sonar-scanner.zip   && mv /opt/sonar-scanner-${SONAR_SCANNER_VERSION} /opt/sonar-scanner   && ln -s /opt/sonar-scanner/bin/sonar-scanner /usr/bin/sonar-scanner": while running runtime: exit status 1
+sonar-scanner --version
+Error: A JNI error has occurred, please check your installation and try again
+Exception in thread "main" java.lang.UnsupportedClassVersionError: org/sonarsource/scanner/cli/Main has been compiled by a more recent version of the Java Runtime (class file version 61.0), this version of the Java Runtime only recognizes class file versions up to 52.0
+        at java.lang.ClassLoader.defineClass1(Native Method)
+        at java.lang.ClassLoader.defineClass(ClassLoader.java:756)
+        at java.security.SecureClassLoader.defineClass(SecureClassLoader.java:142)
+        at java.net.URLClassLoader.defineClass(URLClassLoader.java:473)
+        at java.net.URLClassLoader.access$100(URLClassLoader.java:74)
+        at java.net.URLClassLoader$1.run(URLClassLoader.java:369)
+        at java.net.URLClassLoader$1.run(URLClassLoader.java:363)
+        at java.security.AccessController.doPrivileged(Native Method)
+        at java.net.URLClassLoader.findClass(URLClassLoader.java:362)
+        at java.lang.ClassLoader.loadClass(ClassLoader.java:418)
+        at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:352)
+        at java.lang.ClassLoader.loadClass(ClassLoader.java:351)
+        at sun.launcher.LauncherHelper.checkAndLoadMain(LauncherHelper.java:621)
