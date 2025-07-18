@@ -1,3 +1,124 @@
+FROM artifactory.voya.net/docker-virtual/openshift/ubi8/openjdk-8:latest
+
+ARG TARGETPLATFORM
+ARG RUNNER_VERSION
+ARG RUNNER_CONTAINER_HOOKS_VERSION
+ARG CHANNEL=stable
+ARG DUMB_INIT_VERSION=1.2.5
+ARG RUNNER_USER_UID=1001
+ARG DOCKER_GROUP_GID=121
+
+# 1. Install corporate certificates
+COPY voya_ecc_root.crx voyarootca.cer voya_rsa_root.crx zscalerrootca.cer /etc/pki/ca-trust/source/anchors/
+RUN update-ca-trust extract
+
+RUN microdnf update -y && \
+    microdnf install -y \
+        curl \
+        ca-certificates \
+        git \
+        dnf \
+        yum \
+        jq \
+        unzip \
+        zip \
+        libicu \
+        krb5-libs \
+        zlib \
+        openssl-libs \
+        shadow-utils \
+        findutils \
+        libyaml-devel \
+        procps-ng \
+        iputils \
+        hostname \
+        nc \
+        tar \
+        gzip \
+        which \
+        wget \
+        less \
+        vim-minimal \
+        lsof \
+    && dnf clean all
+
+RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.rpm.sh | bash && \
+    dnf install -y git-lfs && \
+    git lfs install
+
+# Install Podman and related tools
+RUN dnf install -y podman buildah crun fuse-overlayfs slirp4netns && \
+    dnf clean all
+
+# Create docker group and runner user
+RUN groupadd --gid $DOCKER_GROUP_GID docker && \
+    useradd --uid $RUNNER_USER_UID -g $DOCKER_GROUP_GID --create-home runner && \
+    usermod -a -G docker runner && \
+    chmod g+w /etc/passwd
+
+# Setup directories for rootless Podman
+ENV HOME=/home/runner
+ENV RUNNER_HOME=/home/runner
+RUN mkdir -p $HOME/.local/share/containers && \
+    chown -R $RUNNER_USER_UID:$DOCKER_GROUP_GID $HOME/.local
+
+# Create and configure containers.conf
+RUN mkdir -p /etc/containers && \
+    echo -e '[containers]\nuserns = "host"\n' > /etc/containers/containers.conf && \
+    echo -e '[storage]\ndriver = "overlay"\nignore_chown_errors = "true"\n' >> /etc/containers/containers.conf && \
+    echo -e '[engine]\ncgroup_manager = "cgroupfs"\nevents_logger = "file"\n' >> /etc/containers/containers.conf && \
+    chmod 644 /etc/containers/containers.conf
+
+# Prepare subuid/subgid files
+RUN touch /etc/subuid /etc/subgid && \
+    chgrp 0 /etc/subuid /etc/subgid && \
+    chmod g+rw /etc/subuid /etc/subgid
+
+# Mail spool fix
+RUN rm -rf /var/spool/mail && \
+    mkdir -p /var/spool/mail && \
+    groupadd -g 12 mail || true && \
+    chgrp mail /var/spool/mail && \
+    chmod 1777 /var/spool/mail && \
+    usermod -a -G mail runner
+
+# Install dumb-init
+RUN ARCH=$(echo ${TARGETPLATFORM} | cut -d / -f2) && \
+    if [ "$ARCH" = "arm64" ]; then ARCH=aarch64; fi && \
+    if [ "$ARCH" = "amd64" ] || [ "$ARCH" = "i386" ]; then ARCH=x86_64; fi && \
+    curl -fLo /usr/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v${DUMB_INIT_VERSION}/dumb-init_${DUMB_INIT_VERSION}_${ARCH} && \
+    chmod +x /usr/bin/dumb-init
+
+# Install GitHub runner
+ENV RUNNER_ASSETS_DIR=/runnertmp
+RUN ARCH=$(echo ${TARGETPLATFORM} | cut -d / -f2) && \
+    if [ "$ARCH" = "amd64" ] || [ "$ARCH" = "x86_64" ] || [ "$ARCH" = "i386" ]; then ARCH=x64; fi && \
+    mkdir -p "$RUNNER_ASSETS_DIR" && \
+    cd "$RUNNER_ASSETS_DIR" && \
+    curl -fLo runner.tar.gz https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-${ARCH}-${RUNNER_VERSION}.tar.gz && \
+    tar xzf ./runner.tar.gz && \
+    rm runner.tar.gz && \
+    ./bin/installdependencies.sh
+
+# Copy runner to home directory
+RUN cp -r $RUNNER_ASSETS_DIR/* $HOME/ && \
+    chown -R $RUNNER_USER_UID:$DOCKER_GROUP_GID $HOME
+
+# Set up tool cache
+ENV RUNNER_TOOL_CACHE=/opt/hostedtoolcache
+RUN mkdir /opt/hostedtoolcache && \
+    chgrp $DOCKER_GROUP_GID /opt/hostedtoolcache && \
+    chmod g+rwx /opt/hostedtoolcache
+
+# Install container hooks
+RUN cd "$RUNNER_ASSETS_DIR" && \
+    curl -fLo runner-container-hooks.zip https://github.com/actions/runner-container-hooks/releases/download/v${RUNNER_CONTAINER_HOOKS_VERSION}/actions-runner-hooks-k8s-${RUNNER_CONTAINER_HOOKS_VERSION}.zip && \
+    unzip ./runner-container-hooks.zip -d ./k8s && \
+    rm -f runner-container-hooks.zip && \
+    mkdir -p /etc/arc/hooks && \
+    cp -r ./k8s/* /etc/arc/hooks/ && \
+    chmod -R +x /etc/arc/hooks
+
 # Install SonarScanner CLI
 ARG SONAR_SCANNER_VERSION=5.0.1.3006
 ARG SONAR_SCANNER_SHA=ef3c6a0c0b5f3b21491d6d8f3f9d7c7dbf59d7a8e84d9fb9a3d0b4d0d8b6a8e9
@@ -8,6 +129,32 @@ RUN curl -fLo /tmp/sonar-scanner.zip https://binaries.sonarsource.com/Distributi
   && mv /opt/sonar-scanner-${SONAR_SCANNER_VERSION} /opt/sonar-scanner \
   && ln -s /opt/sonar-scanner/bin/sonar-scanner /usr/bin/sonar-scanner
 
+# Copy scripts
+COPY entrypoint.sh startup.sh logger.sh graceful-stop.sh update-status /usr/bin/
+COPY docker-shim.sh /usr/local/bin/docker
+
+# Environment setup
+ENV PATH="${PATH}:${HOME}/.local/bin"
+ENV ImageOS=rhel8
+RUN echo "PATH=${PATH}" > /etc/environment && \
+    echo "ImageOS=${ImageOS}" >> /etc/environment && \
+    echo "CONTAINERS_CONF=/etc/containers/containers.conf" >> /etc/environment
+
+# Set permissions
+RUN chmod 755 /usr/bin/entrypoint.sh /usr/bin/startup.sh /usr/bin/logger.sh /usr/bin/graceful-stop.sh /usr/local/bin/docker && \
+    chmod +x $HOME/run.sh $HOME/bin/*.sh && \
+    ln -s $HOME/run.sh /usr/bin/run.sh && \
+    # OpenShift permissions
+    chgrp -R 0 $HOME /opt /etc/arc /usr/bin /etc/containers && \
+    chmod -R g=u $HOME /opt /etc/arc /usr/bin /etc/containers && \
+    chmod g+rw /etc/passwd && \
+    find $HOME -type d -exec chmod g+x {} +
+
+WORKDIR $HOME
+USER $RUNNER_USER_UID
+
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]
+CMD ["/usr/bin/entrypoint.sh"]
 
 
 
