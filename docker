@@ -62,17 +62,15 @@ ENV RUNNER_HOME=/home/runner
 RUN mkdir -p $HOME/.local/share/containers && \
     chown -R $RUNNER_USER_UID:$DOCKER_GROUP_GID $HOME/.local
 
-# Create and configure containers.conf with VFS storage
+# Create and configure containers.conf
 RUN mkdir -p /etc/containers && \
     echo -e '[containers]\nuserns = "host"\n' > /etc/containers/containers.conf && \
-    echo -e '[storage]\ndriver = "vfs"\n' >> /etc/containers/containers.conf && \
+    echo -e '[storage]\ndriver = "overlay"\nignore_chown_errors = "true"\n' >> /etc/containers/containers.conf && \
     echo -e '[engine]\ncgroup_manager = "cgroupfs"\nevents_logger = "file"\n' >> /etc/containers/containers.conf && \
     chmod 644 /etc/containers/containers.conf
 
 # Prepare subuid/subgid files
 RUN touch /etc/subuid /etc/subgid && \
-    echo "runner:100000:65536" > /etc/subuid && \
-    echo "runner:100000:65536" > /etc/subgid && \
     chgrp 0 /etc/subuid /etc/subgid && \
     chmod g+rw /etc/subuid /etc/subgid
 
@@ -121,6 +119,21 @@ RUN cd "$RUNNER_ASSETS_DIR" && \
     cp -r ./k8s/* /etc/arc/hooks/ && \
     chmod -R +x /etc/arc/hooks
 
+RUN microdnf install -y java-11-openjdk-devel
+
+ENV SONAR_SCANNER_JAVA_HOME=/usr/lib/jvm/java-11-openjdk
+
+# Install SonarScanner CLI (Java 11 compatible)
+ARG SONAR_SCANNER_VERSION=5.0.1.3006
+RUN cd /tmp && \
+    curl -fLO https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip && \
+    unzip sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip -d /opt/ && \
+    rm -f sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip && \
+    mv /opt/sonar-scanner-${SONAR_SCANNER_VERSION} /opt/sonar-scanner && \
+    sed -i "s|^#sonar.scanner.jvmOptions=|sonar.scanner.jvmOptions=-Djavax.net.ssl.trustStore=/etc/pki/java/cacerts|" /opt/sonar-scanner/conf/sonar-scanner.properties && \
+    ln -s /opt/sonar-scanner/bin/sonar-scanner /usr/bin/sonar-scanner
+
+
 # Copy scripts
 COPY entrypoint.sh startup.sh logger.sh graceful-stop.sh update-status /usr/bin/
 COPY docker-shim.sh /usr/local/bin/docker
@@ -130,8 +143,7 @@ ENV PATH="${PATH}:${HOME}/.local/bin"
 ENV ImageOS=rhel8
 RUN echo "PATH=${PATH}" > /etc/environment && \
     echo "ImageOS=${ImageOS}" >> /etc/environment && \
-    echo "CONTAINERS_CONF=/etc/containers/containers.conf" >> /etc/environment && \
-    echo "STORAGE_DRIVER=vfs" >> /etc/environment
+    echo "CONTAINERS_CONF=/etc/containers/containers.conf" >> /etc/environment
 
 # Set permissions
 RUN chmod 755 /usr/bin/entrypoint.sh /usr/bin/startup.sh /usr/bin/logger.sh /usr/bin/graceful-stop.sh /usr/local/bin/docker && \
