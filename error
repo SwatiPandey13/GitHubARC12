@@ -15,6 +15,68 @@ Exception in thread "main" java.lang.UnsupportedClassVersionError: org/sonarsour
         at java.lang.ClassLoader.loadClass(ClassLoader.java:351)
         at sun.launcher.LauncherHelper.checkAndLoadMain(LauncherHelper.java:621)
 ======================================================================================================
+
+Error:  Failed to execute goal org.sonarsource.scanner.maven:sonar-maven-plugin:5.1.0.4751:sonar (default-cli) on project volo: Execution default-cli of goal org.sonarsource.scanner.maven:sonar-maven-plugin:5.1.0.4751:sonar failed: Unable to load the mojo 'sonar' in the plugin 'org.sonarsource.scanner.maven:sonar-maven-plugin:5.1.0.4751' due to an API incompatibility: org.codehaus.plexus.component.repository.exception.ComponentLookupException: org/sonarsource/scanner/maven/SonarQubeMojo has been compiled by a more recent version of the Java Runtime (class file version 55.0), this version of the Java Runtime only recognizes class file versions up to 52.0
+Error:  -----------------------------------------------------
+Error:  realm =    plugin>org.sonarsource.scanner.maven:sonar-maven-plugin:5.1.0.4751
+Error:  strategy = org.codehaus.plexus.classworlds.strategy.SelfFirstStrategy
+Error:  urls[0] = file:/home/runner/.m2/repository/org/sonarsource/scanner/maven/sonar-maven-plugin/5.1.0.4751/sonar-maven-plugin-5.1.0.4751.jar
+Error:  urls[1] = file:/home/runner/.m2/repository/org/codehaus/plexus/plexus-sec-dispatcher/2.0/plexus-sec-dispatcher-2.0.jar
+Error:  urls[2] = file:/home/runner/.m2/repository/org/codehaus/plexus/plexus-utils/3.4.1/plexus-utils-3.4.1.jar
+Error:  urls[3] = file:/home/runner/.m2/repository/org/codehaus/plexus/plexus-cipher/2.0/plexus-cipher-2.0.jar
+Error:  urls[4] = file:/home/runner/.m2/repository/org/sonarsource/scanner/lib/sonar-scanner-java-library/3.3.1.450/sonar-scanner-java-library-3.3.1.450.jar
+Error:  urls[5] = file:/home/runner/.m2/repository/com/squareup/okhttp3/okhttp/4.12.0/okhttp-4.12.0.jar
+Error:  urls[6] = file:/home/runner/.m2/repository/com/squareup/okio/okio/3.6.0/okio-3.6.0.jar
+Error:  urls[7] = file:/home/runner/.m2/repository/com/squareup/okio/okio-jvm/3.6.0/okio-jvm-3.6.0.jar
+Error:  urls[8] = file:/home/runner/.m2/repository/org/jetbrains/kotlin/kotlin-stdlib-common/1.9.10/kotlin-stdlib-common-1.9.10.jar
+Error:  urls[9] = file:/home/runner/.m2/repository/org/jetbrains/kotlin/kotlin-stdlib-jdk8/1.8.21/kotlin-stdlib-jdk8-1.8.21.jar
+Error:  urls[10] = file:/home/runner/.m2/repository/org/jetbrains/kotlin/kotlin-stdlib/1.8.21/kotlin-stdlib-1.8.21.jar
+Error:  urls[11] = file:/home/runner/.m2/repository/org/jetbrains/annotations/13.0/annotations-13.0.jar
+Error:  urls[12] = file:/home/runner/.m2/repository/org/jetbrains/kotlin/kotlin-stdlib-jdk7/1.8.21/kotlin-stdlib-jdk7-1.8.21.jar
+Error:  urls[13] = file:/home/runner/.m2/repository/com/squareup/okhttp3/okhttp-urlconnection/4.12.0/okhttp-urlconnection-4.12.0.jar
+Error:  urls[14] = file:/home/runner/.m2/repository/com/squareup/okhttp3/logging-interceptor/4.12.0/logging-interceptor-4.12.0.jar
+Error:  urls[15] = file:/home/runner/.m2/repository/com/google/code/gson/gson/2.11.0/gson-2.11.0.jar
+Error:  urls[16] = file:/home/runner/.m2/repository/com/google/errorprone/error_prone_annotations/2.27.0/error_prone_annotations-2.27.0.jar
+Error:  urls[17] = file:/home/runner/.m2/repository/org/apache/commons/commons-compress/1.27.1/commons-compress-1.27.1.jar
+Error:  urls[18] = file:/home/runner/.m2/repository/commons-codec/commons-codec/1.17.1/commons-codec-1.17.1.jar
+Error:  urls[19] = file:/home/runner/.m2/repository/commons-io/commons-io/2.16.1/commons-io-2.16.1.jar
+Error:  urls[20] = file:/home/runner/.m2/repository/org/sonarsource/scanner/lib/sonar-scanner-java-library-batch-interface/3.3.1.450/sonar-scanner-java-library-batch-interface-3.3.1.450.jar
+Error:  urls[21] = file:/home/runner/.m2/repository/io/github/hakky54/sslcontext-kickstart/8.3.6/sslcontext-kickstart-8.3.6.jar
+Error:  urls[22] = file:/home/runner/.m2/repository/org/bouncycastle/bcprov-jdk18on/1.78.1/bcprov-jdk18on-1.78.1.jar
+Error:  urls[23] = file:/home/runner/.m2/repository/org/apache/commons/commons-lang3/3.14.0/commons-lang3-3.14.0.jar
+Error:  Number of foreign imports: 1
+Error:  import: Entry[import  from realm ClassRealm[maven.api, parent: null]]
+Error:  
+Error:  -----------------------------------------------------
+Error:  
+Error:  -> [Help 1]
+Error:  
+Error:  To see the full stack trace of the errors, re-run Maven with the -e switch.
+Error:  Re-run Maven using the -X switch to enable full debug logging.
+Error:  
+Error:  For more information about the errors and possible solutions, please read the following articles:
+Error:  [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/PluginContainerException
+Error: Process completed with exit code 1.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Add this before SonarScanner installation
 RUN microdnf install -y java-17-openjdk-devel
 
