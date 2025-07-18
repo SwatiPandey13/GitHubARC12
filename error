@@ -1,3 +1,24 @@
+# Install Java 17 (required for SonarQube 9.9+)
+RUN microdnf install -y java-17-openjdk-devel
+
+# Set Java 17 as default for SonarScanner
+ENV JAVA_HOME_17=/usr/lib/jvm/java-17-openjdk
+ENV PATH=$JAVA_HOME_17/bin:$PATH
+
+# Install SonarScanner CLI (Java 17 compatible)
+ARG SONAR_SCANNER_VERSION=5.0.1.3006
+RUN cd /tmp && \
+    curl -fLO https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip && \
+    unzip sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip -d /opt/ && \
+    rm -f sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip && \
+    mv /opt/sonar-scanner-${SONAR_SCANNER_VERSION} /opt/sonar-scanner && \
+    # Update sonar-scanner script to use Java 17
+    sed -i "1 a export JAVA_HOME=$JAVA_HOME_17" /opt/sonar-scanner/bin/sonar-scanner && \
+    sed -i "s|^#sonar.scanner.jvmOptions=|sonar.scanner.jvmOptions=-Djavax.net.ssl.trustStore=/etc/pki/java/cacerts|" /opt/sonar-scanner/conf/sonar-scanner.properties && \
+    ln -s /opt/sonar-scanner/bin/sonar-scanner /usr/bin/sonar-scanner
+
+--------------------------------------------------------------------------------------
+
 sonar-scanner --version
 Error: A JNI error has occurred, please check your installation and try again
 Exception in thread "main" java.lang.UnsupportedClassVersionError: org/sonarsource/scanner/cli/Main has been compiled by a more recent version of the Java Runtime (class file version 61.0), this version of the Java Runtime only recognizes class file versions up to 52.0
