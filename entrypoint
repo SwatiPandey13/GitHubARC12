@@ -8,6 +8,47 @@ source /usr/bin/graceful-stop.sh
 # Set up signal handler
 trap 'graceful_stop' TERM
 
+# ======================== NEW PODMAN CONFIGURATION ========================
+log.notice "Configuring rootless Podman environment"
+
+# Certificate setup
+if [ -d "$RUNNER_HOME/trusted-certs" ]; then
+    log.notice "Installing additional trusted certificates"
+    cp -f $RUNNER_HOME/trusted-certs/* /etc/pki/ca-trust/source/anchors/
+    update-ca-trust extract
+fi
+
+# Create user entry if missing
+if [ -e /etc/arc/hooks/create-passwd ]; then
+    log.notice "Creating user entry"
+    /etc/arc/hooks/create-passwd
+fi
+
+# Configure subuid/subgid for current user
+log.notice "Configuring UID/GID mappings"
+USER_ID=$(id -u)
+GROUP_ID=$(id -g)
+
+# Update subuid
+if ! grep -q ":$USER_ID:" /etc/subuid; then
+    echo "runner:$USER_ID:1" >> /etc/subuid
+    echo "runner:100000:65536" >> /etc/subuid
+    log.notice "Updated /etc/subuid"
+fi
+
+# Update subgid
+if ! grep -q ":$GROUP_ID:" /etc/subgid; then
+    echo "runner:$GROUP_ID:1" >> /etc/subgid
+    echo "runner:100000:65536" >> /etc/subgid
+    log.notice "Updated /etc/subgid"
+fi
+
+# Configure Podman storage
+log.notice "Initializing Podman storage"
+mkdir -p ${HOME}/.local/share/containers
+podman system migrate
+# ======================== END PODMAN CONFIGURATION ========================
+
 log.notice "Starting GitHub Actions Runner"
 
 # Start the runner in background
