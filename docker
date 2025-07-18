@@ -60,12 +60,17 @@ RUN groupadd --gid $DOCKER_GROUP_GID docker && \
 ENV HOME=/home/runner
 ENV RUNNER_HOME=/home/runner
 RUN mkdir -p $HOME/.local/share/containers && \
-    chown -R $RUNNER_USER_UID:$DOCKER_GROUP_GID $HOME/.local && \
-    # Configure storage
-    echo -e '[storage]\ndriver = "overlay"\nignore_chown_errors = "1"\n' > /etc/containers/storage.conf && \
-    echo -e '[engine]\ncgroup_manager = "cgroupfs"\nevents_logger = "file"\n' >> /etc/containers/storage.conf && \
-    # Prepare subuid/subgid files
-    touch /etc/subuid /etc/subgid && \
+    chown -R $RUNNER_USER_UID:$DOCKER_GROUP_GID $HOME/.local
+
+# Create and configure containers.conf
+RUN mkdir -p /etc/containers && \
+    echo -e '[containers]\nuserns = "host"\n' > /etc/containers/containers.conf && \
+    echo -e '[storage]\ndriver = "overlay"\nignore_chown_errors = "true"\n' >> /etc/containers/containers.conf && \
+    echo -e '[engine]\ncgroup_manager = "cgroupfs"\nevents_logger = "file"\n' >> /etc/containers/containers.conf && \
+    chmod 644 /etc/containers/containers.conf
+
+# Prepare subuid/subgid files
+RUN touch /etc/subuid /etc/subgid && \
     chgrp 0 /etc/subuid /etc/subgid && \
     chmod g+rw /etc/subuid /etc/subgid
 
@@ -123,7 +128,7 @@ ENV PATH="${PATH}:${HOME}/.local/bin"
 ENV ImageOS=rhel8
 RUN echo "PATH=${PATH}" > /etc/environment && \
     echo "ImageOS=${ImageOS}" >> /etc/environment && \
-    echo "CONTAINERS_STORAGE_DRIVER=overlay" >> /etc/environment
+    echo "CONTAINERS_CONF=/etc/containers/containers.conf" >> /etc/environment
 
 # Set permissions
 RUN chmod 755 /usr/bin/entrypoint.sh /usr/bin/startup.sh /usr/bin/logger.sh /usr/bin/graceful-stop.sh /usr/local/bin/docker && \
