@@ -1,6 +1,2 @@
-podman login artifactory.voya.net
-ERRO[0000] cannot find UID/GID for user jboss: no subuid ranges found for user "jboss" in /etc/subuid - check rootless mode in man pages. 
-WARN[0000] Using rootless single mapping into the namespace. This might break some images. Check /etc/subuid and /etc/subgid for adding sub*ids if not using a network user 
-
-
-Error: writing blob: adding layer with blob "sha256:27d95e4a78e52b9cf33dc90a8ddf26147419d428b9611a7f70887cc4c3db0dd1": processing tar file(potentially insufficient UIDs or GIDs available in user namespace (requested 0:42 for /etc/gshadow): Check /etc/subuid and /etc/subgid if configured locally and run "podman system migrate": lchown /etc/gshadow: invalid argument): exit status 1
+Error: writing blob: adding layer with blob "sha256:27d95e4a78e52b9cf33dc90a8ddf26147419d428b9611a7f70887cc4c3db0dd1": processing tar file(time="2025-07-18T10:05:10Z" level=warning msg="Failed to decode the keys [\"storage.ignore_chown_errors\" \"engine\" \"engine.cgroup_manager\" \"engine.events_logger\"] from \"/etc/containers/storage.conf\""
+potentially insufficient UIDs or GIDs available in user namespace (requested 0:42 for /etc/gshadow): Check /etc/subuid and /etc/subgid if configured locally and run "podman system migrate": lchown /etc/gshadow: invalid argument): exit status 1
