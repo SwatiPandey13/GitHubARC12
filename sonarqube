@@ -1,0 +1,26 @@
+# Install SonarScanner CLI
+ARG SONAR_SCANNER_VERSION=5.0.1.3006
+ARG SONAR_SCANNER_SHA=ef3c6a0c0b5f3b21491d6d8f3f9d7c7dbf59d7a8e84d9fb9a3d0b4d0d8b6a8e9
+RUN curl -fLo /tmp/sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip \
+  && echo "${SONAR_SCANNER_SHA} /tmp/sonar-scanner.zip" | sha256sum -c - \
+  && unzip /tmp/sonar-scanner.zip -d /opt/ \
+  && rm -f /tmp/sonar-scanner.zip \
+  && mv /opt/sonar-scanner-${SONAR_SCANNER_VERSION} /opt/sonar-scanner \
+  && ln -s /opt/sonar-scanner/bin/sonar-scanner /usr/bin/sonar-scanner
+
+
+
+
+<properties>
+  <sonar-maven-plugin.version>3.9.1.2184</sonar-maven-plugin.version>
+</properties>
+
+<build>
+  <plugins>
+    <plugin>
+      <groupId>org.sonarsource.scanner.maven</groupId>
+      <artifactId>sonar-maven-plugin</artifactId>
+      <version>${sonar-maven-plugin.version}</version>
+    </plugin>
+  </plugins>
+</build>
