@@ -23,34 +23,10 @@ if [ -e /etc/arc/hooks/create-passwd ]; then
     /etc/arc/hooks/create-passwd
 fi
 
-# Configure subuid/subgid for current user
-log.notice "Configuring UID/GID mappings"
-USER_ID=$(id -u)
-GROUP_ID=$(id -g)
-USER_NAME=$(id -un)
-
-# Update subuid
-if ! grep -q "^${USER_NAME}:" /etc/subuid; then
-    log.notice "Creating subuid mapping for ${USER_NAME}"
-    echo "${USER_NAME}:${USER_ID}:1" >> /etc/subuid
-    echo "${USER_NAME}:100000:65536" >> /etc/subuid
-fi
-
-# Update subgid
-if ! grep -q "^${USER_NAME}:" /etc/subgid; then
-    log.notice "Creating subgid mapping for ${USER_NAME}"
-    echo "${USER_NAME}:${GROUP_ID}:1" >> /etc/subgid
-    echo "${USER_NAME}:100000:65536" >> /etc/subgid
-fi
-
-# Configure Podman storage
-log.notice "Initializing Podman storage"
+# Configure Podman storage - VFS driver doesn't require migrate
+log.notice "Setting up Podman storage with VFS driver"
 export CONTAINERS_CONF=/etc/containers/containers.conf
-mkdir -p ${HOME}/.local/share/containers
-
-# Run storage initialization with debug logging
-log.notice "Running podman system migrate"
-podman system migrate --log-level=debug
+export STORAGE_DRIVER=vfs
 
 # Verify storage configuration
 log.notice "Podman storage configuration:"
