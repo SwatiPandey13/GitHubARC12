@@ -8,8 +8,7 @@ source /usr/bin/graceful-stop.sh
 # Set up signal handler
 trap 'graceful_stop' TERM
 
-# ======================== NEW PODMAN CONFIGURATION ========================
-log.notice "Configuring rootless Podman environment"
+log.notice "Configuring environment for GitHub Actions Runner"
 
 # Certificate setup
 if [ -d "$RUNNER_HOME/trusted-certs" ]; then
@@ -28,26 +27,34 @@ fi
 log.notice "Configuring UID/GID mappings"
 USER_ID=$(id -u)
 GROUP_ID=$(id -g)
+USER_NAME=$(id -un)
 
 # Update subuid
-if ! grep -q ":$USER_ID:" /etc/subuid; then
-    echo "runner:$USER_ID:1" >> /etc/subuid
-    echo "runner:100000:65536" >> /etc/subuid
-    log.notice "Updated /etc/subuid"
+if ! grep -q "^${USER_NAME}:" /etc/subuid; then
+    log.notice "Creating subuid mapping for ${USER_NAME}"
+    echo "${USER_NAME}:${USER_ID}:1" >> /etc/subuid
+    echo "${USER_NAME}:100000:65536" >> /etc/subuid
 fi
 
 # Update subgid
-if ! grep -q ":$GROUP_ID:" /etc/subgid; then
-    echo "runner:$GROUP_ID:1" >> /etc/subgid
-    echo "runner:100000:65536" >> /etc/subgid
-    log.notice "Updated /etc/subgid"
+if ! grep -q "^${USER_NAME}:" /etc/subgid; then
+    log.notice "Creating subgid mapping for ${USER_NAME}"
+    echo "${USER_NAME}:${GROUP_ID}:1" >> /etc/subgid
+    echo "${USER_NAME}:100000:65536" >> /etc/subgid
 fi
 
 # Configure Podman storage
 log.notice "Initializing Podman storage"
+export CONTAINERS_CONF=/etc/containers/containers.conf
 mkdir -p ${HOME}/.local/share/containers
-podman system migrate
-# ======================== END PODMAN CONFIGURATION ========================
+
+# Run storage initialization with debug logging
+log.notice "Running podman system migrate"
+podman system migrate --log-level=debug
+
+# Verify storage configuration
+log.notice "Podman storage configuration:"
+podman info --format=json | jq .store
 
 log.notice "Starting GitHub Actions Runner"
 
