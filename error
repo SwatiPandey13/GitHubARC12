@@ -1,16 +1,28 @@
-sonar-scanner --version
-Error: A JNI error has occurred, please check your installation and try again
-Exception in thread "main" java.lang.UnsupportedClassVersionError: org/sonarsource/scanner/cli/Main has been compiled by a more recent version of the Java Runtime (class file version 61.0), this version of the Java Runtime only recognizes class file versions up to 52.0
-        at java.lang.ClassLoader.defineClass1(Native Method)
-        at java.lang.ClassLoader.defineClass(ClassLoader.java:756)
-        at java.security.SecureClassLoader.defineClass(SecureClassLoader.java:142)
-        at java.net.URLClassLoader.defineClass(URLClassLoader.java:473)
-        at java.net.URLClassLoader.access$100(URLClassLoader.java:74)
-        at java.net.URLClassLoader$1.run(URLClassLoader.java:369)
-        at java.net.URLClassLoader$1.run(URLClassLoader.java:363)
-        at java.security.AccessController.doPrivileged(Native Method)
-        at java.net.URLClassLoader.findClass(URLClassLoader.java:362)
-        at java.lang.ClassLoader.loadClass(ClassLoader.java:418)
-        at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:352)
-        at java.lang.ClassLoader.loadClass(ClassLoader.java:351)
-        at sun.launcher.LauncherHelper.checkAndLoadMain(LauncherHelper.java:621)
+# Replace existing SonarScanner installation with this
+ARG SONAR_SCANNER_VERSION=4.8.0.2856
+RUN cd /tmp && \
+    curl -fLO https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}-linux.zip && \
+    unzip sonar-scanner-cli-${SONAR_SCANNER_VERSION}-linux.zip -d /opt/ && \
+    rm -f sonar-scanner-cli-${SONAR_SCANNER_VERSION}-linux.zip && \
+    mv /opt/sonar-scanner-${SONAR_SCANNER_VERSION}-linux /opt/sonar-scanner && \
+    ln -s /opt/sonar-scanner/bin/sonar-scanner /usr/bin/sonar-scanner
+
+
+
+
+======================================================================================================
+# Add this before SonarScanner installation
+RUN microdnf install -y java-17-openjdk-devel
+
+# Set JAVA_HOME for SonarScanner
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk
+ENV PATH="${JAVA_HOME}/bin:${PATH}"
+
+# Then install SonarScanner (version 5+)
+ARG SONAR_SCANNER_VERSION=5.0.1.3006
+RUN cd /tmp && \
+    curl -fLO https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip && \
+    unzip sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip -d /opt/ && \
+    rm -f sonar-scanner-cli-${SONAR_SCANNER_VERSION}.zip && \
+    mv /opt/sonar-scanner-${SONAR_SCANNER_VERSION} /opt/sonar-scanner && \
+    ln -s /opt/sonar-scanner/bin/sonar-scanner /usr/bin/sonar-scanner
